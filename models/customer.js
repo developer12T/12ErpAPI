@@ -13,7 +13,7 @@ const Customer = sequelize.define(
       allowNull: false,
       field: "OKSTAT",
     },
-    money_type: {
+    OKCUCL: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCUCL",
@@ -42,6 +42,11 @@ const Customer = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCUA3",
+    },
+    customer_address4: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OKCUA4",
     },
     customer_poscode: {
       type: DataTypes.STRING,
@@ -188,6 +193,11 @@ const Sale = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
       field: "CTTX40",
+    },
+    CTSTCO: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "CTSTCO",
     },
   },
   {

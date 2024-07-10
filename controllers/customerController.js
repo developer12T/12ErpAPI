@@ -11,8 +11,21 @@ exports.index = async (req, res, next) => {
       },
       where: {
         customer_phone: "02-2211748",
-        customer_status: "20",
-        co_code: "410",
+        [Op.or]: [
+          {
+            customer_status: "20",
+            co_code: "410",
+          },
+        ],
+        customer_code: {
+          [Op.like]: `%${customer_no}%`,
+        },
+        OKCUCL: {
+          [Op.like]: `%${OKCUCL}%`,
+        },
+        OKCFC1: {
+          [Op.like]: `%${OKCFC1}%`,
+        },
       },
     });
     let shippingarr = [];
@@ -39,7 +52,7 @@ exports.index = async (req, res, next) => {
         attributes: {
           exclude: ["id"],
         },
-        where: { CTSTKY: customersData[i].sale_code },
+        where: { CTSTKY: customersData[i].sale_code, CTSTCO: "SMCD" },
         // group: ["MMFUDS"],
       });
       const sales = saleData.map((sale) => {
@@ -70,15 +83,20 @@ exports.index = async (req, res, next) => {
       const sales_payer = customer.sales_payer.trim();
       //   const credit_limit = customer.credit_limit.trim();
       const taxno = customer.taxno.trim();
+
       return {
         customer_code: customer_code,
         customer_status: customer.customer_status,
-        money_type: customer.warehouse,
-        customer_name: customer.customer_name,
+        OKCUCL: customer.OKCUCL,
+        customer_name:
+          OKCUCL == "102" || "103"
+            ? customer.customer_name + customer.customer_address4 
+            : customer.customer_name,
         co_code: customer.co_code,
         customer_address1: customer.customer_address1,
         customer_address2: customer.customer_address2,
         customer_address3: customer.customer_address3,
+        customer_address4: customer.customer_address4,
         customer_poscode: customer_poscode,
         customer_phone: customer_phone,
         credit_term: customer.credit_term,
@@ -96,7 +114,45 @@ exports.index = async (req, res, next) => {
       };
     });
 
+    if(!customers.length){
+      const error = new Error('Not Found');
+      error.statusCode = 404;
+      throw error;
+    }
+
     res.json(customers);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.update = async (req, res, next) => {
+  try {
+    const { OKCUCL, OKCUNO, OKCFC1, OKCUNM, OKALCU } = req.body;
+    await Customer.update(
+      { customer_name: OKCUNM },
+      {
+        where: {
+          lastName: null,
+        },
+      }
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.delete = async (req, res, next) => {
+  try {
+    const { OKCUCL, OKCUNO, OKCFC1, OKCUNM, OKALCU } = req.body;
+    await Customer.update(
+      { customer_name: OKCUNM },
+      {
+        where: {
+          lastName: null,
+        },
+      }
+    );
   } catch (error) {
     next(error);
   }
