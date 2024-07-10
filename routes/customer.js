@@ -1,13 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { index } = require("../controllers/customerController");
+const { index, update } = require("../controllers/customerController");
+const passportJWT = require("../middleware/passportJWT");
 
 /* GET home page. */
 //http://localhost:3000/stock
-router.post("/", index);
+router.post("/", [passportJWT.isLogin], index);
 
-//http://localhost:3000/stock
-router.post("/edit", index);
+//localhost:3000/stock
+http: router.post("/edit", update);
 
 //http://localhost:3000/stock/monitoring/10010201029
 // router.get("/monitoring/:id", index);

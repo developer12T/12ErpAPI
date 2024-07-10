@@ -73,7 +73,7 @@ const Customer = sequelize.define(
       allowNull: false,
       field: "OKWHLO",
     },
-    sdst: {
+    OKSDST: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKSDST",
