@@ -3,67 +3,67 @@ const { sequelize, DataTypes } = require("../config/m3db");
 const Customer = sequelize.define(
   "OCUSMA",
   {
-    customer_code: {
+    customerNo: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCUNO",
     },
-    customer_status: {
+    customerStatus: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKSTAT",
     },
-    OKCUCL: {
+    moneyChannel: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCUCL",
     },
-    customer_name: {
+    customerName: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCUNM",
     },
-    co_code: {
+    coNo: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCONO",
     },
-    customer_address1: {
+    customerAddress1: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCUA1",
     },
-    customer_address2: {
+    customerAddress2: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCUA2",
     },
-    customer_address3: {
+    customerAddress3: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCUA3",
     },
-    customer_address4: {
+    customerAddress4: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCUA4",
     },
-    customer_poscode: {
+    customerPoscode: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKPONO",
     },
-    customer_phone: {
+    customerPhone: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKPHNO",
     },
-    credit_term: {
+    creditTerm: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKTEPY",
     },
-    co_type: {
+    coType: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKORTP",
@@ -78,7 +78,7 @@ const Customer = sequelize.define(
       allowNull: false,
       field: "OKSDST",
     },
-    customer_team: {
+    saleTeam: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCFC8",
@@ -98,12 +98,12 @@ const Customer = sequelize.define(
       allowNull: false,
       field: "OKCFC6",
     },
-    sales_payer: {
+    salePayer: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKPYNO",
     },
-    credit_limit: {
+    creditLimit: {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "OKCRL2",
@@ -113,10 +113,70 @@ const Customer = sequelize.define(
       allowNull: false,
       field: "OKVRNO",
     },
-    sale_code: {
+    saleCode: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKSMCD",
+    },
+    OKRESP: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OKRESP",
+    },
+    OKUSR1: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OKUSR1",
+    },
+    OKUSR2: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OKUSR2",
+    },
+    OKUSR3: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OKUSR3",
+    },
+    OKDTE1: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "OKDTE1",
+    },
+    OKDTE2: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "OKDTE2",
+    },
+    OKDTE3: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "OKDTE3",
+    },
+    OKRGDT: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "OKRGDT",
+    },
+    OKRGTM: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "OKRGTM",
+    },
+    OKLMDT: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "OKLMDT",
+    },
+    OKCHID: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OKCHID",
+    },
+    OKLMTS: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "OKLMTS",
     },
   },
   {
