@@ -8,6 +8,7 @@ const passport = require('passport');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const customersRouter = require('./routes/customer');
+const shinppingsRouter = require('./routes/shipping');
 
 //import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/customer', customersRouter);
+app.use('/shinpping', shinppingsRouter);
 
 app.use(errorHandler);
 

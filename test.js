@@ -1,59 +1,58 @@
 const customer = {
-    customerNo: customerNo,
-    coNo: existingData.OKCONO,
-    customerStatus: customerStatus,
-    moneyChannel: moneyChannel,
-    coType: "021",
-    customerName: customerName,
-    customerAddress1: customerAddress1,
-    customerAddress2: customerAddress2,
-    customerAddress3: customerAddress3,
-    customerAddress4: customerAddress4,
-    customerPoscode: customerPoscode,
-    customerPhone: customerPhone,
-    warehouse: warehouse,
-    OKSDST: OKSDST,
-    saleTeam: saleTeam,
-    OKCFC1: OKCFC1,
-    OKCFC3: OKCFC3,
-    OKCFC6: OKCFC6,
-    salePayer: salePayer,
-    creditLimit: creditLimit,
-    taxno: taxno,
-    saleCode: saleCode,
-    OKCUTP: existingData.OKCUTP,
-    OKCORG: existingData.OKCORG,
-    creditTerm: existingData.OKTEPY,
-    OKOT7: existingData.OKOT7,
-    OKTEDL: existingData.OKTEDL,
-    OKMODL: existingData.OKMODL,
-    OKDIPC: existingData.OKDIPC,
-    OKDIPC: existingData.OKDIPC,
-    OKTXAP: existingData.OKTXAP,
-    OKCUCD: existingData.OKCUCD,
-    OKCRTP: existingData.OKCRTP,
-    OKDTFM: existingData.OKDTFM,
-    OKPRIC: existingData.OKPRIC,
-    OKCSCD: existingData.OKCSCD,
-    OKLHCD: existingData.OKLHCD,
-    OKDOGR: existingData.OKDOGR,
-    OKEDES: existingData.OKEDES,
-    OKPYCD: existingData.OKPYCD,
-    OKGRPY: existingData.OKGRPY,
-    OKTINC: existingData.OKTINC,
-    OKPRDL: existingData.OKPRDL,
-    OKIVGP: existingData.OKIVGP,
-    OKFACI: existingData.OKFACI,
-    OKRESP: existingData.USER,
-    OKUSR1: existingData.USER,
-    OKUSR2: existingData.USER,
-    OKUSR3: existingData.USER,
-    OKDTE1: formatDate(),
-    OKDTE2: formatDate(),
-    OKDTE3: formatDate(),
-    OKRGDT: formatDate(),
-    OKRGTM: getCurrentTimeFormatted(),
-    OKLMDT: formatDate(),
-    OKCHID: existingData.USER,
-    OKLMTS: Date.now(),
+    customerNo: customerNo,             // OKCUNO,
+    coNo: existingData.OKCONO,          // OKCONO
+    customerStatus: customerStatus,     // OKSTAT
+    moneyChannel: moneyChannel,         // OKCUCL
+    coType: "021",                      // OKORTP
+    customerName: customerName,         // OKCUNM
+    customerAddress1: customerAddress1, // OKCUA1
+    customerAddress2: customerAddress2, // OKCUA2
+    customerAddress3: customerAddress3, // OKCUA3
+    customerAddress4: customerAddress4, // OKCUA4
+    customerPoscode: customerPoscode,   // OKPONO
+    customerPhone: customerPhone,       // OKPHNO
+    warehouse: warehouse,               // OKWHLO
+    OKSDST: OKSDST,                     // OKSDST
+    saleTeam: saleTeam,                 // OKCFC8
+    OKCFC1: OKCFC1,                     // OKCFC1
+    OKCFC3: OKCFC3,                     // OKCFC3
+    OKCFC6: OKCFC6,                     // OKCFC6
+    salePayer: salePayer,               // OKPYNO
+    creditLimit: creditLimit,           // OKCRL2
+    taxno: taxno,                       // OKVRNO
+    saleCode: saleCode,                 // OKSMCD
+    OKCUTP: existingData.OKCUTP,        // OKCUTP
+    OKCORG: existingData.OKCORG,        // OKCORG
+    creditTerm: existingData.OKTEPY,    // OKTEPY
+    OKOT75: existingData.OKOT75,        // OKOT75
+    OKTEDL: existingData.OKTEDL,        // OKTEDL
+    OKMODL: existingData.OKMODL,        // OKMODL
+    OKDIPC: existingData.OKDIPC,        // OKDIPC
+    OKTXAP: existingData.OKTXAP,        // OKTXAP
+    OKCUCD: existingData.OKCUCD,        // OKCUCD
+    OKCRTP: existingData.OKCRTP,        // OKCRTP
+    OKDTFM: existingData.OKDTFM,        // OKDTFM
+    OKPRIC: existingData.OKPRIC,        // OKPRIC
+    OKCSCD: existingData.OKCSCD,        // OKCSCD
+    OKLHCD: existingData.OKLHCD,        // OKLHCD
+    OKDOGR: existingData.OKDOGR,        // OKDOGR
+    OKEDES: existingData.OKEDES,        // OKEDES
+    OKPYCD: existingData.OKPYCD,        // OKPYCD
+    OKGRPY: existingData.OKGRPY,        // OKGRPY
+    OKTINC: existingData.OKTINC,        // OKTINC
+    OKPRDL: existingData.OKPRDL,        // OKPRDL
+    OKIVGP: existingData.OKIVGP,        // OKIVGP
+    OKFACI: existingData.OKFACI,        // OKFACI
+    OKRESP: existingData.USER,          // OKRESP
+    OKUSR1: existingData.USER,          // OKUSR1
+    OKUSR2: existingData.USER,          // OKUSR2
+    OKUSR3: existingData.USER,          // OKUSR3
+    OKDTE1: formatDate(),               // OKDTE1
+    OKDTE2: formatDate(),               // OKDTE2
+    OKDTE3: formatDate(),               // OKDTE3
+    OKRGDT: formatDate(),               // OKRGDT
+    OKRGTM: getCurrentTimeFormatted(),  // OKRGTM
+    OKLMDT: formatDate(),               // OKLMDT
+    OKCHID: existingData.USER,          // OKCHID
+    OKLMTS: Date.now(),                 // OKLMTS
   };

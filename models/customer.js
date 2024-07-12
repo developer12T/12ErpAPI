@@ -13,7 +13,7 @@ const Customer = sequelize.define(
       allowNull: false,
       field: "OKSTAT",
     },
-    moneyChannel: {
+    customerChannel: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKCUCL",
@@ -191,7 +191,12 @@ const Customer = sequelize.define(
 const Shipping = sequelize.define(
   "OCUSAD",
   {
-    OPCUNO: {
+    coNo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPCONO",
+    },
+    customerNo: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OPCUNO",
@@ -201,32 +206,32 @@ const Shipping = sequelize.define(
       allowNull: false,
       field: "OPADID",
     },
-    OPCUNM: {
+    customerName: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OPCUNM",
     },
-    OPCUA1: {
+    shippingAddress1: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OPCUA1",
     },
-    OPCUA2: {
+    shippingAddress2: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OPCUA2",
     },
-    OPCUA3: {
+    shippingAddress3: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OPCUA3",
     },
-    OPPONO: {
+    shippingPoscode: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OPPONO",
     },
-    OPPHNO: {
+    shippingPhone: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OPPHNO",
