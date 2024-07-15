@@ -63,7 +63,7 @@ const Customer = sequelize.define(
       allowNull: false,
       field: "OKTEPY",
     },
-    coType: {
+    orderType: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKORTP",

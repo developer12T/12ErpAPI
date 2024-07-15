@@ -79,7 +79,7 @@ exports.index = async (req, res, next) => {
       }
     }
 
-      const customers = customersData.map((customer) => {
+    const customers = customersData.map((customer) => {
       const customerNo = customer.customerNo.trim();
       const customerPoscode = customer.customerPoscode.trim();
       const customerPhone = customer.customerPhone.trim();
@@ -107,8 +107,8 @@ exports.index = async (req, res, next) => {
         customerPoscode: customerPoscode,
         customerPhone: customerPhone,
         creditTerm: customer.creditTerm,
-        coType: customer.coType,
-        zone: customer.saleZone,
+        orderType: customer.orderType,
+        zone: saleZone,
         saleTeam: saleTeam,
         OKCFC1: OKCFC1,
         OKCFC3: OKCFC3,
@@ -147,7 +147,7 @@ exports.update = async (req, res, next) => {
       customerPoscode,
       customerPhone,
       creditTerm,
-      coType,
+      orderType,
       warehouse,
       OKSDST,
       OKCFC1,
@@ -168,13 +168,14 @@ exports.update = async (req, res, next) => {
         coNo: "410",
       },
     });
+
     // console.log(customersData);
     const customers = customersData.map((customer) => {
       const customerChannel = customer.customerChannel.trim();
       const customerPoscode = customer.customerPoscode.trim();
       const customerPhone = customer.customerPhone.trim();
       const creditTerm = customer.creditTerm.trim();
-      const coType = customer.coType.trim();
+      const orderType = customer.orderType.trim();
       const warehouse = customer.warehouse.trim();
       const OKSDST = customer.OKSDST.trim();
       const saleTeam = customer.saleTeam.trim();
@@ -193,7 +194,7 @@ exports.update = async (req, res, next) => {
         customerPoscode: customerPoscode,
         customerPhone: customerPhone,
         creditTerm: creditTerm,
-        coType: coType,
+        orderType: orderType,
         warehouse: warehouse,
         OKSDST: OKSDST,
         saleTeam: saleTeam,
@@ -233,8 +234,8 @@ exports.update = async (req, res, next) => {
     if (customers[0].creditTerm !== creditTerm) {
       updateFields.creditTerm = creditTerm;
     }
-    if (customers[0].coType !== coType) {
-      updateFields.coType = coType;
+    if (customers[0].orderType !== orderType) {
+      updateFields.orderType = orderType;
     }
     if (customers[0].warehouse !== warehouse) {
       updateFields.warehouse = warehouse;
@@ -266,7 +267,7 @@ exports.update = async (req, res, next) => {
         coNo: "410",
       },
     });
-    console.log(update);
+    // console.log(update);
     if (update === 0) {
       const error = new Error("Not Found Update");
       error.statusCode = 404;
@@ -381,7 +382,7 @@ INSERT INTO [MVXJDTA].[OCUSMA]
   :coNo,
   :customerStatus,
   :customerChannel,
-  :coType,
+  :orderType,
   :customerName,
   :customerAddress1,
   :customerAddress2,
@@ -439,7 +440,7 @@ INSERT INTO [MVXJDTA].[OCUSMA]
       coNo: existingData.OKCONO, // OKCONO
       customerStatus: customerStatus, // OKSTAT
       customerChannel: customerChannel, // OKCUCL
-      coType: "021", // OKORTP
+      orderType: "021", // OKORTP
       customerName: customerName, // OKCUNM
       customerAddress1: customerAddress1, // OKCUA1
       customerAddress2: customerAddress2, // OKCUA2
