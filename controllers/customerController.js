@@ -79,11 +79,11 @@ exports.index = async (req, res, next) => {
       }
     }
 
-    const customers = customersData.map((customer) => {
+      const customers = customersData.map((customer) => {
       const customerNo = customer.customerNo.trim();
       const customerPoscode = customer.customerPoscode.trim();
       const customerPhone = customer.customerPhone.trim();
-      const OKSDST = customer.OKSDST.trim();
+      const saleZone = customer.saleZone.trim();
       const saleTeam = customer.saleTeam.trim();
       const OKCFC1 = customer.OKCFC1.trim();
       const OKCFC3 = customer.OKCFC3.trim();
@@ -108,7 +108,7 @@ exports.index = async (req, res, next) => {
         customerPhone: customerPhone,
         creditTerm: customer.creditTerm,
         coType: customer.coType,
-        sdst: OKSDST,
+        zone: customer.saleZone,
         saleTeam: saleTeam,
         OKCFC1: OKCFC1,
         OKCFC3: OKCFC3,
