@@ -511,7 +511,7 @@ exports.delete = async (req, res, next) => {
       { customerName: OKCUNM },
       {
         where: {
-          lastName: null,
+          lastName: null, // UPDATE OKSTAT = 90
         },
       }
     );
