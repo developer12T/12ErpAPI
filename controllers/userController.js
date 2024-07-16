@@ -1,4 +1,4 @@
-const { UserAnt } = require("../models/user");
+const UserAnt = require("../models/user");
 const crypto = require("crypto");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
@@ -39,15 +39,6 @@ exports.login = async (req, res, next) => {
     }
 
     //สร้าง token
-    // const token = await jwt.sign(
-    //   {
-    //     id: user._id,
-    //     role: user.role,
-    //   },
-    //   config.JWT_SECRET,
-    //   { expiresIn: "5 days" }
-    // );
-
     const token = jwt.sign(
       { username: user[0].Col_LoginName, role: user[0].Col_DeptInfo },
       JWT_SECRET,

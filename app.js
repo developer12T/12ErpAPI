@@ -10,6 +10,7 @@ const usersRouter = require('./routes/users');
 const customersRouter = require('./routes/customer');
 const shinppingsRouter = require('./routes/shipping');
 const orderRouter = require('./routes/order');
+const promotionRouter = require('./routes/promotion');
 
 //import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -29,6 +30,7 @@ app.use('/users', usersRouter);
 app.use('/customer', customersRouter);
 app.use('/shinpping', shinppingsRouter);
 app.use('/order', orderRouter);
+app.use('/promotion', promotionRouter);
 
 app.use(errorHandler);
 

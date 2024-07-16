@@ -1,5 +1,5 @@
 const { JWT_SECRET } = require("../config/index");
-const { UserAnt } = require("../models/user");
+const UserAnt = require("../models/user");
 const passport = require("passport");
 
 const JwtStrategy = require("passport-jwt").Strategy,
@@ -13,7 +13,7 @@ passport.use(
   new JwtStrategy(opts, async (jwt_payload, done) => {
     try {
       const user = await UserAnt.findAll({
-        attributes: { exclude: ['id'] },
+        attributes: { exclude: ["id"] },
         where: { Col_LoginName: jwt_payload.username },
       });
 

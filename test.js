@@ -1,58 +1,47 @@
-const customer = {
-    customerNo: customerNo,             // OKCUNO,
-    coNo: existingData.OKCONO,          // OKCONO
-    customerStatus: customerStatus,     // OKSTAT
-    moneyChannel: moneyChannel,         // OKCUCL
-    coType: "021",                      // OKORTP
-    customerName: customerName,         // OKCUNM
-    customerAddress1: customerAddress1, // OKCUA1
-    customerAddress2: customerAddress2, // OKCUA2
-    customerAddress3: customerAddress3, // OKCUA3
-    customerAddress4: customerAddress4, // OKCUA4
-    customerPoscode: customerPoscode,   // OKPONO
-    customerPhone: customerPhone,       // OKPHNO
-    warehouse: warehouse,               // OKWHLO
-    OKSDST: OKSDST,                     // OKSDST
-    saleTeam: saleTeam,                 // OKCFC8
-    OKCFC1: OKCFC1,                     // OKCFC1
-    OKCFC3: OKCFC3,                     // OKCFC3
-    OKCFC6: OKCFC6,                     // OKCFC6
-    salePayer: salePayer,               // OKPYNO
-    creditLimit: creditLimit,           // OKCRL2
-    taxno: taxno,                       // OKVRNO
-    saleCode: saleCode,                 // OKSMCD
-    OKCUTP: existingData.OKCUTP,        // OKCUTP
-    OKCORG: existingData.OKCORG,        // OKCORG
-    creditTerm: existingData.OKTEPY,    // OKTEPY
-    OKOT75: existingData.OKOT75,        // OKOT75
-    OKTEDL: existingData.OKTEDL,        // OKTEDL
-    OKMODL: existingData.OKMODL,        // OKMODL
-    OKDIPC: existingData.OKDIPC,        // OKDIPC
-    OKTXAP: existingData.OKTXAP,        // OKTXAP
-    OKCUCD: existingData.OKCUCD,        // OKCUCD
-    OKCRTP: existingData.OKCRTP,        // OKCRTP
-    OKDTFM: existingData.OKDTFM,        // OKDTFM
-    OKPRIC: existingData.OKPRIC,        // OKPRIC
-    OKCSCD: existingData.OKCSCD,        // OKCSCD
-    OKLHCD: existingData.OKLHCD,        // OKLHCD
-    OKDOGR: existingData.OKDOGR,        // OKDOGR
-    OKEDES: existingData.OKEDES,        // OKEDES
-    OKPYCD: existingData.OKPYCD,        // OKPYCD
-    OKGRPY: existingData.OKGRPY,        // OKGRPY
-    OKTINC: existingData.OKTINC,        // OKTINC
-    OKPRDL: existingData.OKPRDL,        // OKPRDL
-    OKIVGP: existingData.OKIVGP,        // OKIVGP
-    OKFACI: existingData.OKFACI,        // OKFACI
-    OKRESP: existingData.USER,          // OKRESP
-    OKUSR1: existingData.USER,          // OKUSR1
-    OKUSR2: existingData.USER,          // OKUSR2
-    OKUSR3: existingData.USER,          // OKUSR3
-    OKDTE1: formatDate(),               // OKDTE1
-    OKDTE2: formatDate(),               // OKDTE2
-    OKDTE3: formatDate(),               // OKDTE3
-    OKRGDT: formatDate(),               // OKRGDT
-    OKRGTM: getCurrentTimeFormatted(),  // OKRGTM
-    OKLMDT: formatDate(),               // OKLMDT
-    OKCHID: existingData.USER,          // OKCHID
-    OKLMTS: Date.now(),                 // OKLMTS
-  };
+  [OACONO],
+  [OADIVI],
+  [OAORNO],
+  [OAORTP],
+  [OAFACI],
+  [OAWHLO],
+  [OAORST],
+  [OAORSL],
+  [OACUNO],
+  [OAORDT],
+  [OACUDT],
+  [OARLDT],
+  [OARLDZ],
+  [OATIZO],
+  [OALNCD],
+  [OATEPY],
+  [OAMODL],
+  [OATEDL],
+  [OAADID],
+  [OASMCD],
+  [OAOREF],
+  [OAVRCD],
+  [OAFRE1],
+  [OAPTNO],
+  [OAINRC],
+  [OABAGD],
+  [OADISY],
+  [OATINC],
+  [OALOCD],
+  [OACUCD],
+  [OADCCD],
+  [OADMCU],
+  [OAGRWE],
+  [OANEWE],
+  [OAVOL3],
+  [OACOAM],
+  [OABRAM],
+  [OABRLA],
+  [OANTAM],
+  [OANTLA],
+  [OARGDT],
+  [OARGTM],
+  [OALMDT],
+  [OACHNO],
+  [OACHID],
+  [OALMTS],
+  [OADECU]

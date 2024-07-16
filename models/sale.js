@@ -1,22 +1,22 @@
 const { sequelize, DataTypes } = require("../config/m3db");
 
-const Promotion = sequelize.define(
-  "OPROMH",
+const Sale = sequelize.define(
+  "CSYTAB",
   {
-    promotionCode: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "FZPIDE",
-    },
-    promotionName: {
+    CTSTKY: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "FZTX40",
+      field: "CTSTKY",
     },
-    FZCONO: {
+    CTTX40: {
       type: DataTypes.STRING,
-      allowNull: true,
-      field: "FZCONO",
+      allowNull: false,
+      field: "CTTX40",
+    },
+    CTSTCO: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "CTSTCO",
     },
   },
   {
@@ -28,4 +28,4 @@ const Promotion = sequelize.define(
   }
 );
 
-module.exports = Promotion;
+module.exports = Sale;

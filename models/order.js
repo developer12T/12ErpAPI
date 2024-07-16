@@ -76,7 +76,7 @@ const Order = sequelize.define(
     totalDiscount: {
       type: DataTypes.VIRTUAL,
       get() {
-        return this.total - this.totalNet;
+        return Number(Math.round((this.total - this.totalNet) * 100) / 100);
       },
       set(value) {
         throw new Error("Do not try to set the `fullName` value!");
@@ -120,81 +120,4 @@ const Order = sequelize.define(
   }
 );
 
-const OLINE = sequelize.define(
-  "OOLINE",
-  {
-    orderNo: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OBORNO",
-    },
-    productNumber: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OBPONR",
-    },
-    itemNo: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OBITNO",
-    },
-    itemName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OBTEDS",
-    },
-    qty: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OBORQA",
-    },
-    unit: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OBALUN",
-    },
-    price: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OBSAPR",
-    },
-    discount: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OBDIA2",
-    },
-    netPrice: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OBNEPR",
-    },
-    total: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OBLNA2",
-    },
-    promotionCode: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "OBPIDE",
-    },
-    // promotionName: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    //   field: "FZTX40",
-    // },
-  },
-  {
-    freezeTableName: true,
-    timestamps: false,
-    createdAt: false,
-    updatedAt: false,
-    primaryKey: false,
-  }
-);
-
-
-module.exports = {
-  Order,
-  OLINE,
-};
+module.exports = Order;

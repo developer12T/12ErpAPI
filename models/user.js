@@ -38,4 +38,4 @@ const UserAnt = sequelize.define(
 
 // sequelize.sync({force:false,alter:false})
 
-module.exports = { UserAnt };
+module.exports = UserAnt;

@@ -1,11 +1,12 @@
-const { Customer, Sale, Shipping } = require("../models/customer");
-const { Sequelize, Op } = require("sequelize");
+const Customer = require("../models/customer");
+const Shipping = require("../models/shipping");
+const Sale = require("../models/sale");
+const { Op } = require("sequelize");
 const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../middleware/getDateTime");
 const { sequelize } = require("../config/m3db");
-const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 
@@ -44,16 +45,38 @@ exports.index = async (req, res, next) => {
         attributes: {
           exclude: ["id"],
         },
-        where: { OPCUNO: customersData[i].customerNo },
+        where: { customerNo: customersData[i].customerNo, coNo: "410" },
         // group: ["MMFUDS"],
       });
       for (let i = 0; i < shippingData.length; i++) {
         shippingarr.push({
-          OPADID: shippingData[i].OPADID,
-          OPCUNM: shippingData[i].OPCUNM,
+          addressID: shippingData[i].addressID,
+          customerName: shippingData[i].customerName,
+          shippingAddress1: shippingData[i].shippingAddress1,
+          shippingAddress2: shippingData[i].shippingAddress2,
+          shippingAddress3: shippingData[i].shippingAddress3,
+          shippingPoscode: shippingData[i].shippingPoscode,
+          shippingPhone: shippingData[i].shippingPhone,
         });
       }
     }
+
+    const shippings = shippingarr.map((shipping) => {
+      const shippingPoscode = shipping.shippingPoscode.trim();
+      const shippingPhone = shipping.shippingPhone.trim();
+      const shippingAddress1 = shipping.shippingAddress1.trim();
+      const shippingAddress2 = shipping.shippingAddress2.trim();
+      const shippingAddress3 = shipping.shippingAddress3.trim();
+      return {
+        addressID: shipping.addressID,
+        customerName: shipping.customerName,
+        shippingAddress1: shippingAddress1,
+        shippingAddress2: shippingAddress2,
+        shippingAddress3: shippingAddress3,
+        shippingPoscode: shippingPoscode,
+        shippingPhone: shippingPhone,
+      };
+    });
 
     for (let i = 0; i < customersData.length; i++) {
       const saleData = await Sale.findAll({
@@ -90,7 +113,6 @@ exports.index = async (req, res, next) => {
       const OKCFC6 = customer.OKCFC6.trim();
       const salePayer = customer.salePayer.trim();
       const taxno = customer.taxno.trim();
-
       return {
         customerNo: customerNo,
         customerStatus: customer.customerStatus,
@@ -116,7 +138,7 @@ exports.index = async (req, res, next) => {
         salePayer: salePayer,
         creditLimit: customer.creditLimit,
         taxno: taxno,
-        shipping: shippingarr,
+        shipping: shippings,
         sale: salearr,
       };
     });
@@ -176,6 +198,7 @@ exports.update = async (req, res, next) => {
       const customerPhone = customer.customerPhone.trim();
       const creditTerm = customer.creditTerm.trim();
       const orderType = customer.orderType.trim();
+      CUSJDTA;
       const warehouse = customer.warehouse.trim();
       const OKSDST = customer.OKSDST.trim();
       const saleTeam = customer.saleTeam.trim();
