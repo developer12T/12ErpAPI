@@ -7,10 +7,12 @@ const passport = require('passport');
 // Routes
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const saleRouter = require('./routes/sale');
 const customersRouter = require('./routes/customer');
 const shinppingsRouter = require('./routes/shipping');
 const orderRouter = require('./routes/order');
 const promotionRouter = require('./routes/promotion');
+const runningnumberRouter = require('./routes/runningnumber');
 
 //import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -27,10 +29,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 //  Set Routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/sales', saleRouter);
 app.use('/customer', customersRouter);
 app.use('/shinpping', shinppingsRouter);
 app.use('/order', orderRouter);
 app.use('/promotion', promotionRouter);
+app.use('/runningnumber', runningnumberRouter);
 
 app.use(errorHandler);
 

@@ -1,14 +1,20 @@
 const { sequelize, DataTypes } = require("../config/m3db");
+const { filterStringParentTH } = require("../middleware/filterString");
 
 const Sale = sequelize.define(
   "CSYTAB",
   {
-    CTSTKY: {
+    coNo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "CTCONO",
+    },
+    saleCode: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "CTSTKY",
     },
-    CTTX40: {
+    saleName: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "CTTX40",
@@ -18,6 +24,15 @@ const Sale = sequelize.define(
       allowNull: false,
       field: "CTSTCO",
     },
+    // saleNameFull: {
+    //   type: DataTypes.VIRTUAL,
+    //   get() {
+    //     return saleName;
+    //   },
+    //   set(value) {
+    //     throw new Error("Do not try to set the `saleNameFull` value!");
+    //   },
+    // },
   },
   {
     freezeTableName: true,

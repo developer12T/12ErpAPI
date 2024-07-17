@@ -83,21 +83,21 @@ exports.index = async (req, res, next) => {
         attributes: {
           exclude: ["id"],
         },
-        where: { CTSTKY: customersData[i].saleCode, CTSTCO: "SMCD" },
+        where: { saleCode: customersData[i].saleCode, CTSTCO: "SMCD" },
         // group: ["MMFUDS"],
       });
       const sales = saleData.map((sale) => {
-        const OKSMCD = sale.CTSTKY.trim();
+        const OKSMCD = sale.saleCode.trim();
         return {
-          CTSTKY: OKSMCD,
-          CTTX40: sale.CTTX40,
+          saleCode: OKSMCD,
+          saleName: sale.saleName,
         };
       });
       for (let i = 0; i < sales.length; i++) {
         // const saleCode = saleData[].customerNo.trim();
         salearr.push({
-          OKSMCD: sales[i].CTSTKY,
-          sale_name: sales[i].CTTX40,
+          OKSMCD: sales[i].saleCode,
+          sale_name: sales[i].saleName,
         });
       }
     }

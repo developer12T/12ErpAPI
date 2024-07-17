@@ -3,25 +3,15 @@ const { sequelize, DataTypes } = require("../config/m3db");
 const Order = sequelize.define(
   "OOHEAD",
   {
-    orderDate: {
-      type: DataTypes.STRING,
+    coNo: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      field: "OAORDT",
+      field: "OACONO",
     },
-    requestDate: {
-      type: DataTypes.STRING,
+    OADIVI: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      field: "OARLDT",
-    },
-    customerNo: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OACUNO",
-    },
-    orderDate: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OAORDT",
+      field: "OADIVI",
     },
     orderNo: {
       type: DataTypes.STRING,
@@ -33,28 +23,45 @@ const Order = sequelize.define(
       allowNull: false,
       field: "OAORTP",
     },
+    OAFACI: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAFACI",
+    },
     warehouse: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OAWHLO",
     },
+    requestDate: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "OARLDT",
+    },
+
+    customerNo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OACUNO",
+    },
+    orderDate: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "OAORDT",
+    },
+
     orderStatus: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OAORSL",
     },
-    orderDate: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "OAORDT",
-    },
     total: {
-      type: DataTypes.STRING,
+      type: DataTypes.DECIMAL,
       allowNull: false,
       field: "OABRLA",
     },
     totalNet: {
-      type: DataTypes.STRING,
+      type: DataTypes.DECIMAL,
       allowNull: false,
       field: "OANTLA",
     },
@@ -70,7 +77,7 @@ const Order = sequelize.define(
         );
       },
       set(value) {
-        throw new Error("Do not try to set the `fullName` value!");
+        throw new Error("Do not try to set the `totalVat` value!");
       },
     },
     totalDiscount: {
@@ -79,7 +86,7 @@ const Order = sequelize.define(
         return Number(Math.round((this.total - this.totalNet) * 100) / 100);
       },
       set(value) {
-        throw new Error("Do not try to set the `fullName` value!");
+        throw new Error("Do not try to set the `totalDiscount` value!");
       },
     },
     totalNonVat: {
@@ -92,7 +99,7 @@ const Order = sequelize.define(
         );
       },
       set(value) {
-        throw new Error("Do not try to set the `fullName` value!");
+        throw new Error("Do not try to set the `totalNonVat` value!");
       },
     },
   },

@@ -7,6 +7,8 @@ const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../middleware/getDateTime");
+const fs = require("fs");
+const path = require("path");
 
 // Get the current year and month
 const now = new Date();
@@ -264,30 +266,25 @@ exports.insert = async (req, res, next) => {
     const {
       orderDate,
       requestDate,
-      customerCode,
+      customerNo,
       orderNo,
       orderType,
-      orderWh,
+      warehouse,
       orderStatus,
       total,
       totalDiscount,
       totalNet,
       totalVat,
       totalNonVat,
-      Item: [
-        {
-          itemNo,
-          itemCode,
-          itemName,
-          qty,
-          unit,
-          price,
-          discount,
-          netPrice,
-          promotionCode,
-        },
-      ],
+      addressID,
     } = req.body;
+
+    const jsonPath = path.join(__dirname, "..", "Jsons", "order.json");
+    let existingData = [];
+    if (fs.existsSync(jsonPath)) {
+      const jsonData = fs.readFileSync(jsonPath, "utf-8");
+      existingData = JSON.parse(jsonData);
+    }
 
     const query = `
 INSERT INTO [MVXJDTA].[OOHEAD] 
@@ -306,44 +303,24 @@ INSERT INTO [MVXJDTA].[OOHEAD]
   [OARLDT],
   [OARLDZ],
   [OATIZO],
-  [OALNCD],
   [OATEPY],
   [OAMODL],
   [OATEDL],
   [OAADID],
-  [OASMCD],
-  [OAOREF],
-  [OAVRCD],
-  [OAFRE1],
-  [OAPTNO],
-  [OAINRC],
-  [OABAGD],
-  [OADISY],
-  [OATINC],
   [OALOCD],
   [OACUCD],
-  [OADCCD],
-  [OADMCU],
-  [OAGRWE],
-  [OANEWE],
-  [OAVOL3],
-  [OACOAM],
-  [OABRAM],
   [OABRLA],
-  [OANTAM],
   [OANTLA],
   [OARGDT],
   [OARGTM],
   [OALMDT],
-  [OACHNO],
   [OACHID],
-  [OALMTS],
-  [OADECU]
+  [OALMTS]
 ) VALUES (
   :coNo,
   :OADIVI,
   :orderNo,
-  :coType,
+  :orderType,
   :OAFACI,
   :warehouse,
   :OAORST,
@@ -351,103 +328,61 @@ INSERT INTO [MVXJDTA].[OOHEAD]
   :customerNo,
   :orderDate,
   :OACUDT,
-  :OARLDT,
+  :requestDate,
   :OARLDZ,
   :OATIZO,
-  :OALNCD,
   :OATEPY,
   :OAMODL,
   :OATEDL,
   :addressID,
-  :OASMCD,
-  :OAOREF,
-  :OAVRCD,
-  :OAFRE1,
-  :OAPTNO,
-  :OAINRC,
-  :OABAGD,
-  :OADISY,
-  :OATINC,
   :OALOCD,
   :OACUCD,
-  :OADCCD,
-  :OADMCU,
-  :OAGRWE,
-  :OANEWE,
-  :OAVOL3,
-  :OACOAM,
-  :OABRAM,
   :OABRLA,
-  :OANTAM,
   :OANTLA,
   :OARGDT,
   :OARGTM,
   :OALMDT,
-  :OACHNO,
   :OACHID,
-  :OALMTS,
-  :OADECU
+  :OALMTS
 )
   `;
 
     const replacements = {
-      customerNo: customerNo, // OACONO,
-      coNo: existingData.OKCONO, // OADIVI
-      customerStatus: customerStatus, // OAORNO
-      customerChannel: customerChannel, // OAORTP
-      orderType: "021", // OAFACI
-      customerName: customerName, // OAWHLO
-      customerAddress1: customerAddress1, // OAORST
-      customerAddress2: customerAddress2, // OAORSL
-      customerAddress3: customerAddress3, // OACUNO
-      customerAddress4: customerAddress4, // OAORDT
-      customerPoscode: customerPoscode, // OACUDT
-      customerPhone: customerPhone, // OARLDT
-      warehouse: warehouse, // OARLDZ
-      OKSDST: OKSDST, // OATIZO
-      saleTeam: saleTeam, // OALNCD
-      OKCFC1: OKCFC1, // OATEPY
-      OKCFC3: OKCFC3, // OKCFC3
-      OKCFC6: OKCFC6, // OKCFC6
-      salePayer: salePayer, // OKPYNO
-      creditLimit: creditLimit, // OKCRL2
-      taxno: taxno, // OKVRNO
-      saleCode: saleCode, // OKSMCD
-      OKCUTP: existingData.OKCUTP, // OKCUTP
-      OKCORG: existingData.OKCORG, // OKCORG
-      creditTerm: existingData.OKTEPY, // OKTEPY
-      OKOT75: existingData.OKOT75, // OKOT75
-      OKTEDL: existingData.OKTEDL, // OKTEDL
-      OKMODL: existingData.OKMODL, // OKMODL
-      OKDIPC: existingData.OKDIPC, // OKDIPC
-      OKTXAP: existingData.OKTXAP, // OKTXAP
-      OKCUCD: existingData.OKCUCD, // OKCUCD
-      OKCRTP: existingData.OKCRTP, // OKCRTP
-      OKDTFM: existingData.OKDTFM, // OKDTFM
-      OKPRIC: existingData.OKPRIC, // OKPRIC
-      OKCSCD: existingData.OKCSCD, // OKCSCD
-      OKLHCD: existingData.OKLHCD, // OKLHCD
-      OKDOGR: existingData.OKDOGR, // OKDOGR
-      OKEDES: existingData.OKEDES, // OKEDES
-      OKPYCD: existingData.OKPYCD, // OKPYCD
-      OKGRPY: existingData.OKGRPY, // OKGRPY
-      OKTINC: existingData.OKTINC, // OKTINC
-      OKPRDL: existingData.OKPRDL, // OKPRDL
-      OKIVGP: existingData.OKIVGP, // OKIVGP
-      OKFACI: existingData.OKFACI, // OKFACI
-      OKRESP: existingData.USER, // OKRESP
-      OKUSR1: existingData.USER, // OKUSR1
-      OKUSR2: existingData.USER, // OKUSR2
-      OKUSR3: existingData.USER, // OKUSR3
-      OKDTE1: formatDate(), // OKDTE1
-      OKDTE2: formatDate(), // OKDTE2
-      OKDTE3: formatDate(), // OKDTE3
-      OKRGDT: formatDate(), // OKRGDT
-      OKRGTM: getCurrentTimeFormatted(), // OKRGTM
-      OKLMDT: formatDate(), // OKLMDT
-      OKCHID: existingData.USER, // OKCHID
-      OKLMTS: Date.now(), // OKLMTS
+      coNo: 410, // OACONO,
+      OADIVI: existingData.OADIVI, // OADIVI
+      orderNo: orderNo, // OAORNO
+      orderType: orderType, // OAFACI
+      OAFACI: existingData.OAFACI, // OAORTP
+      warehouse: warehouse, // OAWHLO
+      OAORST: 22, // OAORST
+      OAORSL: 22, // OAORSL
+      customerNo: customerNo, // OACUNO
+      orderDate: orderDate, // OAORDT
+      OACUDT: formatDate(), // OACUDT
+      requestDate: requestDate, // OARLDT
+      OARLDZ: formatDate(), // OARLDZ
+      OATIZO: existingData.OATIZO, // OAMODL
+      OATEPY: existingData.OATEPY, // OATEPY
+      OAMODL: existingData.OAMODL, // OAMODL
+      OATEDL: existingData.OATEDL, // OATEDL
+      addressID: addressID, // OAADID
+      OALOCD: existingData.OALOCD, // OALOCD
+      OACUCD: existingData.OACUCD, // OACUCD
+      OABRLA: total, // OABRLA
+      OANTLA: totalNet, // OANTLA
+      OARGDT: formatDate(), // OARGDT
+      OARGTM: getCurrentTimeFormatted(), // OARGTM
+      OALMDT: formatDate(), // OALMDT
+      OACHID: existingData.OACHID, // OACHID
+      OALMTS: Date.now(), // OALMTS
     };
+    await sequelize.query(query, {
+      replacements,
+      type: sequelize.QueryTypes.INSERT,
+    });
+    res.status(201).json({
+      message: "Upload Success",
+    });
   } catch (error) {
     next(error);
   }
