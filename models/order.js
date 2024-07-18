@@ -55,6 +55,11 @@ const Order = sequelize.define(
       allowNull: false,
       field: "OAORSL",
     },
+    addressID: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAADID",
+    },
     total: {
       type: DataTypes.DECIMAL,
       allowNull: false,

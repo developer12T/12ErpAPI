@@ -1,4 +1,4 @@
-const { Customer, Sale, Shipping } = require("../models/customer");
+const Shipping = require("../models/shipping");
 const { Sequelize, Op } = require("sequelize");
 const fs = require("fs");
 const path = require("path");

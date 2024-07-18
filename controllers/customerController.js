@@ -198,7 +198,6 @@ exports.update = async (req, res, next) => {
       const customerPhone = customer.customerPhone.trim();
       const creditTerm = customer.creditTerm.trim();
       const orderType = customer.orderType.trim();
-      CUSJDTA;
       const warehouse = customer.warehouse.trim();
       const OKSDST = customer.OKSDST.trim();
       const saleTeam = customer.saleTeam.trim();
@@ -282,7 +281,7 @@ exports.update = async (req, res, next) => {
       updateFields.saleCode = saleCode;
     }
 
-    const [update] = await Customer.update(updateFields, {
+    const update = await Customer.update(updateFields, {
       attributes: { exclude: ["id"] },
       where: {
         customerNo: customerNo,
@@ -296,7 +295,7 @@ exports.update = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     } else {
-      res.status(200).json({
+      res.status(202).json({
         message: "Update Success",
       });
     }
@@ -332,8 +331,8 @@ exports.insert = async (req, res, next) => {
     if ((customerName.trim().length > 36 && customerChannel == !105) || 103) {
       customerAddress4 = customerName.trim().slice(35);
       customerName = customerName.trim().slice(0, 35);
-      console.log(customerAddress4);
-      console.log(customerName);
+      // console.log(customerAddress4);
+      // console.log(customerName);
     }
 
     const jsonPath = path.join(__dirname, "..", "Jsons", "customer.json");
@@ -520,7 +519,7 @@ INSERT INTO [MVXJDTA].[OCUSMA]
       replacements,
       type: sequelize.QueryTypes.INSERT,
     });
-    res.status(200).json({
+    res.status(201).json({
       message: "Upload Success",
     });
   } catch (error) {

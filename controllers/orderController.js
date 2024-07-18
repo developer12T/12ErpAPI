@@ -9,6 +9,7 @@ const {
 } = require("../middleware/getDateTime");
 const fs = require("fs");
 const path = require("path");
+const Shipping = require("../models/shipping");
 
 // Get the current year and month
 const now = new Date();
@@ -17,19 +18,21 @@ const currentMonth = now.getMonth() + 1;
 
 exports.index = async (req, res, next) => {
   try {
-    const { orderType } = req.body;
+    const { orderType, orderNo } = req.body;
     let { orderDate } = req.body;
     if (orderDate == "") {
-      orderDate = 20240715;
+      orderDate = 202407;
     }
-    // console.log(orderDate);
     const orderData = await Order.findAll({
       attributes: {
         exclude: ["id"],
       },
       where: {
         orderType: orderType,
-        orderDate: orderDate,
+        orderDate: {
+          [Op.like]: `${202407}%`,
+        },
+        // orderNo:orderNo
       },
     });
     let OLINEarr = [];
@@ -39,6 +42,7 @@ exports.index = async (req, res, next) => {
     // Object to hold OLINEarr for each orderNo
     const orderLineData = {};
     const promotionData = {};
+    const shippingData = {};
 
     for (let i = 0; i < orderData.length; i++) {
       const OLINEData = await OLINE.findAll({
@@ -46,9 +50,7 @@ exports.index = async (req, res, next) => {
           exclude: ["id"],
         },
         where: { orderNo: orderData[i].orderNo },
-        // group: ["MMFUDS"],
       });
-      // OLINEarr[i] = [];
       // Initialize the array for current orderNo
       orderLineData[orderData[i].orderNo] = [];
 
@@ -57,6 +59,12 @@ exports.index = async (req, res, next) => {
           productNumber: OLINEData[j].productNumber,
           itemNo: OLINEData[j].itemNo,
           itemName: OLINEData[j].itemName,
+          qty: OLINEData[j].qty,
+          unit: OLINEData[j].unit,
+          price: OLINEData[j].price,
+          discount: OLINEData[j].discount,
+          netPrice: OLINEData[j].netPrice,
+          total: OLINEData[j].total,
           promotionCode: OLINEData[j].promotionCode,
         });
       }
@@ -72,33 +80,33 @@ exports.index = async (req, res, next) => {
           },
         },
       });
+
       promotionData[orderData[i].orderNo] = [];
 
-      for (let j = 0; j < OLINEData2.length; j++) {
+      for (let OLine2 of OLINEData2) {
         const PromotionData = await Promotion.findAll({
           attributes: {
             exclude: ["id"],
           },
           where: {
-            promotionCode: OLINEData2[j].promotionCode,
-            // FZCONO: "410",
+            promotionCode: OLine2.promotionCode,
+            FZCONO: "410",
           },
         });
-        promotionData[orderData[i].orderNo].push({
-          promotionCode: OLINEData2[j].promotionCode,
-          promotionName: PromotionData[j].promotionName,
-        });
-      }
 
-      // res.json(promotionData);
-      // orderLineData[orderData[i].orderNo].map(() => {
-      //   let promotionNameC = "";
-      //   for (let i = 0; i < promotionArr.length; i++) {
-      //     if (OLINE.promotionCode == promotionArr[i].promotionCode) {
-      //       promotionNameC = promotionArr[i].promotionName;
-      //     }
-      //   }
-      // });
+        if (PromotionData.length > 0) {
+          promotionData[orderData[i].orderNo].push({
+            promotionCode: OLine2.promotionCode,
+            promotionName: PromotionData[0].promotionName, // Assuming promotionName is a property of PromotionData
+          });
+        } else {
+          console.log(`No promotion data found for ${OLine2.promotionCode}`);
+          promotionData[orderData[i].orderNo].push({
+            promotionCode: OLine2.promotionCode,
+            promotionName: null, // Or handle as needed if no data is found
+          });
+        }
+      }
     }
 
     // If you want to keep all OLINE data in a single array as well
@@ -115,6 +123,12 @@ exports.index = async (req, res, next) => {
           productNumber: OLINE.productNumber,
           itemNo: OLINE.itemNo,
           itemName: OLINE.itemName,
+          qty: OLINE.qty,
+          unit: OLINE.unit,
+          price: OLINE.price,
+          discount: OLINE.discount,
+          netPrice: OLINE.netPrice,
+          total: OLINE.total,
           promotionCode: OLINE.promotionCode,
           promotionName: promotion ? promotion.promotionName : "",
         };
@@ -134,7 +148,6 @@ exports.index = async (req, res, next) => {
         totalNonVat: order.totalNonVat,
         totalDiscount: order.totalDiscount,
         item: Oline,
-        shipping: promotionArr,
       };
     });
 
@@ -144,9 +157,9 @@ exports.index = async (req, res, next) => {
   }
 };
 
-exports.selectOne = async (req, res, next) => {
+exports.single = async (req, res, next) => {
   try {
-    const { orderType, orderDate, customerNo, orderNo } = req.body;
+    const { orderNo } = req.body;
     let OLINEarr = [];
     let promotionArr = [];
     let shippingarr = [];
@@ -155,9 +168,6 @@ exports.selectOne = async (req, res, next) => {
         exclude: ["id"],
       },
       where: {
-        // orderType: orderType,
-        // orderDate: orderDate,
-        // customerNo: customerNo,
         orderNo: orderNo,
       },
     });
@@ -167,7 +177,7 @@ exports.selectOne = async (req, res, next) => {
         attributes: {
           exclude: ["id"],
         },
-        where: { orderNo: orderData[i].orderNo },
+        where: { orderNo: orderNo },
       });
 
       for (let i = 0; i < OLINEData.length; i++) {
@@ -175,11 +185,39 @@ exports.selectOne = async (req, res, next) => {
           productNumber: OLINEData[i].productNumber,
           itemNo: OLINEData[i].itemNo,
           itemName: OLINEData[i].itemName,
+          qty: OLINEData[i].qty,
+          unit: OLINEData[i].unit,
+          price: OLINEData[i].price,
+          discount: OLINEData[i].discount,
+          netPrice: OLINEData[i].netPrice,
+          total: OLINEData[i].total,
           promotionCode: OLINEData[i].promotionCode,
         });
       }
-    }
 
+      const ShippingData = await Shipping.findAll({
+        attributes: {
+          exclude: ["id"],
+        },
+        where: {
+          // addressID: orderData[i].addressID,
+          customerNo: orderData[i].customerNo,
+          coNo: "410",
+        },
+      });
+
+      for (let shipping of ShippingData) {
+        shippingarr.push({
+          addressID: shipping.addressID,
+          customerName: shipping.customerName,
+          shippingAddress1: shipping.shippingAddress1,
+          shippingAddress2: shipping.shippingAddress2,
+          shippingAddress3: shipping.shippingAddress3,
+          shippingPoscode: shipping.shippingPoscode,
+          shippingPhone: shipping.shippingPhone,
+        });
+      }
+    }
     const OLINEData2 = await OLINE.findAll({
       attributes: {
         exclude: ["id"],
@@ -190,24 +228,34 @@ exports.selectOne = async (req, res, next) => {
           [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: "" }],
         },
       },
+      // group: ["promotionCode"],
     });
 
-    for (let i = 0; i < OLINEData2.length; i++) {
+    for (let OLine2 of OLINEData2) {
       const PromotionData = await Promotion.findAll({
         attributes: {
           exclude: ["id"],
         },
         where: {
-          promotionCode: OLINEData2[i].promotionCode,
-          // FZCONO: "410",
+          promotionCode: OLine2.promotionCode,
+          FZCONO: "410",
         },
       });
-      // console.log(PromotionData[i].promotionName);
-      promotionArr.push({
-        promotionCode: OLINEData2[i].promotionCode,
-        promotionName: PromotionData[i].promotionName,
-      });
+
+      if (PromotionData.length > 0) {
+        promotionArr.push({
+          promotionCode: OLine2.promotionCode,
+          promotionName: PromotionData[0].promotionName, // Assuming promotionName is a property of PromotionData
+        });
+      } else {
+        console.log(`No promotion data found for ${OLine2.promotionCode}`);
+        promotionArr.push({
+          promotionCode: OLine2.promotionCode,
+          promotionName: null, // Or handle as needed if no data is found
+        });
+      }
     }
+
     // res.json(promotionArr);
 
     const Oline = OLINEarr.map((OLINE) => {
@@ -221,6 +269,12 @@ exports.selectOne = async (req, res, next) => {
         productNumber: OLINE.productNumber,
         itemNo: OLINE.itemNo,
         itemName: OLINE.itemName,
+        qty: OLINE.qty,
+        unit: OLINE.unit,
+        price: OLINE.price,
+        discount: OLINE.discount,
+        netPrice: OLINE.netPrice,
+        total: OLINE.total,
         promotionCode: OLINE.promotionCode,
         promotionName: promotionNameC,
       };
@@ -251,16 +305,6 @@ exports.selectOne = async (req, res, next) => {
   }
 };
 
-exports.item = async (req, res, next) => {
-  const OLINEData = await OLINE.findAll({
-    attributes: {
-      exclude: ["id"],
-    },
-    where: { orderNo: "000000001" },
-  });
-  res.json(OLINEData);
-};
-
 exports.insert = async (req, res, next) => {
   try {
     const {
@@ -279,14 +323,25 @@ exports.insert = async (req, res, next) => {
       addressID,
     } = req.body;
 
-    const jsonPath = path.join(__dirname, "..", "Jsons", "order.json");
-    let existingData = [];
-    if (fs.existsSync(jsonPath)) {
-      const jsonData = fs.readFileSync(jsonPath, "utf-8");
-      existingData = JSON.parse(jsonData);
+    const items = req.body.item;
+
+    const jsonPathOrder = path.join(__dirname, "..", "Jsons", "order.json");
+    const jsonPathItem = path.join(__dirname, "..", "Jsons", "orederItem.json");
+
+    let orderJson = [];
+    let ItemJson = [];
+
+    if (fs.existsSync(jsonPathOrder)) {
+      const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
+      orderJson = JSON.parse(jsonDataOrder);
     }
 
-    const query = `
+    if (fs.existsSync(jsonPathItem)) {
+      const jsonDataItem = fs.readFileSync(jsonPathItem, "utf-8");
+      ItemJson = JSON.parse(jsonDataItem);
+    }
+
+    const queryOrder = `
 INSERT INTO [MVXJDTA].[OOHEAD] 
 (
   [OACONO],
@@ -347,42 +402,176 @@ INSERT INTO [MVXJDTA].[OOHEAD]
 )
   `;
 
-    const replacements = {
-      coNo: 410, // OACONO,
-      OADIVI: existingData.OADIVI, // OADIVI
+    const queryItem = `
+    INSERT INTO [MVXJDTA].[OOLINE] 
+    (
+    [OBCONO],
+    [OBDIVI],
+    [OBORNO],
+    [OBPONR],
+    [OBORST],
+    [OBFACI],
+    [OBWHLO],
+    [OBITNO],
+    [OBITDS],
+    [OBTEDS],
+    [OBORQT],
+    [OBORQA],
+    [OBIVQT],
+    [OBIVQA],
+    [OBALUN],
+    [OBSAPR],
+    [OBNEPR],
+    [OBDIA2],
+    [OBLNA2],
+    [OBPIDE],
+    [OBATPR],
+    [OBMODL],
+    [OBTEDL],
+    [OBRGDT],
+    [OBRGTM],
+    [OBLMDT],
+    [OBCHNO],
+    [OBCHID],
+    [OBLMTS],
+    [OBTEPY]
+    ) VALUES (
+    :coNo,
+    :OBDIVI,
+    :orderNo,
+    :productNo,
+    :orderStatus,
+    :OBFACI,
+    :warehouse,
+    :itemNo,
+    :OBITDS,
+    :itemName,
+    :OBORQT,
+    :qty,
+    :OBIVQT,
+    :OBIVQA,
+    :unit,
+    :price,
+    :netprice,
+    :discount,
+    :total,
+    :promotionCode,
+    :OBATPR,
+    :OBMODL,
+    :OBTEDL,
+    :OBRGDT,
+    :OBRGTM,
+    :OBLMDT,
+    :OBCHNO,
+    :OBCHID,
+    :OBLMTS,
+    :creditTerm)`;
+
+    let replacements = {
+      coNo: orderJson.OACONO, // OACONO,
+      OADIVI: orderJson.OADIVI, // OADIVI
       orderNo: orderNo, // OAORNO
       orderType: orderType, // OAFACI
-      OAFACI: existingData.OAFACI, // OAORTP
+      OAFACI: orderJson.OAFACI, // OAORTP
       warehouse: warehouse, // OAWHLO
-      OAORST: 22, // OAORST
-      OAORSL: 22, // OAORSL
+      OAORST: orderStatus, // OAORST
+      OAORSL: orderStatus, // OAORSL
       customerNo: customerNo, // OACUNO
       orderDate: orderDate, // OAORDT
       OACUDT: formatDate(), // OACUDT
       requestDate: requestDate, // OARLDT
       OARLDZ: formatDate(), // OARLDZ
-      OATIZO: existingData.OATIZO, // OAMODL
-      OATEPY: existingData.OATEPY, // OATEPY
-      OAMODL: existingData.OAMODL, // OAMODL
-      OATEDL: existingData.OATEDL, // OATEDL
+      OATIZO: orderJson.OATIZO, // OAMODL
+      OATEPY: orderJson.OATEPY, // OATEPY
+      OAMODL: orderJson.OAMODL, // OAMODL
+      OATEDL: orderJson.OATEDL, // OATEDL
       addressID: addressID, // OAADID
-      OALOCD: existingData.OALOCD, // OALOCD
-      OACUCD: existingData.OACUCD, // OACUCD
+      OALOCD: orderJson.OALOCD, // OALOCD
+      OACUCD: orderJson.OACUCD, // OACUCD
       OABRLA: total, // OABRLA
       OANTLA: totalNet, // OANTLA
       OARGDT: formatDate(), // OARGDT
       OARGTM: getCurrentTimeFormatted(), // OARGTM
       OALMDT: formatDate(), // OALMDT
-      OACHID: existingData.OACHID, // OACHID
+      OACHID: orderJson.OACHID, // OACHID
       OALMTS: Date.now(), // OALMTS
     };
-    await sequelize.query(query, {
-      replacements,
-      type: sequelize.QueryTypes.INSERT,
-    });
+
+    // await sequelize.query(queryOrder, {
+    //   replacements,
+    //   type: sequelize.QueryTypes.INSERT,
+    // });
+
+    for (let item of items) {
+      let productNo = 1
+      replacements = {
+        coNo: ItemJson.OBCONO, //
+        OBDIVI: ItemJson.OBDIVI, //
+        orderNo: orderNo,
+        productNo: productNo,
+        orderStatus: 22,
+        OBFACI: ItemJson.OBFACI,
+        warehouse: 101,
+        itemNo: item.itemNo,
+        OBITDS: ItemJson.OBITDS,
+        itemName: item.itemName,
+        OBORQT: ItemJson.OBORQT,
+        qty: item.qty,
+        OBIVQT: ItemJson.OBIVQT,
+        OBIVQA: ItemJson.OBIVQA,
+        unit: item.unit,
+        price: item.price,
+        netprice: 20.1,
+        discount: item.discount,
+        total: item.total,
+        promotionCode: item.promotionCode,
+        OBATPR: ItemJson.OBATPR,
+        OBMODL: ItemJson.OBMODL,
+        OBTEDL: ItemJson.OBTEDL,
+        OBRGDT: formatDate(),
+        OBRGTM: getCurrentTimeFormatted(),
+        OBLMDT: formatDate(),
+        OBCHNO: ItemJson.OBCHNO,
+        OBCHID: ItemJson.OBCHID,
+        OBLMTS: Date.now(),
+        creditTerm: ItemJson.OBTEPY,
+      };
+      await sequelize.query(queryItem, {
+        replacements,
+        type: sequelize.QueryTypes.INSERT,
+      });
+      productNo ++; 
+    }
+
     res.status(201).json({
-      message: "Upload Success",
+      message: "Insert Success",
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleted = async (req, res, next) => {
+  try {
+    const { orderNo } = req.body;
+
+    const deleted = await Order.update(
+      {
+        coNo: "-410",
+      },
+      {
+        attributes: { exclude: ["id"] },
+        where: {
+          orderNo: orderNo,
+          coNo: "410",
+        },
+      }
+    );
+    if ([deleted] > 0) {
+      res.status(202).json({
+        message: "success",
+      });
+    }
   } catch (error) {
     next(error);
   }
