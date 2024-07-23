@@ -9,6 +9,7 @@ const {
 const { sequelize } = require("../config/m3db");
 const fs = require("fs");
 const path = require("path");
+const { filterStringParentTH } = require("../middleware/filterString");
 
 exports.index = async (req, res, next) => {
   try {
@@ -88,15 +89,16 @@ exports.index = async (req, res, next) => {
       });
       const sales = saleData.map((sale) => {
         const OKSMCD = sale.saleCode.trim();
+        const saleName = sale.saleName.trim();
         return {
           saleCode: OKSMCD,
-          saleName: sale.saleName,
+          saleName: filterStringParentTH(saleName),
         };
       });
       for (let i = 0; i < sales.length; i++) {
         // const saleCode = saleData[].customerNo.trim();
         salearr.push({
-          OKSMCD: sales[i].saleCode,
+          saleCode: sales[i].saleCode,
           sale_name: sales[i].saleName,
         });
       }
@@ -148,8 +150,7 @@ exports.index = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-
-    res.json(customers);
+    res.status(200).json(customers);
   } catch (error) {
     next(error);
   }
@@ -291,12 +292,10 @@ exports.update = async (req, res, next) => {
     });
     // console.log(update);
     if (update === 0) {
-      const error = new Error("Not Found Update");
-      error.statusCode = 404;
-      throw error;
+      res.status(304);
     } else {
       res.status(202).json({
-        message: "Update Success",
+        message: "Accepted",
       });
     }
   } catch (error) {
@@ -520,24 +519,36 @@ INSERT INTO [MVXJDTA].[OCUSMA]
       type: sequelize.QueryTypes.INSERT,
     });
     res.status(201).json({
-      message: "Upload Success",
+      message: "Created",
     });
   } catch (error) {
     next(error);
   }
 };
 
-exports.delete = async (req, res, next) => {
+exports.deleted = async (req, res, next) => {
   try {
-    const { customerChannel, OKCUNO, OKCFC1, OKCUNM, OKALCU } = req.body;
-    await Customer.update(
-      { customerName: OKCUNM },
+    const { customerNo, coNo } = req.body;
+    // res.status(204);
+    const deleted = await Customer.update(
+      { coNo: coNo },
       {
+        attributes: { exclude: ["id"] },
         where: {
-          lastName: null, // UPDATE OKSTAT = 90
+          coNo: `${coNo * -1}`,
+          customerNo: customerNo,
         },
       }
     );
+    if (deleted[0] === 1) {
+      res.status(202).json({
+        message: "Deleted",
+      });
+    } else {
+      res.status(304).json({
+        message: "Not Modified",
+      });
+    }
   } catch (error) {
     next(error);
   }

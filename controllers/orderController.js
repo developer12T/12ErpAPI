@@ -1,6 +1,8 @@
 const Order = require("../models/order");
 const OLINE = require("../models/orderline");
 const Promotion = require("../models/promotion");
+const axios = require("axios");
+const { LOCALHOST } = require("../config/index");
 const { Op } = require("sequelize");
 const { sequelize } = require("../config/m3db");
 const {
@@ -20,6 +22,7 @@ exports.index = async (req, res, next) => {
   try {
     const { orderType, orderNo } = req.body;
     let { orderDate } = req.body;
+
     if (orderDate == "") {
       orderDate = 202407;
     }
@@ -113,23 +116,27 @@ exports.index = async (req, res, next) => {
     // OLINEarr = Object.values(orderLineData).flat();
 
     const orders = orderData.map((order) => {
-      const orderNo = order.orderNo;
+      const orderNo = order.orderNo.trim();
+      const customerNo = order.customerNo.trim();
       const OLINEarr = orderLineData[orderNo] || [];
       const Oline = OLINEarr.map((OLINE) => {
         const promotion = promotionData[orderNo].find(
           (promo) => promo.promotionCode === OLINE.promotionCode
         );
+        const itemName = OLINE.itemName.trim();
+        const itemNo = OLINE.itemNo.trim();
+        const promotionCode = OLINE.promotionCode.trim();
         return {
           productNumber: OLINE.productNumber,
-          itemNo: OLINE.itemNo,
-          itemName: OLINE.itemName,
+          itemNo: itemNo,
+          itemName: itemName,
           qty: OLINE.qty,
           unit: OLINE.unit,
           price: OLINE.price,
           discount: OLINE.discount,
           netPrice: OLINE.netPrice,
           total: OLINE.total,
-          promotionCode: OLINE.promotionCode,
+          promotionCode: promotionCode,
           promotionName: promotion ? promotion.promotionName : "",
         };
       });
@@ -137,8 +144,8 @@ exports.index = async (req, res, next) => {
       return {
         orderDate: order.orderDate,
         requestDate: order.requestDate,
-        customerNo: order.customerNo,
-        orderNo: order.orderNo,
+        customerNo: customerNo,
+        orderNo: orderNo,
         orderType: order.orderType,
         warehouse: order.warehouse,
         orderStatus: order.orderStatus,
@@ -326,19 +333,12 @@ exports.insert = async (req, res, next) => {
     const items = req.body.item;
 
     const jsonPathOrder = path.join(__dirname, "..", "Jsons", "order.json");
-    const jsonPathItem = path.join(__dirname, "..", "Jsons", "orederItem.json");
 
     let orderJson = [];
-    let ItemJson = [];
 
     if (fs.existsSync(jsonPathOrder)) {
       const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
       orderJson = JSON.parse(jsonDataOrder);
-    }
-
-    if (fs.existsSync(jsonPathItem)) {
-      const jsonDataItem = fs.readFileSync(jsonPathItem, "utf-8");
-      ItemJson = JSON.parse(jsonDataItem);
     }
 
     const queryOrder = `
@@ -402,71 +402,6 @@ INSERT INTO [MVXJDTA].[OOHEAD]
 )
   `;
 
-    const queryItem = `
-    INSERT INTO [MVXJDTA].[OOLINE] 
-    (
-    [OBCONO],
-    [OBDIVI],
-    [OBORNO],
-    [OBPONR],
-    [OBORST],
-    [OBFACI],
-    [OBWHLO],
-    [OBITNO],
-    [OBITDS],
-    [OBTEDS],
-    [OBORQT],
-    [OBORQA],
-    [OBIVQT],
-    [OBIVQA],
-    [OBALUN],
-    [OBSAPR],
-    [OBNEPR],
-    [OBDIA2],
-    [OBLNA2],
-    [OBPIDE],
-    [OBATPR],
-    [OBMODL],
-    [OBTEDL],
-    [OBRGDT],
-    [OBRGTM],
-    [OBLMDT],
-    [OBCHNO],
-    [OBCHID],
-    [OBLMTS],
-    [OBTEPY]
-    ) VALUES (
-    :coNo,
-    :OBDIVI,
-    :orderNo,
-    :productNo,
-    :orderStatus,
-    :OBFACI,
-    :warehouse,
-    :itemNo,
-    :OBITDS,
-    :itemName,
-    :OBORQT,
-    :qty,
-    :OBIVQT,
-    :OBIVQA,
-    :unit,
-    :price,
-    :netprice,
-    :discount,
-    :total,
-    :promotionCode,
-    :OBATPR,
-    :OBMODL,
-    :OBTEDL,
-    :OBRGDT,
-    :OBRGTM,
-    :OBLMDT,
-    :OBCHNO,
-    :OBCHID,
-    :OBLMTS,
-    :creditTerm)`;
-
     let replacements = {
       coNo: orderJson.OACONO, // OACONO,
       OADIVI: orderJson.OADIVI, // OADIVI
@@ -497,54 +432,36 @@ INSERT INTO [MVXJDTA].[OOHEAD]
       OALMTS: Date.now(), // OALMTS
     };
 
-    // await sequelize.query(queryOrder, {
-    //   replacements,
-    //   type: sequelize.QueryTypes.INSERT,
-    // });
+    await sequelize.query(queryOrder, {
+      replacements,
+      type: sequelize.QueryTypes.INSERT,
+    });
 
-    for (let item of items) {
-      let productNo = 1
-      replacements = {
-        coNo: ItemJson.OBCONO, //
-        OBDIVI: ItemJson.OBDIVI, //
+    const itemsData = items.map((item) => {
+      return {
         orderNo: orderNo,
-        productNo: productNo,
-        orderStatus: 22,
-        OBFACI: ItemJson.OBFACI,
-        warehouse: 101,
         itemNo: item.itemNo,
-        OBITDS: ItemJson.OBITDS,
+        productNo: item.productNo,
+        itemCode: item.itemCode,
         itemName: item.itemName,
-        OBORQT: ItemJson.OBORQT,
         qty: item.qty,
-        OBIVQT: ItemJson.OBIVQT,
-        OBIVQA: ItemJson.OBIVQA,
         unit: item.unit,
         price: item.price,
-        netprice: 20.1,
         discount: item.discount,
+        netPrice: item.netPrice,
         total: item.total,
         promotionCode: item.promotionCode,
-        OBATPR: ItemJson.OBATPR,
-        OBMODL: ItemJson.OBMODL,
-        OBTEDL: ItemJson.OBTEDL,
-        OBRGDT: formatDate(),
-        OBRGTM: getCurrentTimeFormatted(),
-        OBLMDT: formatDate(),
-        OBCHNO: ItemJson.OBCHNO,
-        OBCHID: ItemJson.OBCHID,
-        OBLMTS: Date.now(),
-        creditTerm: ItemJson.OBTEPY,
       };
-      await sequelize.query(queryItem, {
-        replacements,
-        type: sequelize.QueryTypes.INSERT,
-      });
-      productNo ++; 
-    }
+    });
+    // res.json(itemsData);
 
+    await axios({
+      method: "post",
+      url: `${LOCALHOST}order/insertorderitem`,
+      data: itemsData,
+    });
     res.status(201).json({
-      message: "Insert Success",
+      message: "Created",
     });
   } catch (error) {
     next(error);
@@ -553,11 +470,12 @@ INSERT INTO [MVXJDTA].[OOHEAD]
 
 exports.deleted = async (req, res, next) => {
   try {
-    const { orderNo } = req.body;
+    const { orderNo, coNo } = req.body;
+    const items = req.body.item;
 
     const deleted = await Order.update(
       {
-        coNo: "-410",
+        coNo: coNo,
       },
       {
         attributes: { exclude: ["id"] },
@@ -567,9 +485,28 @@ exports.deleted = async (req, res, next) => {
         },
       }
     );
-    if ([deleted] > 0) {
+
+    const itemsData = items.map((item) => {
+      return {
+        orderNo: orderNo,
+        itemNo: item.itemNo,
+        productNo: item.productNo,
+      };
+    });
+
+    await axios({
+      method: "post",
+      url: `${LOCALHOST}order/deleteitem`,
+      data: itemsData,
+    });
+
+    if (deleted[0] === 1) {
       res.status(202).json({
-        message: "success",
+        message: "Deleted",
+      });
+    } else {
+      res.status(304).json({
+        message: "Not Modified",
       });
     }
   } catch (error) {

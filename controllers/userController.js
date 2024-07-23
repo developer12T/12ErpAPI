@@ -4,7 +4,9 @@ const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/index");
 
-exports.index = (req, res, next) => {};
+exports.index = (req, res, next) => {
+  
+};
 
 exports.login = async (req, res, next) => {
   try {
@@ -54,7 +56,7 @@ exports.login = async (req, res, next) => {
       departmentDescrip: user[0].Col_DeptInfo,
     });
 
-    // //decode วันหมดอายุ
+  //decode วันหมดอายุ
     const expires_in = jwt.decode(token);
     return res.status(200).json({
       access_token: token,

@@ -8,9 +8,9 @@ const {
 } = require("../controllers/orderController");
 const {
   insertItem,
-  deleteitem,
   deleteitemsingle,
   item,
+  deleteitem
 } = require("../controllers/orderItemController");
 // const passportJWT = require("../middleware/passportJWT");
 
@@ -19,7 +19,7 @@ const {
 router.post("/", index);
 
 //http://localhost:3000/order/deledte
-router.post("/deledte", deleted);
+router.post("/delete", deleted);
 
 //http://localhost:3000/order/insert
 router.post("/insert", insert);
@@ -33,5 +33,8 @@ router.post("/orderitem", item);
 
 //http://localhost:3000/order/insertorderitem
 router.post("/insertorderitem", insertItem);
+
+//http://localhost:3000/order/insertorderitem
+router.post("/deleteitem", deleteitem);
 
 module.exports = router;

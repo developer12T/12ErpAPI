@@ -1,5 +1,5 @@
 const OLINE = require("../models/orderline");
-const Promotion = require('../models/promotion')
+const Promotion = require("../models/promotion");
 const fs = require("fs");
 const path = require("path");
 const { Op } = require("sequelize");
@@ -88,12 +88,13 @@ exports.insertItem = async (req, res, next) => {
     :OBCHID,
     :OBLMTS,
     :creditTerm)`;
+    let productNo = 1;
     for (let item of items) {
       const replacements = {
         coNo: existingData.OBCONO, //
         OBDIVI: existingData.OBDIVI, //
         orderNo: item.orderNo,
-        productNo: item.productNo,
+        productNo: productNo,
         orderStatus: 22,
         OBFACI: existingData.OBFACI,
         warehouse: 101,
@@ -106,7 +107,7 @@ exports.insertItem = async (req, res, next) => {
         OBIVQA: existingData.OBIVQA,
         unit: item.unit,
         price: item.price,
-        netprice: 20.1,
+        netprice: item.netPrice,
         discount: item.discount,
         total: item.total,
         promotionCode: item.promotionCode,
@@ -125,10 +126,11 @@ exports.insertItem = async (req, res, next) => {
         replacements,
         type: sequelize.QueryTypes.INSERT,
       });
+      productNo++;
     }
 
     res.status(201).json({
-      message: "Insert Success",
+      message: "Created",
     });
   } catch (error) {
     next(error);
@@ -149,18 +151,18 @@ exports.item = async (req, res, next) => {
     where: { orderNo: orderNo },
   });
 
-  for (let j = 0; j < OLINEData.length; j++) {
+  for (let i = 0; i < OLINEData.length; i++) {
     orderLineData[orderNo].push({
-      productNumber: OLINEData[j].productNumber,
-      itemNo: OLINEData[j].itemNo,
-      itemName: OLINEData[j].itemName,
-      qty: OLINEData[j].qty,
-      unit: OLINEData[j].unit,
-      price: OLINEData[j].price,
-      discount: OLINEData[j].discount,
-      netPrice: OLINEData[j].netPrice,
-      total: OLINEData[j].total,
-      promotionCode: OLINEData[j].promotionCode,
+      productNumber: OLINEData[i].productNumber,
+      itemNo: OLINEData[i].itemNo,
+      itemName: OLINEData[i].itemName,
+      qty: OLINEData[i].qty,
+      unit: OLINEData[i].unit,
+      price: OLINEData[i].price,
+      discount: OLINEData[i].discount,
+      netPrice: OLINEData[i].netPrice,
+      total: OLINEData[i].total,
+      promotionCode: OLINEData[i].promotionCode,
     });
   }
 
@@ -200,13 +202,16 @@ exports.item = async (req, res, next) => {
       });
     }
   }
+
   const Oline = orderLineData[orderNo].map((OLINE) => {
+    const itemNo = OLINE.itemNo.trim();
+    const promotionCode = OLINE.promotionCode.trim();
     const promotion = promotionData[orderNo].find(
       (promo) => promo.promotionCode === OLINE.promotionCode
     );
     return {
       productNumber: OLINE.productNumber,
-      itemNo: OLINE.itemNo,
+      itemNo: itemNo,
       itemName: OLINE.itemName,
       qty: OLINE.qty,
       unit: OLINE.unit,
@@ -214,7 +219,7 @@ exports.item = async (req, res, next) => {
       discount: OLINE.discount,
       netPrice: OLINE.netPrice,
       total: OLINE.total,
-      promotionCode: OLINE.promotionCode,
+      promotionCode: promotionCode,
       promotionName: promotion ? promotion.promotionName : "",
     };
   });
@@ -223,8 +228,8 @@ exports.item = async (req, res, next) => {
 };
 
 exports.deleteitem = async (req, res, next) => {
-  const { orderNo } = req.body;
-  const OLINEData = await OLINE.findAll({
+  const items = req.body;
+  const OLINEData = await OLINE.update({
     attributes: {
       exclude: ["id"],
     },
@@ -233,13 +238,13 @@ exports.deleteitem = async (req, res, next) => {
   res.json(OLINEData);
 };
 
-exports.deleteitemsingle = async (req, res, next) => {
-  const { orderNo, productNo } = req.body;
-  const OLINEData = await OLINE.findAll({
-    attributes: {
-      exclude: ["id"],
-    },
-    where: { orderNo: orderNo, productNo: productNo },
-  });
-  res.json(OLINEData);
-};
+// exports.deleteitemsingle = async (req, res, next) => {
+//   const { orderNo, productNo } = req.body;
+//   const OLINEData = await OLINE.findAll({
+//     attributes: {
+//       exclude: ["id"],
+//     },
+//     where: { orderNo: orderNo, productNo: productNo },
+//   });
+//   res.json(OLINEData);
+// };

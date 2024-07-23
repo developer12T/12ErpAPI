@@ -1,5 +1,5 @@
 const Shipping = require("../models/shipping");
-const { Sequelize, Op } = require("sequelize");
+const { Sequelize, Op, where } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
 const { sequelize } = require("../config/m3db");
@@ -7,7 +7,10 @@ const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../middleware/getDateTime");
-
+const {
+  filterStringEN,
+  filterStringNumber,
+} = require("../middleware/filterString");
 exports.index = async (req, res, next) => {
   try {
     const { customerNo, OPADID } = req.body;
@@ -124,7 +127,7 @@ exports.insert = async (req, res, next) => {
   try {
     const {
       customerNo,
-      OPADID,
+      // OPADID,
       customerName,
       shippingAddress1,
       shippingAddress2,
@@ -135,10 +138,10 @@ exports.insert = async (req, res, next) => {
     } = req.body;
 
     const query = `
-INSERT INTO [MVXJDTA].[OCUSMA] 
+INSERT INTO [MVXJDTA].[OCUSAD] 
   ([OPCONO],
   [OPCUNO],
-  [OPPART],
+  [OPADRT],
   [OPADID],
   [OPCUNM],
   [OPCUA1],
@@ -146,15 +149,11 @@ INSERT INTO [MVXJDTA].[OCUSMA]
   [OPCUA3],
   [OPCUA4],
   [OPPONO],
-  [OPEALO],
-  [OPECAR],
-  [OPRONO],
   [OPMODL],
-  [OPREDL],
+  [OPTEDL],
   [OPPHNO],
   [OPCSCD],
   [OPEDES],
-  [OPRODN],
   [OPULZO],
   [OPGEOC],
   [OPFVDT],
@@ -171,23 +170,23 @@ INSERT INTO [MVXJDTA].[OCUSMA]
   ) VALUES (
      :coNO,
      :customerNo,
-     :OPPART,
+     :OPADRT,
      :OPADID,
      :customerName,
      :shippingAddress1,
      :shippingAddress2,
      :shippingAddress3,
+     :shippingAddress4,
      :shippingPoscode,
-     :OPEALO,
      :OPMODL,
      :OPTEDL,
      :shippingPhone,
      :OPCSCD,
      :OPEDES,
-     :OPRODN,
      :OPULZO,
      :OPGEOC,
      :OPFVDT,
+     :OPLVDT,
      :OPDTID,
      :OPBCKO,
      :OPPADL,
@@ -203,31 +202,60 @@ INSERT INTO [MVXJDTA].[OCUSMA]
       const jsonData = fs.readFileSync(jsonPath, "utf-8");
       existingData = JSON.parse(jsonData);
     }
+
+    const shinppingData = await Shipping.findAll({
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        customerNo: customerNo,
+        coNo: "410",
+        // addressID: "INVTSP",
+      },
+    });
+
+    // res.json(shinppingData);
+    let checkShipping = "INVTSP";
+    let shinppingNum = 0;
+    let OPADID = "";
+
+    for (let shinpping of shinppingData) {
+      if (filterStringEN(shinpping.addressID) === "SHIP") {
+        checkShipping = "SHIP";
+        if (shinppingNum < parseInt(filterStringNumber(shinpping.addressID))) {
+          shinppingNum = parseInt(filterStringNumber(shinpping.addressID));
+        }
+      }
+    }
+    OPADID = `${checkShipping}${shinppingNum + 1}`;
+
     const replacements = {
       coNO: existingData.OPCONO, // OPCONO,
       customerNo: customerNo, // OPCUNO
-      OPPART: existingData.OPADRT, // OPPART
+      OPADRT: existingData.OPADRT, // OPPART
       OPADID: OPADID, // OPADID
       customerName: customerName, // OPCUNM
       shippingAddress1: shippingAddress1, // OPCUA1
       shippingAddress2: shippingAddress2, // OPCUA2
       shippingAddress3: shippingAddress3, // OPCUA3
-      //   shippingAddress4: customerAddress3, // OKCUA4
+      shippingAddress4: shippingAddress3, // OKCUA4
       shippingPoscode: shippingPoscode, // OPPONO
-      OPEALO: existingData.OPEALO, // OPEALO
+      // OPEALO: existingData.OPEALO, // OPEALO
+      // OPECAR: '', // OPECAR
+      // OPRONO: '', // OPRONO
       OPMODL: existingData.OPMODL, // OPMODL
       OPTEDL: existingData.OPTEDL, // OPTEDL
       shippingPhone: shippingPhone, // OPPHNO
       OPCSCD: existingData.OPCSCD, // OPCSCD
       OPEDES: existingData.OPEDES, // OPEDES
-      OPRODN: existingData.OPRODN, // OPRODN
+      // OPRODN: '', // OPRODN
       OPULZO: OPULZO, // OPULZO
       OPGEOC: existingData.OPGEOC, // OPGEOC
       OPFVDT: existingData.OPFVDT, // OPFVDT
       OPLVDT: existingData.OPLVDT, // OPLVDT
       OPDTID: existingData.OPDTID, // OPDTID
-      OPBCKO: existingData, // OPBCKO
-      OPPADL: existingData, // OPPADL
+      OPBCKO: existingData.OPBCKO, // OPBCKO
+      OPPADL: existingData.OPPADL, // OPPADL
       OPRGDT: formatDate(), // OPRGDT
       OPRGTM: getCurrentTimeFormatted(), // OPRGTM
       OPLMDT: formatDate(), // OPLMDT
@@ -240,25 +268,40 @@ INSERT INTO [MVXJDTA].[OCUSMA]
       replacements,
       type: sequelize.QueryTypes.INSERT,
     });
-    if (result > 0) {
-      res.status(200).json({
-        message: "Upload Success",
-      });
-    }
+    // res.status(201).json(replacements);
+
+    res.status(201).json({
+      message: "Insert Success",
+    });
   } catch (error) {
     next(error);
   }
 };
 
-exports.delete = async (req, res, next) => {
+exports.deleted = async (req, res, next) => {
   try {
-    const { customerNo } = req.body;
-    const shippingData = await Shipping.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
-      where: { customerNo: customerNo },
-    });
+    const { customerNo, addressID, coNo } = req.body;
+    const deleted = await Shipping.update(
+      { coNo: coNo },
+      {
+        attributes: { exclude: ["id"] },
+        where: {
+          coNo: `${coNo * -1}`,
+          customerNo: customerNo,
+          addressID: addressID,
+        },
+      }
+    );
+
+    if (deleted[0] === 1) {
+      res.status(202).json({
+        message: "Deleted",
+      });
+    } else {
+      res.status(304).json({
+        message: "Not Modified",
+      });
+    }
   } catch (error) {
     next(error);
   }
