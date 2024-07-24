@@ -4,5 +4,5 @@ module.exports = {
     JWT_SECRET: process.env.JWT_SECRET,
     PORT:process.env.PORT,
     SERVER:process.env.SERVER,
-    LOCALHOST:process.env.LOCALHOST,
+    HOST:process.env.HOST,
 }

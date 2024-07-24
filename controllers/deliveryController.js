@@ -1,6 +1,8 @@
+
+
 exports.index = async (req, res, next) => {};
 
-exports.insertSL = async (req, res, next) => {
+exports.insertL = async (req, res, next) => {
   const query = `INSERT INTO [MVXJDTA].[OOLINE](
 [OQCONO],
 [OQDLIX],
@@ -81,7 +83,7 @@ exports.insertSL = async (req, res, next) => {
 :OQLMTS)`;
 };
 
-exports.insertSH = async (req, res, next) => {
+exports.insertH = async (req, res, next) => {
   const query = `INSERT INTO [MVXJDTA].[OOLINE](
 [URCONO],
 [URDLIX],

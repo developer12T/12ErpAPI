@@ -229,13 +229,26 @@ exports.item = async (req, res, next) => {
 
 exports.deleteitem = async (req, res, next) => {
   const items = req.body;
-  const OLINEData = await OLINE.update({
-    attributes: {
-      exclude: ["id"],
-    },
-    where: { orderNo: orderNo },
-  });
-  res.json(OLINEData);
+
+  for (let item of items) {
+    const OLINEData = await OLINE.update(
+      {
+        coNo: -410,
+      },
+      {
+        attributes: {
+          exclude: ["id"],
+        },
+        where: {
+          orderNo: item.orderNo,
+          itemNo: item.itemNo,
+          productNo: item.productNo,
+        },
+      }
+    );
+  }
+
+  // res.json(OLINEData);
 };
 
 // exports.deleteitemsingle = async (req, res, next) => {

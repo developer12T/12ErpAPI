@@ -2,7 +2,7 @@ const Order = require("../models/order");
 const OLINE = require("../models/orderline");
 const Promotion = require("../models/promotion");
 const axios = require("axios");
-const { LOCALHOST } = require("../config/index");
+const { HOST } = require("../config/index");
 const { Op } = require("sequelize");
 const { sequelize } = require("../config/m3db");
 const {
@@ -16,15 +16,15 @@ const Shipping = require("../models/shipping");
 // Get the current year and month
 const now = new Date();
 const currentYear = now.getFullYear();
-const currentMonth = now.getMonth() + 1;
+const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0')
 
 exports.index = async (req, res, next) => {
   try {
-    const { orderType, orderNo } = req.body;
+    const { orderType } = req.body;
     let { orderDate } = req.body;
 
     if (orderDate == "") {
-      orderDate = 202407;
+      orderDate = `${currentYear}${currentMonth}`;
     }
     const orderData = await Order.findAll({
       attributes: {
@@ -33,19 +33,15 @@ exports.index = async (req, res, next) => {
       where: {
         orderType: orderType,
         orderDate: {
-          [Op.like]: `${202407}%`,
+          [Op.like]: `${orderDate}%`,
         },
         // orderNo:orderNo
       },
     });
-    let OLINEarr = [];
-    let promotionArr = [];
-    let shippingarr = [];
 
     // Object to hold OLINEarr for each orderNo
     const orderLineData = {};
     const promotionData = {};
-    const shippingData = {};
 
     for (let i = 0; i < orderData.length; i++) {
       const OLINEData = await OLINE.findAll({
@@ -440,6 +436,7 @@ INSERT INTO [MVXJDTA].[OOHEAD]
     const itemsData = items.map((item) => {
       return {
         orderNo: orderNo,
+        orderType: orderType,
         itemNo: item.itemNo,
         productNo: item.productNo,
         itemCode: item.itemCode,
@@ -451,13 +448,85 @@ INSERT INTO [MVXJDTA].[OOHEAD]
         netPrice: item.netPrice,
         total: item.total,
         promotionCode: item.promotionCode,
+        warehouse: warehouse,
+        customerChannel: item.customerChannel,
       };
     });
-    // res.json(itemsData);
+
+    const prepareData = items.map((item) => {
+      return {
+        coNo: orderJson.coNo,
+        OUDIVI: orderJson.OUDIVI,
+        OUFACI: orderJson.OUFACI,
+        orderNo: orderNo,
+        productNo: item.productNo,
+        OUOSSQ: OUOSSQ,
+        OUOSDT: OUOSDT,
+        OUOSPE: OUOSPE,
+        customerNo: customerNo,
+        customerChannel: item.customerChannel,
+        OUCUST: OUCUST,
+        orderType: orderType,
+        OUPYNO: OUPYNO,
+        OUCUCD: orderJson.OUCUCD,
+        OUSMCD: OUSMCD,
+        OUCSCD: OUCSCD,
+        OUFRE1: OUFRE1,
+        warehouse: warehouse,
+        itemNo: item.itemNo,
+        OUITGR: OUITGR,
+        OUITTY: OUITTY,
+        OUITCL: OUITCL,
+        orderStatus: orderStatus,
+        OUORQT: OUORQT,
+        OUORQA: OUORQA,
+        // itemUnit: item.itemUnit,
+        OUCOFA: OUCOFA,
+        OUDMCF: OUDMCF,
+        OUSPUN: OUSPUN,
+        OUORQS: OUORQS,
+        OUSTUN: OUSTUN,
+        OUORQB: OUORQB,
+        // itemGrossWight: itemGrossWight,
+        // itemNetWight: itemNetWight,
+        OUDCCD: OUDCCD,
+        OUSAPR: OUSAPR,
+        OUGRPR: OUGRPR,
+        OUSAAM: OUSAAM,
+        OUPRMO: OUPRMO,
+        OUDISY: OUDISY,
+        OUDWDT: OUDWDT,
+        OUCODT: OUCODT,
+        OUUCOS: OUUCOS,
+        OUUCCD: OUUCCD,
+        OUUNMS: OUUNMS,
+        OUORTK: OUORTK,
+        addressID: addressID,
+        OUINRC: OUINRC,
+        OURGDT: formatDate(),
+        OURGTM: getCurrentTimeFormatted(),
+        OULMDT: formatDate(),
+        OUCHNO: OUCHNO,
+        OUCHID: OUCHID,
+        OULMTS: Date.now(),
+        OUACOS: OUACOS,
+        OUTEPY: orderJson.OATEPY,
+        OUDECU: OUDECU,
+        OURQWH: OURQWH,
+      };
+    });
+
+    res.json(itemsData);
 
     await axios({
       method: "post",
-      url: `${LOCALHOST}order/insertorderitem`,
+      url: `${HOST}order/insertorderitem`,
+      data: itemsData,
+    });
+
+    await axios({
+      method: "post",
+      url: `${HOST}order/insertorderitem`,
       data: itemsData,
     });
     res.status(201).json({
@@ -481,7 +550,7 @@ exports.deleted = async (req, res, next) => {
         attributes: { exclude: ["id"] },
         where: {
           orderNo: orderNo,
-          coNo: "410",
+          coNo: 410,
         },
       }
     );
@@ -496,7 +565,7 @@ exports.deleted = async (req, res, next) => {
 
     await axios({
       method: "post",
-      url: `${LOCALHOST}order/deleteitem`,
+      url: `${HOST}order/deleteitem`,
       data: itemsData,
     });
 

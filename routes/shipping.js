@@ -8,7 +8,7 @@ const { index, update, insert,deleted } = require("../controllers/shippingContro
 router.post("/", index);
 
 //http://localhost:3000/customer/edit
-router.post("/edit", update);
+router.post("/update", update);
 
 //http://localhost:3000/customer/insert
 router.post("/insert", insert);
