@@ -134,8 +134,38 @@ const ItemUnit = sequelize.define(
   }
 );
 
+const Warehouse = sequelize.define(
+  "MITWHL",
+  {
+    coNo: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "MWCONO",
+    },
+    warehouse: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      field: "MWWHLO",
+    },
+    warehouseName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MWWHNM",
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+    primaryKey: false,
+  }
+);
+
 module.exports = {
   ItemFac,
   ItemMaster,
   ItemUnit,
+  Warehouse,
 };

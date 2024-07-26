@@ -1,5 +1,4 @@
-const Order = require("../../models/order");
-const OLINE = require("../../models/orderline");
+const { OLINE, Order } = require("../../models/order");
 const Promotion = require("../../models/promotion");
 const axios = require("axios");
 const { HOST } = require("../../config/index");
@@ -476,7 +475,6 @@ exports.insert = async (req, res, next) => {
         runningNumberH: runningNumberH,
       },
     });
-
 
     // Insert Delivery L
     await axios({

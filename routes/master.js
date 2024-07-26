@@ -11,6 +11,7 @@ const {
   calWight,
   runningNumber,
   updateRunningNumber,
+  warehouse,
 } = require("../controllers/master/masterContorller");
 
 const {
@@ -50,5 +51,8 @@ router.post("/runningNumber", runningNumber);
 
 //http://localhost:3000/master/runningNumber/edit
 router.post("/runningNumber/update", updateRunningNumber);
+
+//http://localhost:3000/master/calWight
+router.post("/warehouse", warehouse);
 
 module.exports = router;

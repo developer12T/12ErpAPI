@@ -1,4 +1,9 @@
-const { ItemFac, ItemMaster, ItemUnit } = require("../../models/master");
+const {
+  ItemFac,
+  ItemMaster,
+  ItemUnit,
+  Warehouse,
+} = require("../../models/master");
 const NumberSeries = require("../../models/runningnumber");
 const { HOST } = require("../../config/index");
 const axios = require("axios");
@@ -173,6 +178,33 @@ exports.updateRunningNumber = async (req, res, next) => {
       }
     );
     res.json(update);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.warehouse = async (req, res, next) => {
+  try {
+    // const { itemNo, qty } = req.body;
+    const warehouse = await Warehouse.findAll({
+      //   limit: 10,
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        // itemNo: itemNo,
+        coNo: 410,
+      },
+    });
+
+    // const items = itemData.map((item) => {
+    //   const itemNo = item.itemNo.trim();
+    //   return {
+    //     itemNo: itemNo,
+    //     cost: Math.round(item.cost * qty * 1000000) / 1000000,
+    //   };
+    // });
+    res.json(warehouse);
   } catch (error) {
     next(error);
   }

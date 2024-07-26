@@ -1,4 +1,4 @@
-const OLINE = require("../../models/orderline");
+const { OLINE } = require("../../models/order");
 const Promotion = require("../../models/promotion");
 const fs = require("fs");
 const path = require("path");
