@@ -5,12 +5,16 @@ const {
   update,
   insert,
   deleted,
+  single,
 } = require("../controllers/customers/customerController");
 const passportJWT = require("../middleware/passportJWT");
 
 /* GET home page. */
 //http://localhost:3000/customer/
 router.post("/", [passportJWT.isLogin], index);
+
+//http://localhost:3000/customer/
+router.post("/single", single);
 
 //http://localhost:3000/customer/edit
 router.post("/edit", update);

@@ -16,6 +16,7 @@ const Order = sequelize.define(
     orderNo: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "OAORNO",
     },
     orderType: {
@@ -112,22 +113,6 @@ const Order = sequelize.define(
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
-    // tableName: "OOHEAD", // Replace with your actual table name
-    // defaultScope: {
-    //   attributes: ["totalDiscount", "totalDiscount"],
-    // },
-    // scopes: {
-    //     orderDate: {
-    //     attributes: ["totalDiscount"],
-    //   },
-    // },
-  },
-  {
-    // tableName: "your_table_name", // Replace with your actual table name
-    // defaultScope: {
-    //   attributes: ["orderNo", "totalNonVat"],
-    // },
   }
 );
 

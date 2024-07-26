@@ -1,5 +1,309 @@
 const { sequelize, DataTypes } = require("../config/m3db");
 
+const PrepareInvoA = sequelize.define(
+  "OSASTD",
+  {
+    coNo: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      primaryKey: true,
+      field: "OUCONO",
+    },
+    OUDIVI: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUDIVI",
+    },
+    OUFACI: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUFACI",
+    },
+    orderNo: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUORNO",
+      primaryKey: true,
+    },
+    productNo: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUPONR",
+    },
+    OUOSSQ: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUOSSQ",
+    },
+    OUOSDT: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUOSDT",
+    },
+    OUOSPE: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUOSPE",
+    },
+    customerNo: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUCUNO",
+    },
+    customerChannel: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUCUCL",
+    },
+    OUCUST: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUCUST",
+    },
+    orderType: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUORTP",
+    },
+    payer: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUPYNO",
+    },
+    OUCUCD: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUCUCD",
+    },
+    saleCode: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUSMCD",
+    },
+    OUCSCD: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUCSCD",
+    },
+    OUFRE1: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUFRE1",
+    },
+    warehouse: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUWHLO",
+    },
+    itemNo: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUITNO",
+    },
+    OUITGR: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUITGR",
+    },
+    itemType: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUITTY",
+    },
+    OUITCL: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUITCL",
+    },
+    OUORST: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUORST",
+    },
+    OUORQT: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUORQT",
+    },
+    OUORQA: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUORQA",
+    },
+    unit: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUALUN",
+    },
+    OUCOFA: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUCOFA",
+    },
+    OUDMCF: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUDMCF",
+    },
+    OUSPUN: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUSPUN",
+    },
+    OUORQS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUORQS",
+    },
+    OUSTUN: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUSTUN",
+    },
+    OUORQB: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUORQB",
+    },
+    grossWight: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUGRWE",
+    },
+    netWight: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUNEWE",
+    },
+    OUDCCD: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUDCCD",
+    },
+    OUSAPR: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUSAPR",
+    },
+    OUGRPR: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUGRPR",
+    },
+    OUSAAM: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUSAAM",
+    },
+    OUPRMO: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUPRMO",
+    },
+    OUDISY: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUDISY",
+    },
+    OUDWDT: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUDWDT",
+    },
+    OUCODT: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUCODT",
+    },
+    OUUCOS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUUCOS",
+    },
+    OUUCCD: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUUCCD",
+    },
+    OUUNMS: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUUNMS",
+    },
+    OUORTK: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUORTK",
+    },
+    addressID: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUADID",
+    },
+    OUINRC: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUINRC",
+    },
+    OURGDT: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OURGDT",
+    },
+    OURGTM: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OURGTM",
+    },
+    OULMDT: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OULMDT",
+    },
+    OUCHNO: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUCHNO",
+    },
+    OUCHID: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUCHID",
+    },
+    OULMTS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OULMTS",
+    },
+    OUACOS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUACOS",
+    },
+    OUTEPY: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUTEPY",
+    },
+    OUDECU: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUDECU",
+    },
+    OURQWH: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OURQWH",
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+  }
+);
+
 const PrepareInvoB = sequelize.define(
   "OSBSTD",
   {
@@ -391,4 +695,4 @@ const PrepareInvoB = sequelize.define(
   }
 );
 
-module.exports = PrepareInvoB;
+module.exports = { PrepareInvoA, PrepareInvoB };

@@ -1,5 +1,4 @@
-const DeliverySH = require("../../models/deliveryhead");
-const DeliverySL = require("../../models/deliveryline");
+const { DeliverySH, DeliverySL } = require("../../models/delivery");
 const axios = require("axios");
 const { HOST } = require("../../config/index");
 const { sequelize } = require("../../config/m3db");
@@ -9,67 +8,54 @@ const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../middleware/getDateTime");
-const { log } = require("console");
 
 exports.index = async (req, res, next) => {};
 
 exports.insertL = async (req, res, next) => {
   try {
-    const running = await axios({
-      method: "post",
-      url: `${HOST}master/runningNumber/`,
-      data: {
+    const items = req.body.items;
+
+    // res.json(items)
+ 
+    for (let item of items) {
+      // console.log(runningNumber);
+
+      const jsonPath = path.join(
+        __dirname,
+        "../../",
+        "Jsons",
+        "deliverySL.json"
+      );
+      let deliveryLData = [];
+      if (fs.existsSync(jsonPath)) {
+        const jsonData = fs.readFileSync(jsonPath, "utf-8");
+        deliveryLData = JSON.parse(jsonData);
+      }
+
+      await DeliverySL.create({
         coNo: 410,
-        series: "B",
-        seriesType: "07",
-        seriesName: "0",
-      },
-    });
+        URDLIX: item.runningNumberH,
+        URRORC: deliveryLData.URRORC,
+        URRIDN: formatDate(),
+        URRIDL: item.productNo,
+        URITNO: item.itemNo,
+        URFACI: deliveryLData.URFACI,
+        URTRQT: deliveryLData.URTRQT,
+        URSTCD: deliveryLData.URSTCD,
+        URGRWE: deliveryLData.URGRWE,
+        URNEWE: deliveryLData.URNEWE,
+        URRGDT: formatDate(),
+        URRGTM: getCurrentTimeFormatted(),
+        URLMDT: formatDate(),
+        URCHNO: deliveryLData.URCHNO,
+        URCHID: deliveryLData.URCHID,
+        URLMTS: Date.now(),
+        URSCES: deliveryLData.URSCES,
+      });
 
-    const runningNumber = running.data[0].lastNo + 1;
-
-    await axios({
-      method: "post",
-      url: `${HOST}master/runningNumber/update`,
-      data: {
-        coNo: 410,
-        series: "B",
-        seriesType: "07",
-        seriesName: "0",
-        lastNo: runningNumber,
-      },
-    });
-    console.log(runningNumber);
-
-    const jsonPath = path.join(__dirname, "../../", "Jsons", "deliverySL.json");
-    let deliveryLData = [];
-    if (fs.existsSync(jsonPath)) {
-      const jsonData = fs.readFileSync(jsonPath, "utf-8");
-      deliveryLData = JSON.parse(jsonData);
     }
 
-    const insert = await DeliverySL.create({
-      coNo: 410,
-      URDLIX: runningNumber,
-      URRORC: deliveryLData.URRORC,
-      URRIDN: formatDate(),
-      URRIDL: deliveryLData.URRIDL,
-      URITNO: 10010401016,
-      URFACI: deliveryLData.URFACI,
-      URTRQT: deliveryLData.URTRQT,
-      URSTCD: deliveryLData.URSTCD,
-      URGRWE: deliveryLData.URGRWE,
-      URNEWE: deliveryLData.URNEWE,
-      URRGDT: formatDate(),
-      URRGTM: getCurrentTimeFormatted(),
-      URLMDT: formatDate(),
-      URCHNO: deliveryLData.URCHNO,
-      URCHID: deliveryLData.URCHID,
-      URLMTS: Date.now(),
-      URSCES: deliveryLData.URSCES,
-    });
-
-    res.status(201).json("Accept");
+    res.status(201).json("Created");
   } catch (error) {
     next(error);
   }
@@ -77,32 +63,7 @@ exports.insertL = async (req, res, next) => {
 
 exports.insertH = async (req, res, next) => {
   try {
-    const {} = req.body;
-    const running = await axios({
-      method: "post",
-      url: `${HOST}master/runningNumber/`,
-      data: {
-        coNo: 410,
-        series: "B",
-        seriesType: "07",
-        seriesName: "0",
-      },
-    });
-
-    const runningNumber = running.data[0].lastNo + 1;
-
-    await axios({
-      method: "post",
-      url: `${HOST}master/runningNumber/update`,
-      data: {
-        coNo: 410,
-        series: "B",
-        seriesType: "07",
-        seriesName: "0",
-        lastNo: runningNumber,
-      },
-    });
-    console.log(runningNumber);
+    const { warehouse, runningNumberH } = req.body;
 
     const jsonPath = path.join(__dirname, "../../", "Jsons", "deliverySH.json");
     let deliveryHData = [];
@@ -110,11 +71,11 @@ exports.insertH = async (req, res, next) => {
       const jsonData = fs.readFileSync(jsonPath, "utf-8");
       deliveryHData = JSON.parse(jsonData);
     }
-    const insert = await DeliverySH.create({
-      coNo: 380,
-      OQDLIX: runningNumber,
+    await DeliverySH.create({
+      coNo: 410,
+      OQDLIX: runningNumberH,
       OQDPOL: deliveryHData.OQDPOL,
-      OQWHLO: 101,
+      OQWHLO: warehouse,
       OQINOU: deliveryHData.OQINOU,
       OQCONA: deliveryHData.OQCONA,
       OQSDES: deliveryHData.OQSDES,
@@ -148,10 +109,24 @@ exports.insertH = async (req, res, next) => {
       OQLMTS: Date.now(),
     });
 
-    res.status(201).json("Accept");
+    res.status(201).json("Created");
   } catch (error) {
     next(error);
   }
 };
 
-exports.delete = async (req, res, next) => {};
+exports.deleteL = async (req, res, next) => {
+  try {
+    const { warehouse } = req.body;
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteH = async (req, res, next) => {
+  try {
+    const { warehouse } = req.body;
+  } catch (error) {
+    next(error);
+  }
+};

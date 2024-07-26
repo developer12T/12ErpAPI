@@ -20,7 +20,6 @@ exports.index = async (req, res, next) => {
         exclude: ["id"],
       },
       where: {
-        customerPhone: "02-2211748",
         [Op.or]: [
           {
             customerStatus: "20",
@@ -142,6 +141,73 @@ exports.index = async (req, res, next) => {
         taxno: taxno,
         shipping: shippings,
         sale: salearr,
+      };
+    });
+
+    if (!customers.length) {
+      const error = new Error("Not Found");
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json(customers);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.single = async (req, res, next) => {
+  try {
+    const { customerNo } = req.body;
+    const customersData = await Customer.findAll({
+      //   limit: 10,
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        customerStatus: 20,
+        coNo: 410,
+        customerNo: customerNo,
+      },
+    });
+    const customers = customersData.map((customer) => {
+      const customerNo = customer.customerNo.trim();
+      const customerPoscode = customer.customerPoscode.trim();
+      const customerPhone = customer.customerPhone.trim();
+      const saleZone = customer.saleZone.trim();
+      const saleTeam = customer.saleTeam.trim();
+      const OKCFC1 = customer.OKCFC1.trim();
+      const OKCFC3 = customer.OKCFC3.trim();
+      const OKCFC6 = customer.OKCFC6.trim();
+      const salePayer = customer.salePayer.trim();
+      const taxno = customer.taxno.trim();
+      const saleCode = customer.saleCode.trim();
+      // const taxno = customer.taxno.trim();
+      return {
+        coNo: customer.coNo,
+        customerStatus: customer.customerStatus,
+        customerNo: customerNo,
+        customerChannel: customer.customerChannel,
+        customerName:
+          customer.customerChannel == "102" || "103"
+            ? customer.customerName + customer.customerAddress4
+            : customer.customerName,
+        customerAddress1: customer.customerAddress1,
+        customerAddress2: customer.customerAddress2,
+        customerAddress3: customer.customerAddress3,
+        customerAddress4: customer.customerAddress4,
+        customerPoscode: customerPoscode,
+        customerPhone: customerPhone,
+        creditTerm: customer.creditTerm,
+        orderType: customer.orderType,
+        zone: saleZone,
+        saleTeam: saleTeam,
+        saleCode: saleCode,
+        salePayer: salePayer,
+        OKCFC1: OKCFC1,
+        OKCFC3: OKCFC3,
+        OKCFC6: OKCFC6,
+        creditLimit: customer.creditLimit,
+        taxno: taxno,
       };
     });
 

@@ -6,16 +6,19 @@ const OLINE = sequelize.define(
     orderNo: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "OBORNO",
     },
     productNumber: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "OBPONR",
     },
     itemNo: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "OBITNO",
     },
     itemName: {

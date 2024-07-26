@@ -10,7 +10,7 @@ exports.itemdetails = async (req, res, next) => {
     const itemFacObj = {};
     const itemUnitObj = {};
     let unitarr = [];
-    const { itemNo } = req.body;
+    let { itemNo } = req.body;
     const itemData = await ItemMaster.findAll({
       attributes: {
         exclude: ["id"],
@@ -22,19 +22,19 @@ exports.itemdetails = async (req, res, next) => {
     });
 
     // Gather itemNo values to make a batch request
-    const itemNos = itemData.map((item) => item.itemNo.trim());
+    itemNo = itemData.map((item) => item.itemNo.trim());
 
-    const { data } = await axios({
+    const facData = await axios({
       method: "post",
-      url: `http://localhost:3000/master/fac`,
-      data: { itemNos },
+      url: `${HOST}master/fac`,
+      data: { itemNo },
     });
 
-    data.forEach((fac) => {
+    facData.data.forEach((fac) => {
       itemFacObj[fac.itemNo] = fac.cost;
     });
 
-    // res.json(itemFacObj);
+    // res.json(facData.data);
 
     for (let i = 0; i < itemData.length; i++) {
       const itemUnitData = await ItemUnit.findAll({
@@ -46,8 +46,9 @@ exports.itemdetails = async (req, res, next) => {
       });
       for (let j = 0; j < itemUnitData.length; j++) {
         unitarr.push({
-          unit: itemUnitData[j].unit,
+          facType: itemUnitData[j].facType,
           factor: itemUnitData[j].factor,
+          unit: itemUnitData[j].unit,
         });
       }
     }
@@ -56,13 +57,17 @@ exports.itemdetails = async (req, res, next) => {
       const itemNo = item.itemNo.trim();
       const itemName = item.itemName.trim();
       const itemType = item.itemType.trim();
+      const MMITGR = item.MMITGR.trim();
+      const MMITCL = item.MMITCL.trim();
       const itemGroup = item.itemGroup.trim();
-      const cost = itemFacObj[item.itemNo] || 0;
+      const cost = itemFacObj[itemNo] || 0;
       return {
         coNo: item.coNo,
         itemNo: itemNo,
         status: item.status,
         itemName: itemName,
+        MMITGR: MMITGR,
+        MMITCL: MMITCL,
         itemType: itemType,
         itemGroup: itemGroup,
         cost: cost,
@@ -72,24 +77,6 @@ exports.itemdetails = async (req, res, next) => {
       };
     });
     res.json(items);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.itemsingle = async (req, res, next) => {
-  try {
-    const itemData = await ItemMaster.findAll({
-      //   limit: 10,
-      attributes: {
-        exclude: ["id"],
-      },
-      where: {
-        itemNo: itemNo,
-        coNo: 410,
-      },
-    });
-    res.json(itemData);
   } catch (error) {
     next(error);
   }
@@ -175,7 +162,7 @@ exports.updateRunningNumber = async (req, res, next) => {
   try {
     const { coNo, lastNo, seriesType, series } = req.body;
     const update = await NumberSeries.update(
-      { lastNo: lastNo},
+      { lastNo: lastNo },
       {
         attributes: { exclude: ["id"] },
         where: {

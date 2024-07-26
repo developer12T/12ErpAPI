@@ -16,7 +16,7 @@ const Shipping = require("../../models/shipping");
 // Get the current year and month
 const now = new Date();
 const currentYear = now.getFullYear();
-const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0')
+const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0");
 
 exports.index = async (req, res, next) => {
   try {
@@ -324,28 +324,14 @@ exports.insert = async (req, res, next) => {
       totalVat,
       totalNonVat,
       addressID,
+      payer,
     } = req.body;
-
-    const order = {
-      orderNo,
-      orderDate,
-      requestDate,
-      customerNo,
-      orderNo,
-      orderType,
-      warehouse,
-      orderStatus,
-      total,
-      totalDiscount,
-      totalNet,
-      totalVat,
-      totalNonVat,
-      addressID,
-    }
 
     const items = req.body.item;
 
-    const jsonPathOrder = path.join(__dirname, "..", "Jsons", "order.json");
+    // console.log(orderStatus);
+
+    const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
 
     let orderJson = [];
 
@@ -353,76 +339,14 @@ exports.insert = async (req, res, next) => {
       const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
       orderJson = JSON.parse(jsonDataOrder);
     }
-
-    const queryOrder = `
-INSERT INTO [MVXJDTA].[OOHEAD] 
-(
-  [OACONO],
-  [OADIVI],
-  [OAORNO],
-  [OAORTP],
-  [OAFACI],
-  [OAWHLO],
-  [OAORST],
-  [OAORSL],
-  [OACUNO],
-  [OAORDT],
-  [OACUDT],
-  [OARLDT],
-  [OARLDZ],
-  [OATIZO],
-  [OATEPY],
-  [OAMODL],
-  [OATEDL],
-  [OAADID],
-  [OALOCD],
-  [OACUCD],
-  [OABRLA],
-  [OANTLA],
-  [OARGDT],
-  [OARGTM],
-  [OALMDT],
-  [OACHID],
-  [OALMTS]
-) VALUES (
-  :coNo,
-  :OADIVI,
-  :orderNo,
-  :orderType,
-  :OAFACI,
-  :warehouse,
-  :OAORST,
-  :OAORSL,
-  :customerNo,
-  :orderDate,
-  :OACUDT,
-  :requestDate,
-  :OARLDZ,
-  :OATIZO,
-  :OATEPY,
-  :OAMODL,
-  :OATEDL,
-  :addressID,
-  :OALOCD,
-  :OACUCD,
-  :OABRLA,
-  :OANTLA,
-  :OARGDT,
-  :OARGTM,
-  :OALMDT,
-  :OACHID,
-  :OALMTS
-)
-  `;
-
-    let replacements = {
+    await Order.create({
       coNo: orderJson.OACONO, // OACONO,
       OADIVI: orderJson.OADIVI, // OADIVI
       orderNo: orderNo, // OAORNO
       orderType: orderType, // OAFACI
       OAFACI: orderJson.OAFACI, // OAORTP
       warehouse: warehouse, // OAWHLO
-      OAORST: orderStatus, // OAORST
+      orderStatus: orderStatus, // OAORST
       OAORSL: orderStatus, // OAORSL
       customerNo: customerNo, // OACUNO
       orderDate: orderDate, // OAORDT
@@ -436,23 +360,44 @@ INSERT INTO [MVXJDTA].[OOHEAD]
       addressID: addressID, // OAADID
       OALOCD: orderJson.OALOCD, // OALOCD
       OACUCD: orderJson.OACUCD, // OACUCD
-      OABRLA: total, // OABRLA
-      OANTLA: totalNet, // OANTLA
+      total: total, // OABRLA
+      totalNet: totalNet, // OANTLA
       OARGDT: formatDate(), // OARGDT
       OARGTM: getCurrentTimeFormatted(), // OARGTM
       OALMDT: formatDate(), // OALMDT
       OACHID: orderJson.OACHID, // OACHID
       OALMTS: Date.now(), // OALMTS
-    };
-
-    await sequelize.query(queryOrder, {
-      replacements,
-      type: sequelize.QueryTypes.INSERT,
     });
 
-    const itemsData = items.map((item) => {
+    const running = await axios({
+      method: "post",
+      url: `${HOST}master/runningNumber/`,
+      data: {
+        coNo: 410,
+        series: "B",
+        seriesType: "07",
+        seriesName: "0",
+      },
+    });
+
+    const runningNumberH = running.data[0].lastNo + 1;
+
+    await axios({
+      method: "post",
+      url: `${HOST}master/runningNumber/update`,
+      data: {
+        coNo: 410,
+        series: "B",
+        seriesType: "07",
+        seriesName: "0",
+        lastNo: runningNumberH,
+      },
+    });
+
+    let itemsData = items.map((item) => {
       return {
         orderNo: orderNo,
+        runningNumberH: runningNumberH,
         orderType: orderType,
         itemNo: item.itemNo,
         productNo: item.productNo,
@@ -470,82 +415,96 @@ INSERT INTO [MVXJDTA].[OOHEAD]
       };
     });
 
-    const prepareData = items.map((item) => {
+    let prepareData = items.map((item) => {
       return {
-        coNo: orderJson.coNo,
-        OUDIVI: orderJson.OUDIVI,
-        OUFACI: orderJson.OUFACI,
+        coNo: 410,
+        OBDIVI: "OTT",
+        warehouse: 110,
+        OBFACI: "F10",
         orderNo: orderNo,
-        productNo: item.productNo,
-        OUOSSQ: OUOSSQ,
-        OUOSDT: OUOSDT,
-        OUOSPE: OUOSPE,
+        orderType: orderType,
+        orderStatus: orderStatus,
+        payer: payer,
+        runningNumberH: runningNumberH,
+        // saleCode: item.saleCode,
+        itemNo: item.itemNo,
         customerNo: customerNo,
         customerChannel: item.customerChannel,
-        OUCUST: OUCUST,
-        orderType: orderType,
-        OUPYNO: OUPYNO,
-        OUCUCD: orderJson.OUCUCD,
-        OUSMCD: OUSMCD,
-        OUCSCD: OUCSCD,
-        OUFRE1: OUFRE1,
-        warehouse: warehouse,
-        itemNo: item.itemNo,
-        OUITGR: OUITGR,
-        OUITTY: OUITTY,
-        OUITCL: OUITCL,
-        orderStatus: orderStatus,
-        OUORQT: OUORQT,
-        OUORQA: OUORQA,
-        // itemUnit: item.itemUnit,
-        OUCOFA: OUCOFA,
-        OUDMCF: OUDMCF,
-        OUSPUN: OUSPUN,
-        OUORQS: OUORQS,
-        OUSTUN: OUSTUN,
-        OUORQB: OUORQB,
-        // itemGrossWight: itemGrossWight,
-        // itemNetWight: itemNetWight,
-        OUDCCD: OUDCCD,
-        OUSAPR: OUSAPR,
-        OUGRPR: OUGRPR,
-        OUSAAM: OUSAAM,
-        OUPRMO: OUPRMO,
-        OUDISY: OUDISY,
-        OUDWDT: OUDWDT,
-        OUCODT: OUCODT,
-        OUUCOS: OUUCOS,
-        OUUCCD: OUUCCD,
-        OUUNMS: OUUNMS,
-        OUORTK: OUORTK,
+        itemCode: item.itemCode,
+        itemName: item.itemName,
+        qty: item.qty,
+        unit: item.unit,
+        price: item.price,
+        discount: item.discount,
+        netPrice: item.netPrice,
+        total: item.total,
         addressID: addressID,
-        OUINRC: OUINRC,
-        OURGDT: formatDate(),
-        OURGTM: getCurrentTimeFormatted(),
-        OULMDT: formatDate(),
-        OUCHNO: OUCHNO,
-        OUCHID: OUCHID,
-        OULMTS: Date.now(),
-        OUACOS: OUACOS,
-        OUTEPY: orderJson.OATEPY,
-        OUDECU: OUDECU,
-        OURQWH: OURQWH,
       };
     });
+    let productNo = 1;
+    let productNo2 = 1;
+    itemsData = itemsData.map((item) => {
+      const result = {
+        ...item, // Spread the properties of the original item
+        productNo: productNo, // Add the productNo property
+      };
+      productNo++;
+      return result;
+    });
+    prepareData = prepareData.map((item) => {
+      const result = {
+        ...item, // Spread the properties of the original item
+        productNo: productNo2, // Add the productNo property
+      };
+      productNo2++;
+      return result;
+    });
 
-    res.json(itemsData);
-
+    // res.json(itemsData);
     await axios({
       method: "post",
       url: `${HOST}order/insertorderitem`,
       data: itemsData,
     });
 
+    // Insert Delivery H
     await axios({
       method: "post",
-      url: `${HOST}order/delivery/insertH`,
-      data: order,
+      url: `${HOST}delivery/insertH`,
+      data: {
+        warehouse: warehouse,
+        runningNumberH: runningNumberH,
+      },
     });
+
+
+    // Insert Delivery L
+    await axios({
+      method: "post",
+      url: `${HOST}delivery/insertL`,
+      data: {
+        items: itemsData,
+      },
+    });
+
+    // Insert Prepare Invoice A
+    await axios({
+      method: "post",
+      url: `${HOST}prepare/insertA`,
+      data: {
+        items: prepareData,
+      },
+    });
+
+    // Insert Prepare Invoice B
+    await axios({
+      method: "post",
+      url: `${HOST}prepare/insertB`,
+      data: {
+        items: prepareData,
+      },
+    });
+
     res.status(201).json({
       message: "Created",
     });
@@ -585,7 +544,6 @@ exports.deleted = async (req, res, next) => {
       url: `${HOST}order/deleteitem`,
       data: itemsData,
     });
-
     if (deleted[0] === 1) {
       res.status(202).json({
         message: "Deleted",

@@ -14,7 +14,7 @@ exports.insertItem = async (req, res, next) => {
   try {
     const items = req.body;
 
-    const jsonPath = path.join(__dirname, "..", "Jsons", "orederItem.json");
+    const jsonPath = path.join(__dirname, "../../", "Jsons", "orederItem.json");
     let existingData = [];
 
     if (fs.existsSync(jsonPath)) {
@@ -88,13 +88,13 @@ exports.insertItem = async (req, res, next) => {
     :OBCHID,
     :OBLMTS,
     :creditTerm)`;
-    let productNo = 1;
+    // let productNo = 1;
     for (let item of items) {
       const replacements = {
         coNo: existingData.OBCONO, //
         OBDIVI: existingData.OBDIVI, //
         orderNo: item.orderNo,
-        productNo: productNo,
+        productNo: item.productNo,
         orderStatus: 22,
         OBFACI: existingData.OBFACI,
         warehouse: 101,
@@ -126,11 +126,8 @@ exports.insertItem = async (req, res, next) => {
         replacements,
         type: sequelize.QueryTypes.INSERT,
       });
-      productNo++;
-
-      
+      // productNo++;
     }
-
     res.status(201).json({
       message: "Created",
     });
@@ -252,14 +249,3 @@ exports.deleteitem = async (req, res, next) => {
 
   // res.json(OLINEData);
 };
-
-// exports.deleteitemsingle = async (req, res, next) => {
-//   const { orderNo, productNo } = req.body;
-//   const OLINEData = await OLINE.findAll({
-//     attributes: {
-//       exclude: ["id"],
-//     },
-//     where: { orderNo: orderNo, productNo: productNo },
-//   });
-//   res.json(OLINEData);
-// };

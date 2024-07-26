@@ -2,18 +2,23 @@ const express = require("express");
 const router = express.Router();
 const {
   index,
-//   items,
-  itemsingle,
-//   fac,
+  //   items,
+  // itemsingle,
+  //   fac,
   itemdetails,
-//   unit,
+  //   unit,
   calCost,
   calWight,
   runningNumber,
   updateRunningNumber,
 } = require("../controllers/master/masterContorller");
 
-const { fac, items, unit } = require("../controllers/master/itemController");
+const {
+  fac,
+  items,
+  unit,
+  itemsingle,
+} = require("../controllers/master/itemController");
 /* GET home page. */
 //http://localhost:3000/master/
 router.post("/", index);
