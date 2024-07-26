@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { index,single } = require("../controllers/saleController");
+const { index,single } = require("../controllers/customers/saleController");
 
 /* GET home page. */
 //http://localhost:3000/sale/

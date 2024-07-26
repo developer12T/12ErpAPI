@@ -1,16 +1,16 @@
-const Shipping = require("../models/shipping");
+const Shipping = require("../../models/shipping");
 const { Sequelize, Op, where } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
-const { sequelize } = require("../config/m3db");
+const { sequelize } = require("../../config/m3db");
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../middleware/getDateTime");
+} = require("../../middleware/getDateTime");
 const {
   filterStringEN,
   filterStringNumber,
-} = require("../middleware/filterString");
+} = require("../../middleware/filterString");
 exports.index = async (req, res, next) => {
   try {
     const { customerNo, OPADID } = req.body;

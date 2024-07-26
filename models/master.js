@@ -124,8 +124,47 @@ const ItemUnit = sequelize.define(
   }
 );
 
+const TEST = sequelize.define(
+  "TEST",
+  {
+    test1: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      field: "test1",
+    },
+    test2: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      field: "test2",
+    },
+    test3: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "test3",
+    },
+    test4: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "test4",
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+    primaryKey: false,
+  }
+  // define: {
+  //   noPrimaryKey: true,
+  // },
+);
+
 module.exports = {
   ItemFac,
   ItemMaster,
   ItemUnit,
+  TEST,
 };

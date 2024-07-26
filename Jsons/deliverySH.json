@@ -15,8 +15,6 @@
     "OQTTYP": 51,
     "OQRIDN": 20414757,
     "OQEDES": "TH00000   ",
-    "OQPGRS": 0,
-    "OQPIST": 0,
     "OQNEWE": 59,
     "OQGRWE": 79,
     "OQTIZO": "&SYS ",
@@ -29,12 +27,11 @@
     "OQPRIO": 5,
     "OQCSCD": "TH ",
     "OQAGKY": "                                        15101W42",
-    "OQIRST": 0,
     "OQRGDT": 20201020,
     "OQRGTM": 155923,
     "OQLMDT": 20201020,
     "OQCHNO": 2,
-    "OQCHID": "MI02      ",
+    "OQCHID": "MVXSECOFR ",
     "OQSCES": 90,
     "OQLMTS": 1603184363952
 }

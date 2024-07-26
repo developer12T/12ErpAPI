@@ -5,7 +5,7 @@ const {
   update,
   insert,
   deleted,
-} = require("../controllers/customerController");
+} = require("../controllers/customers/customerController");
 const passportJWT = require("../middleware/passportJWT");
 
 /* GET home page. */

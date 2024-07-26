@@ -1,17 +1,17 @@
-const Order = require("../models/order");
-const OLINE = require("../models/orderline");
-const Promotion = require("../models/promotion");
+const Order = require("../../models/order");
+const OLINE = require("../../models/orderline");
+const Promotion = require("../../models/promotion");
 const axios = require("axios");
-const { HOST } = require("../config/index");
+const { HOST } = require("../../config/index");
 const { Op } = require("sequelize");
-const { sequelize } = require("../config/m3db");
+const { sequelize } = require("../../config/m3db");
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../middleware/getDateTime");
+} = require("../../middleware/getDateTime");
 const fs = require("fs");
 const path = require("path");
-const Shipping = require("../models/shipping");
+const Shipping = require("../../models/shipping");
 
 // Get the current year and month
 const now = new Date();
@@ -326,6 +326,23 @@ exports.insert = async (req, res, next) => {
       addressID,
     } = req.body;
 
+    const order = {
+      orderNo,
+      orderDate,
+      requestDate,
+      customerNo,
+      orderNo,
+      orderType,
+      warehouse,
+      orderStatus,
+      total,
+      totalDiscount,
+      totalNet,
+      totalVat,
+      totalNonVat,
+      addressID,
+    }
+
     const items = req.body.item;
 
     const jsonPathOrder = path.join(__dirname, "..", "Jsons", "order.json");
@@ -526,8 +543,8 @@ INSERT INTO [MVXJDTA].[OOHEAD]
 
     await axios({
       method: "post",
-      url: `${HOST}order/insertorderitem`,
-      data: itemsData,
+      url: `${HOST}order/delivery/insertH`,
+      data: order,
     });
     res.status(201).json({
       message: "Created",

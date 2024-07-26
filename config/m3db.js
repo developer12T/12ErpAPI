@@ -16,6 +16,9 @@ const sequelize = new Sequelize("M3FDBTST", "sa", "One2@@", {
       },
     },
   },
+  define: {
+    noPrimaryKey: true,
+  },
 });
 
 module.exports = {

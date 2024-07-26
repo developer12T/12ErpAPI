@@ -1,15 +1,15 @@
-const Customer = require("../models/customer");
-const Shipping = require("../models/shipping");
-const Sale = require("../models/sale");
+const Customer = require("../../models/customer");
+const Shipping = require("../../models/shipping");
+const Sale = require("../../models/sale");
 const { Op } = require("sequelize");
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../middleware/getDateTime");
-const { sequelize } = require("../config/m3db");
+} = require("../../middleware/getDateTime");
+const { sequelize } = require("../../config/m3db");
 const fs = require("fs");
 const path = require("path");
-const { filterStringParentTH } = require("../middleware/filterString");
+const { filterStringParentTH } = require("../../middleware/filterString");
 
 exports.index = async (req, res, next) => {
   try {

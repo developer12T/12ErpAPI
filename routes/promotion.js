@@ -5,7 +5,7 @@ const {
   deleted,
   update,
   insert
-} = require("../controllers/promotionController");
+} = require("../controllers/order/promotionController");
 const passportJWT = require("../middleware/passportJWT");
 
 /* GET home page. */

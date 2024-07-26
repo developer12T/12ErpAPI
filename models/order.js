@@ -49,7 +49,6 @@ const Order = sequelize.define(
       allowNull: false,
       field: "OAORDT",
     },
-
     orderStatus: {
       type: DataTypes.STRING,
       allowNull: false,

@@ -1,14 +1,14 @@
-const OLINE = require("../models/orderline");
-const Promotion = require("../models/promotion");
+const OLINE = require("../../models/orderline");
+const Promotion = require("../../models/promotion");
 const fs = require("fs");
 const path = require("path");
 const { Op } = require("sequelize");
-const { sequelize } = require("../config/m3db");
+const { sequelize } = require("../../config/m3db");
 
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../middleware/getDateTime");
+} = require("../../middleware/getDateTime");
 
 exports.insertItem = async (req, res, next) => {
   try {
@@ -127,6 +127,8 @@ exports.insertItem = async (req, res, next) => {
         type: sequelize.QueryTypes.INSERT,
       });
       productNo++;
+
+      
     }
 
     res.status(201).json({

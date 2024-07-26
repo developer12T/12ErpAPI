@@ -13,6 +13,7 @@ const shinppingsRouter = require("./routes/shipping");
 const orderRouter = require("./routes/order");
 const promotionRouter = require("./routes/promotion");
 const masterRouter = require("./routes/master");
+const deliveryRouter = require("./routes/delivery");
 const prepareInvoiceRouter = require("./routes/prepareInvoice");
 
 //import middleware
@@ -36,6 +37,7 @@ app.use("/order", orderRouter);
 app.use("/promotion", promotionRouter);
 app.use("/master", masterRouter);
 app.use("/prepare",prepareInvoiceRouter);
+app.use("/delivery",deliveryRouter);
 
 app.use(errorHandler);
 

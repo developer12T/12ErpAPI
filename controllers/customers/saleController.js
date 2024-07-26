@@ -1,5 +1,5 @@
-const Sale = require("../models/sale");
-const { filterStringParentTH } = require("../middleware/filterString");
+const Sale = require("../../models/sale");
+const { filterStringParentTH } = require("../../middleware/filterString");
 
 exports.index = async (req, res, next) => {
   try {

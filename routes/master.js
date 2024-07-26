@@ -11,9 +11,9 @@ const {
   calWight,
   runningNumber,
   updateRunningNumber,
-} = require("../controllers/masterContorller");
+} = require("../controllers/master/masterContorller");
 
-const { fac, items, unit } = require("../controllers/itemController");
+const { fac, items, unit } = require("../controllers/master/itemController");
 /* GET home page. */
 //http://localhost:3000/master/
 router.post("/", index);

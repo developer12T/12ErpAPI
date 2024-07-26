@@ -5,14 +5,14 @@ const {
   single,
   insert,
   deleted,
-} = require("../controllers/orderController");
+} = require("../controllers/order/orderController");
 const {
   insertItem,
   deleteitemsingle,
   item,
   deleteitem
-} = require("../controllers/orderItemController");
-// const passportJWT = require("../middleware/passportJWT");
+} = require("../controllers/order/orderItemController");
+// const passportJWT = require("../../middleware/passportJWT");
 
 // Order 
 //http://localhost:3000/order/

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { index, update, insert,deleted } = require("../controllers/shippingController");
-// const passportJWT = require("../middleware/passportJWT");
+const { index, update, insert,deleted } = require("../controllers/customers/shippingController");
+// const passportJWT = require("../../middleware/passportJWT");
 
 /* GET home page. */
 //http://localhost:3000/customer/

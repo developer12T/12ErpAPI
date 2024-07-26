@@ -1,4 +1,4 @@
-const Promotion = require("../models/promotion");
+const Promotion = require("../../models/promotion");
 
 exports.index = async (req, res, next) => {
   const promotionData = await Promotion.findAll({

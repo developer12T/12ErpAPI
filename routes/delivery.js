@@ -1,15 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const { index,insert } = require("../controllers/deliveryController");
+const { index,insertL,insertH } = require("../controllers/order/deliveryController");
 
 /* GET home page. */
 //http://localhost:3000/sale/
 router.get("/", index);
 
 //http://localhost:3000/customer/edit
-router.post("/insert", insert);
+router.post("/insertL", insertL);
 
-//http://localhost:3000/customer/insert
-// router.post("/insert", insert);
+// http://localhost:3000/customer/insert
+router.post("/insertH", insertH);
 
 module.exports = router;

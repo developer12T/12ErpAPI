@@ -1,8 +1,10 @@
-const { ItemFac, ItemMaster, ItemUnit } = require("../models/master");
-const { HOST } = require("../config/index");
+const { ItemFac, ItemMaster, ItemUnit } = require("../../models/master");
+const NumberSeries = require("../../models/runningnumber");
+const { HOST } = require("../../config/index");
 const axios = require("axios");
 
 exports.index = async (req, res, next) => {};
+
 exports.itemdetails = async (req, res, next) => {
   try {
     const itemFacObj = {};
@@ -15,7 +17,7 @@ exports.itemdetails = async (req, res, next) => {
       },
       where: {
         coNo: 410,
-        itemNo:itemNo
+        itemNo: itemNo,
       },
     });
 
@@ -171,27 +173,19 @@ exports.runningNumber = async (req, res, next) => {
 
 exports.updateRunningNumber = async (req, res, next) => {
   try {
-    const { series, seriestype, companycode } = req.body;
-    const result = await NumberSeries.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
-      where: {
-        [Op.or]: [
-          {
-            companycode: companycode,
-            series: series,
-            seriestype: seriestype,
-          },
-          {
-            seriesname: {
-              [Op.like]: `%${seriesname}%`,
-            },
-          },
-        ],
-      },
-    });
-    res.json(result);
+    const { coNo, lastNo, seriesType, series } = req.body;
+    const update = await NumberSeries.update(
+      { lastNo: lastNo},
+      {
+        attributes: { exclude: ["id"] },
+        where: {
+          coNo: coNo,
+          series: series,
+          seriesType: seriesType,
+        },
+      }
+    );
+    res.json(update);
   } catch (error) {
     next(error);
   }
