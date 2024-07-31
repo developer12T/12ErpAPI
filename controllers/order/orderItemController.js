@@ -4,6 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const { Op } = require("sequelize");
 const { sequelize } = require("../../config/m3db");
+const axios = require("axios");
+const { HOST } = require("../../config/index");
 
 const {
   formatDate,
@@ -12,7 +14,7 @@ const {
 
 exports.insertItem = async (req, res, next) => {
   try {
-    const items = req.body;
+    const items = req.body.items;
 
     const jsonPath = path.join(__dirname, "../../", "Jsons", "orederItem.json");
     let existingData = [];
@@ -23,111 +25,80 @@ exports.insertItem = async (req, res, next) => {
     }
 
     // res.json(fs.existsSync(jsonPath))
-
-    const query = `
-    INSERT INTO [MVXJDTA].[OOLINE] 
-    (
-    [OBCONO],
-    [OBDIVI],
-    [OBORNO],
-    [OBPONR],
-    [OBORST],
-    [OBFACI],
-    [OBWHLO],
-    [OBITNO],
-    [OBITDS],
-    [OBTEDS],
-    [OBORQT],
-    [OBORQA],
-    [OBIVQT],
-    [OBIVQA],
-    [OBALUN],
-    [OBSAPR],
-    [OBNEPR],
-    [OBDIA2],
-    [OBLNA2],
-    [OBPIDE],
-    [OBATPR],
-    [OBMODL],
-    [OBTEDL],
-    [OBRGDT],
-    [OBRGTM],
-    [OBLMDT],
-    [OBCHNO],
-    [OBCHID],
-    [OBLMTS],
-    [OBTEPY]
-    ) VALUES (
-    :coNo,
-    :OBDIVI,
-    :orderNo,
-    :productNo,
-    :orderStatus,
-    :OBFACI,
-    :warehouse,
-    :itemNo,
-    :OBITDS,
-    :itemName,
-    :OBORQT,
-    :qty,
-    :OBIVQT,
-    :OBIVQA,
-    :unit,
-    :price,
-    :netprice,
-    :discount,
-    :total,
-    :promotionCode,
-    :OBATPR,
-    :OBMODL,
-    :OBTEDL,
-    :OBRGDT,
-    :OBRGTM,
-    :OBLMDT,
-    :OBCHNO,
-    :OBCHID,
-    :OBLMTS,
-    :creditTerm)`;
     // let productNo = 1;
-    for (let item of items) {
-      const replacements = {
-        coNo: existingData.OBCONO, //
-        OBDIVI: existingData.OBDIVI, //
+    // for (let item of items) {
+    //   await OLINE.create({
+    //     coNo: existingData.OBCONO, //
+    //     OBDIVI: existingData.OBDIVI, //
+    //     orderNo: item.orderNo,
+    //     productNo: item.productNo,
+    //     orderStatus: item.orderStatus,
+    //     OBFACI: existingData.OBFACI,
+    //     warehouse: item.warehouse,
+    //     itemNo: item.itemNo,
+    //     OBITDS: existingData.OBITDS,
+    //     itemName: item.itemName,
+    //     OBORQT: existingData.OBORQT,
+    //     qty: item.qty,
+    //     OBIVQT: existingData.OBIVQT,
+    //     OBIVQA: existingData.OBIVQA,
+    //     unit: item.unit,
+    //     price: item.price,
+    //     netPrice: item.netPrice,
+    //     discount: item.discount,
+    //     total: item.total,
+    //     promotionCode: item.promotionCode,
+    //     OBATPR: existingData.OBATPR,
+    //     OBMODL: existingData.OBMODL,
+    //     OBTEDL: existingData.OBTEDL,
+    //     OBRGDT: formatDate(),
+    //     OBRGTM: getCurrentTimeFormatted(),
+    //     OBLMDT: formatDate(),
+    //     OBCHNO: existingData.OBCHNO,
+    //     OBCHID: existingData.OBCHID,
+    //     OBLMTS: Date.now(),
+    //     creditTerm: existingData.OBTEPY,
+    //     OBPLDT: existingData.OBPLDT,
+    //     OBPLHM: existingData.OBPLHM,
+    //     OBPRIO: existingData.OBPRIO,
+    //   });
+    // }
+
+    let itemsData = items.map((item) => {
+      return {
+        coNo: 410,
+        OBDIVI: "OTT",
         orderNo: item.orderNo,
-        productNo: item.productNo,
-        orderStatus: 22,
-        OBFACI: existingData.OBFACI,
-        warehouse: 101,
+        orderType: item.orderType,
+        orderStatus: item.orderStatus,
+        payer: item.payer,
         itemNo: item.itemNo,
-        OBITDS: existingData.OBITDS,
+        productNo: item.productNo,
+        itemCode: item.itemCode,
         itemName: item.itemName,
-        OBORQT: existingData.OBORQT,
         qty: item.qty,
-        OBIVQT: existingData.OBIVQT,
-        OBIVQA: existingData.OBIVQA,
         unit: item.unit,
         price: item.price,
-        netprice: item.netPrice,
         discount: item.discount,
+        netPrice: item.netPrice,
         total: item.total,
         promotionCode: item.promotionCode,
-        OBATPR: existingData.OBATPR,
-        OBMODL: existingData.OBMODL,
-        OBTEDL: existingData.OBTEDL,
-        OBRGDT: formatDate(),
-        OBRGTM: getCurrentTimeFormatted(),
-        OBLMDT: formatDate(),
-        OBCHNO: existingData.OBCHNO,
-        OBCHID: existingData.OBCHID,
-        OBLMTS: Date.now(),
-        creditTerm: existingData.OBTEPY,
+        warehouse: item.warehouse,
+        customerNo: item.customerNo,
+        customerChannel: item.customerChannel,
+        addressID: item.addressID,
+        MOPLDT: existingData.OBPLDT,
+        MOTIHM: existingData.OBPLHM,
+        MOPRIO: existingData.OBPRIO,
       };
-      await sequelize.query(query, {
-        replacements,
-        type: sequelize.QueryTypes.INSERT,
-      });
-      // productNo++;
-    }
+    });
+
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}allowcate/insert`,
+    //   data: { items: itemsData },
+    // });
+
     res.status(201).json({
       message: "Created",
     });
@@ -226,6 +197,7 @@ exports.item = async (req, res, next) => {
   res.json(Oline);
 };
 
+
 exports.deleteitem = async (req, res, next) => {
   const items = req.body;
 
@@ -246,6 +218,4 @@ exports.deleteitem = async (req, res, next) => {
       }
     );
   }
-
-  // res.json(OLINEData);
 };

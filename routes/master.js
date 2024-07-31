@@ -20,6 +20,17 @@ const {
   unit,
   itemsingle,
 } = require("../controllers/master/itemController");
+
+const {
+  stock,
+  balance,
+  locate,
+} = require("../controllers/master/stockController");
+
+const {
+  indexdoc,
+  singledoc,
+} = require("../controllers/master/documentTypeController");
 /* GET home page. */
 //http://localhost:3000/master/
 router.post("/", index);
@@ -54,5 +65,20 @@ router.post("/runningNumber/update", updateRunningNumber);
 
 //http://localhost:3000/master/calWight
 router.post("/warehouse", warehouse);
+
+//http://localhost:3000/master/calWight
+router.post("/stock", stock);
+
+//http://localhost:3000/master/calWight
+router.post("/balance", balance);
+
+//http://localhost:3000/master/calWight
+router.post("/locate", locate);
+
+//http://localhost:3000/master/calWight
+router.post("/documenttype", indexdoc);
+
+//http://localhost:3000/master/calWight
+router.post("/documenttype/single", singledoc);
 
 module.exports = router;

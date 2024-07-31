@@ -119,17 +119,44 @@ const Order = sequelize.define(
 const OLINE = sequelize.define(
   "OOLINE",
   {
+    coNo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      field: "OBCONO",
+    },
+    OBDIVI: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      field: "OBDIVI",
+    },
     orderNo: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
       field: "OBORNO",
     },
-    productNumber: {
+    productNo: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
       field: "OBPONR",
+    },
+    orderStatus: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBORST",
+    },
+    OBFACI: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBFACI",
+    },
+    warehouse: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBWHLO",
     },
     itemNo: {
       type: DataTypes.STRING,
@@ -176,6 +203,77 @@ const OLINE = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
       field: "OBPIDE",
+    },
+    OBPLDT: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBPLDT",
+    },
+    OBPLHM: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBPLHM",
+    },
+
+    OBPRIO: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBPRIO",
+    },
+    OBORQT: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBORQT",
+    },
+    OBIVQA: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBIVQA",
+    },
+    OBATPR: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBATPR",
+    },
+    OBMODL: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBMODL",
+    },
+    OBTEDL: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBTEDL",
+    },
+    OBRGDT: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBRGDT",
+    },
+    OBRGTM: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBRGTM",
+    },
+    OBLMDT: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBLMDT",
+    },
+    OBCHNO: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBCHNO",
+    },
+    OBCHID: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBCHID",
+    },
+    OBLMTS: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBLMTS",
     },
   },
   {

@@ -64,7 +64,7 @@ exports.insertA = async (req, res, next) => {
         },
       });
       await PrepareInvoA.create({
-        coNo: 410,
+        coNo: item.coNo,
         OUDIVI: item.coNo,
         OUFACI: item.OBDIVI,
         orderNo: item.orderNo,

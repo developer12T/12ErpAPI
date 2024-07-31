@@ -33,7 +33,7 @@ exports.insertL = async (req, res, next) => {
       }
 
       await DeliverySL.create({
-        coNo: 410,
+        coNo: item.coNo,
         URDLIX: item.runningNumberH,
         URRORC: deliveryLData.URRORC,
         URRIDN: formatDate(),
@@ -72,7 +72,7 @@ exports.insertH = async (req, res, next) => {
       deliveryHData = JSON.parse(jsonData);
     }
     await DeliverySH.create({
-      coNo: 410,
+      coNo: item.coNo,
       OQDLIX: runningNumberH,
       OQDPOL: deliveryHData.OQDPOL,
       OQWHLO: warehouse,

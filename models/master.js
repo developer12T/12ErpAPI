@@ -162,10 +162,107 @@ const Warehouse = sequelize.define(
     primaryKey: false,
   }
 );
+const Locate = sequelize.define(
+  "MITLOC",
+  {
+    coNo: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "MLCONO",
+    },
+    warehouse: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MLWHLO",
+    },
+    itemCode: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MLITNO",
+    },
+    location: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MLWHSL",
+    },
+    lot: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MLBANO",
+    },
+    itemOnHand: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "MLSTQT",
+    },
+    itemAllowcated: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "MLALQT",
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+    primaryKey: false,
+  }
+);
+
+const Balance = sequelize.define(
+  "MITBAL",
+  {
+    coNo: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "MBCONO",
+    },
+    warehouse: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MBWHLO",
+    },
+    itemCode: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MBITNO",
+    },
+    itemPcs: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MBSTQT",
+    },
+    allowcateMethod: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MBALMT",
+    },
+    itemAllowcated: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MBALQT",
+    },
+    itemAllowcatable: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "MBAVAL",
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+    primaryKey: false,
+  }
+);
 
 module.exports = {
   ItemFac,
   ItemMaster,
   ItemUnit,
   Warehouse,
+  Locate,
+  Balance,
 };

@@ -178,6 +178,11 @@ const Customer = sequelize.define(
       allowNull: false,
       field: "OKLMTS",
     },
+    OKALCU: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OKALCU",
+    },
   },
   {
     freezeTableName: true,
@@ -187,6 +192,5 @@ const Customer = sequelize.define(
     primaryKey: false,
   }
 );
-
 
 module.exports = Customer;

@@ -310,6 +310,7 @@ exports.single = async (req, res, next) => {
 exports.insert = async (req, res, next) => {
   try {
     const {
+      Hcase,
       orderDate,
       requestDate,
       customerNo,
@@ -324,80 +325,99 @@ exports.insert = async (req, res, next) => {
       totalNonVat,
       addressID,
       payer,
+      OKALCU,
     } = req.body;
 
     const items = req.body.item;
 
     // console.log(orderStatus);
 
-    const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
+    // const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
+    // let orderJson = [];
+    // if (fs.existsSync(jsonPathOrder)) {
+    //   const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
+    //   orderJson = JSON.parse(jsonDataOrder);
+    // }
 
-    let orderJson = [];
+    if (Hcase === 1) {
+      await Order.create({
+        coNo: orderJson.OACONO, // OACONO,
+        OADIVI: orderJson.OADIVI, // OADIVI
+        orderNo: orderNo, // OAORNO
+        orderType: orderType, // OAFACI
+        OAFACI: orderJson.OAFACI, // OAORTP
+        warehouse: warehouse, // OAWHLO
+        orderStatus: orderStatus, // OAORST
+        OAORSL: orderStatus, // OAORSL
+        customerNo: customerNo, // OACUNO
+        orderDate: orderDate, // OAORDT
+        OACUDT: formatDate(), // OACUDT
+        requestDate: requestDate, // OARLDT
+        OARLDZ: formatDate(), // OARLDZ
+        OATIZO: orderJson.OATIZO, // OAMODL
+        OATEPY: orderJson.OATEPY, // OATEPY
+        OAMODL: orderJson.OAMODL, // OAMODL
+        OATEDL: orderJson.OATEDL, // OATEDL
+        addressID: addressID, // OAADID
+        OALOCD: orderJson.OALOCD, // OALOCD
+        OACUCD: orderJson.OACUCD, // OACUCD
+        total: total, // OABRLA
+        totalNet: totalNet, // OANTLA
+        OARGDT: formatDate(), // OARGDT
+        OARGTM: getCurrentTimeFormatted(), // OARGTM
+        OALMDT: formatDate(), // OALMDT
+        OACHID: orderJson.OACHID, // OACHID
+        OALMTS: Date.now(), // OALMTS
+      });
 
-    if (fs.existsSync(jsonPathOrder)) {
-      const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
-      orderJson = JSON.parse(jsonDataOrder);
+      await axios({
+        method: "post",
+        url: `${HOST}document/insert`,
+        data: { orderType: orderType, orderNo: orderNo },
+      });
     }
-    await Order.create({
-      coNo: orderJson.OACONO, // OACONO,
-      OADIVI: orderJson.OADIVI, // OADIVI
-      orderNo: orderNo, // OAORNO
-      orderType: orderType, // OAFACI
-      OAFACI: orderJson.OAFACI, // OAORTP
-      warehouse: warehouse, // OAWHLO
-      orderStatus: orderStatus, // OAORST
-      OAORSL: orderStatus, // OAORSL
-      customerNo: customerNo, // OACUNO
-      orderDate: orderDate, // OAORDT
-      OACUDT: formatDate(), // OACUDT
-      requestDate: requestDate, // OARLDT
-      OARLDZ: formatDate(), // OARLDZ
-      OATIZO: orderJson.OATIZO, // OAMODL
-      OATEPY: orderJson.OATEPY, // OATEPY
-      OAMODL: orderJson.OAMODL, // OAMODL
-      OATEDL: orderJson.OATEDL, // OATEDL
-      addressID: addressID, // OAADID
-      OALOCD: orderJson.OALOCD, // OALOCD
-      OACUCD: orderJson.OACUCD, // OACUCD
-      total: total, // OABRLA
-      totalNet: totalNet, // OANTLA
-      OARGDT: formatDate(), // OARGDT
-      OARGTM: getCurrentTimeFormatted(), // OARGTM
-      OALMDT: formatDate(), // OALMDT
-      OACHID: orderJson.OACHID, // OACHID
-      OALMTS: Date.now(), // OALMTS
-    });
 
-    const running = await axios({
-      method: "post",
-      url: `${HOST}master/runningNumber/`,
-      data: {
-        coNo: 410,
-        series: "B",
-        seriesType: "07",
-        seriesName: "0",
-      },
-    });
+    // const running = await axios({
+    //   method: "post",
+    //   url: `${HOST}master/runningNumber/`,
+    //   data: {
+    //     coNo: 410,
+    //     series: "B",
+    //     seriesType: "07",
+    //     seriesName: "0",
+    //   },
+    // });
+    // const runningNumberH = running.data[0].lastNo + 1;
 
-    const runningNumberH = running.data[0].lastNo + 1;
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}master/runningNumber/update`,
+    //   data: {
+    //     coNo: 410,
+    //     series: "B",
+    //     seriesType: "07",
+    //     seriesName: "0",
+    //     lastNo: runningNumberH,
+    //   },
+    // });
+    const jsonPath = path.join(__dirname, "../../", "Jsons", "orederItem.json");
+    let existingData = [];
 
-    await axios({
-      method: "post",
-      url: `${HOST}master/runningNumber/update`,
-      data: {
-        coNo: 410,
-        series: "B",
-        seriesType: "07",
-        seriesName: "0",
-        lastNo: runningNumberH,
-      },
-    });
+    if (fs.existsSync(jsonPath)) {
+      const jsonData = fs.readFileSync(jsonPath, "utf-8");
+      existingData = JSON.parse(jsonData);
+    }
 
     let itemsData = items.map((item) => {
       return {
+        coNo: existingData.OBCONO,
+        OBDIVI: existingData.OBDIVI,
         orderNo: orderNo,
-        runningNumberH: runningNumberH,
+        OKALCU: OKALCU,
+        // runningNumberH: runningNumberH,
         orderType: orderType,
+        orderStatus: orderStatus,
+        payer: payer,
         itemNo: item.itemNo,
         productNo: item.productNo,
         itemCode: item.itemCode,
@@ -410,38 +430,18 @@ exports.insert = async (req, res, next) => {
         total: item.total,
         promotionCode: item.promotionCode,
         warehouse: warehouse,
+        customerNo: customerNo,
         customerChannel: item.customerChannel,
+        addressID: addressID,
+        MOPLDT: existingData.OBPLDT,
+        MOTIHM: existingData.OBPLHM,
+        MOPRIO: existingData.OBPRIO,
+        OBORQT: existingData.OBORQT,
       };
     });
 
-    let prepareData = items.map((item) => {
-      return {
-        coNo: 410,
-        OBDIVI: "OTT",
-        warehouse: 110,
-        OBFACI: "F10",
-        orderNo: orderNo,
-        orderType: orderType,
-        orderStatus: orderStatus,
-        payer: payer,
-        runningNumberH: runningNumberH,
-        // saleCode: item.saleCode,
-        itemNo: item.itemNo,
-        customerNo: customerNo,
-        customerChannel: item.customerChannel,
-        itemCode: item.itemCode,
-        itemName: item.itemName,
-        qty: item.qty,
-        unit: item.unit,
-        price: item.price,
-        discount: item.discount,
-        netPrice: item.netPrice,
-        total: item.total,
-        addressID: addressID,
-      };
-    });
     let productNo = 1;
-    let productNo2 = 1;
+    // let productNo2 = 1;
     itemsData = itemsData.map((item) => {
       const result = {
         ...item, // Spread the properties of the original item
@@ -450,58 +450,56 @@ exports.insert = async (req, res, next) => {
       productNo++;
       return result;
     });
-    prepareData = prepareData.map((item) => {
-      const result = {
-        ...item, // Spread the properties of the original item
-        productNo: productNo2, // Add the productNo property
-      };
-      productNo2++;
-      return result;
+
+    await axios({
+      method: "post",
+      url: `${HOST}allowcate/insert`,
+      data: { items: itemsData },
     });
+
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}order/insertorderitem`,
+    //   data: { items: itemsData },
+    // });
 
     // res.json(itemsData);
-    await axios({
-      method: "post",
-      url: `${HOST}order/insertorderitem`,
-      data: itemsData,
-    });
-
     // Insert Delivery H
-    await axios({
-      method: "post",
-      url: `${HOST}delivery/insertH`,
-      data: {
-        warehouse: warehouse,
-        runningNumberH: runningNumberH,
-      },
-    });
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}delivery/insertH`,
+    //   data: {
+    //     warehouse: warehouse,
+    //     runningNumberH: runningNumberH,
+    //   },
+    // });
 
-    // Insert Delivery L
-    await axios({
-      method: "post",
-      url: `${HOST}delivery/insertL`,
-      data: {
-        items: itemsData,
-      },
-    });
+    // // Insert Delivery L
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}delivery/insertL`,
+    //   data: {
+    //     items: itemsData,
+    //   },
+    // });
 
-    // Insert Prepare Invoice A
-    await axios({
-      method: "post",
-      url: `${HOST}prepare/insertA`,
-      data: {
-        items: prepareData,
-      },
-    });
+    // // Insert Prepare Invoice A
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}prepare/insertA`,
+    //   data: {
+    //     items: itemsData,
+    //   },
+    // });
 
-    // Insert Prepare Invoice B
-    await axios({
-      method: "post",
-      url: `${HOST}prepare/insertB`,
-      data: {
-        items: prepareData,
-      },
-    });
+    // // Insert Prepare Invoice B
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}prepare/insertB`,
+    //   data: {
+    //     items: itemsData,
+    //   },
+    // });
 
     res.status(201).json({
       message: "Created",
