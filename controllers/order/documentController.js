@@ -22,19 +22,19 @@ exports.insert = async (req, res, next) => {
     for (let documentType of documentTypes.data) {
       await Document.create({
         coNo: 410,
-        OFDIVI: "   ",
+        // OFDIVI: "   ",
         orderNo: orderNo,
         OFDONR: documentType.UODONR,
-        OFDOVA: "  ",
-        OFDOTP: 0,
+        // OFDOVA: "  ",
+        OFDOTP: documentType.UODOTP,
         OFNOEX: documentType.UONOEX,
-        OFDOCD: 0,
-        OFDODT: 0,
-        OFTXID: 0,
+        OFDOCD: documentType.UODOCD,
+        OFDODT: documentType.UODODT,
+        OFTXID: documentType.UOTXID,
         OFRGDT: formatDate(),
         OFRGTM: getCurrentTimeFormatted(),
         OFLMDT: formatDate(),
-        OFCHNO: documentType.UONOEX,
+        OFCHNO: documentType.UOCHNO,
         OFCHID: "MVXSECOFR ",
       });
     }

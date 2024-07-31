@@ -34,6 +34,7 @@ const {
 } = require("../controllers/master/documentTypeController");
 
 
+
 // Item
 //http://localhost:3000/master/
 router.post("/", index);
@@ -93,5 +94,6 @@ router.post("/documenttype", indexdoc);
 
 //http://localhost:3000/master/calWight
 router.post("/documenttype/single", singledoc);
+
 
 module.exports = router;

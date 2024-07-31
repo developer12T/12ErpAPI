@@ -17,6 +17,7 @@ const deliveryRouter = require("./routes/delivery");
 const allowcateRouter = require("./routes/allowcate");
 const prepareInvoiceRouter = require("./routes/prepareInvoice");
 const documentRouter = require("./routes/document");
+const routeRouter = require("./routes/route");
 
 //import middleware
 const errorHandler = require("./middleware/errorHandler");
@@ -38,10 +39,11 @@ app.use("/shinpping", shinppingsRouter);
 app.use("/order", orderRouter);
 app.use("/promotion", promotionRouter);
 app.use("/master", masterRouter);
-app.use("/prepare",prepareInvoiceRouter);
-app.use("/delivery",deliveryRouter);
-app.use("/allowcate",allowcateRouter);
-app.use("/document",documentRouter);
+app.use("/prepare", prepareInvoiceRouter);
+app.use("/delivery", deliveryRouter);
+app.use("/allowcate", allowcateRouter);
+app.use("/document", documentRouter);
+app.use("/route", routeRouter);
 
 app.use(errorHandler);
 

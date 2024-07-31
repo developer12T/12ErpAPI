@@ -6,23 +6,23 @@ const Document = sequelize.define(
     coNo: {
       type: DataTypes.NUMBER,
       allowNull: false,
-      primaryKey: true,
       field: "OFCONO",
     },
     OFDIVI: {
       type: DataTypes.NUMBER,
-      allowNull: false,
-      primaryKey: true,
+      allowNull: true,
       field: "OFDIVI",
     },
     orderNo: {
       type: DataTypes.NUMBER,
+      primaryKey: true,
       allowNull: false,
       field: "OFORNO",
     },
     OFDONR: {
       type: DataTypes.NUMBER,
       allowNull: false,
+      primaryKey: true,
       field: "OFDONR",
     },
     OFDOVA: {

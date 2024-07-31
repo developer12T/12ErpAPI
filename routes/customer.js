@@ -6,6 +6,7 @@ const {
   insert,
   deleted,
   single,
+  onlycus,
 } = require("../controllers/customers/customerController");
 const passportJWT = require("../middleware/passportJWT");
 
@@ -21,6 +22,9 @@ router.post("/edit", update);
 
 //http://localhost:3000/customer/insert
 router.post("/insert", insert);
+
+//http://localhost:3000/customer/insert
+router.post("/onlycus", onlycus);
 
 //http://localhost:3000/customer/delete
 router.post("/delete", deleted);

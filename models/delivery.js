@@ -269,6 +269,16 @@ const DeliverySH = sequelize.define(
       allowNull: false,
       field: "OQLMTS",
     },
+    OQDSHM: {
+      type: DataTypes.NUMBER,
+      allowNull: false,
+      field: "OQDSHM",
+    },
+    OQDTHM: {
+      type: DataTypes.NUMBER,
+      allowNull: false,
+      field: "OQDTHM",
+    },
   },
   {
     freezeTableName: true,

@@ -189,7 +189,7 @@ exports.single = async (req, res, next) => {
         customerNo: customerNo,
         customerChannel: customer.customerChannel,
         customerName:
-          customer.customerChannel == "102" || "103"
+          customer.customerChannel == "103" || "107"
             ? customer.customerName + customer.customerAddress4
             : customer.customerName,
         customerAddress1: customer.customerAddress1,
@@ -470,17 +470,21 @@ exports.insert = async (req, res, next) => {
 
     let shippingData = shippings.map((shipping) => {
       return {
-        customerNo: shipping.customerNo,
-        customerName: shipping.customerName,
+        customerNo: customerNo,
+        customerName: customerName,
         shippingAddress1: shipping.shippingAddress1,
         shippingAddress2: shipping.shippingAddress2,
         shippingAddress3: shipping.shippingAddress3,
-        shippingAddress4: shipping.shippingAddress4,
+        shippingAddress4:
+          customerChannel == !105 || 103
+            ? customerAddress4
+            : shipping.shippingAddress4,
         shippingPoscode: shipping.shippingPoscode,
         shippingPhone: shipping.shippingPhone,
-        OPULZO: shipping.OPULZO,
+        shippingRoute: shipping.shippingRoute,
       };
     });
+
     // Insert Shipping
     await axios({
       method: "post",
@@ -492,6 +496,68 @@ exports.insert = async (req, res, next) => {
     res.status(201).json({
       message: "Created",
     });
+  } catch (error) {
+    next(error);
+  }
+};
+exports.onlycus = async (req, res, next) => {
+  try {
+    const { saleZone } = req.body;
+    const customersData = await Customer.findAll({
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        customerStatus: 20,
+        coNo: 410,
+        saleZone: saleZone,
+      },
+    });
+
+    const customers = customersData.map((customer) => {
+      const customerNo = customer.customerNo.trim();
+      const customerPoscode = customer.customerPoscode.trim();
+      const customerPhone = customer.customerPhone.trim();
+      const saleZone = customer.saleZone.trim();
+      const saleTeam = customer.saleTeam.trim();
+      const OKCFC1 = customer.OKCFC1.trim();
+      const OKCFC3 = customer.OKCFC3.trim();
+      const OKCFC6 = customer.OKCFC6.trim();
+      const salePayer = customer.salePayer.trim();
+      const taxno = customer.taxno.trim();
+      const OKALCU = customer.OKALCU.trim();
+      return {
+        customerNo: customerNo,
+        customerStatus: customer.customerStatus,
+        customerChannel: customer.customerChannel,
+        customerName:
+          customer.customerChannel == "103" || "107"
+            ? customer.customerName + customer.customerAddress4
+            : customer.customerName,
+        OKALCU: OKALCU,
+        coNo: customer.coNo,
+        customerAddress1: customer.customerAddress1,
+        customerPoscode: customerPoscode,
+        customerPhone: customerPhone,
+        creditTerm: customer.creditTerm,
+        orderType: customer.orderType,
+        zone: saleZone,
+        saleTeam: saleTeam,
+        OKCFC1: OKCFC1,
+        OKCFC3: OKCFC3,
+        OKCFC6: OKCFC6,
+        salePayer: salePayer,
+        creditLimit: customer.creditLimit,
+        taxno: taxno,
+      };
+    });
+
+    if (!customers.length) {
+      const error = new Error("Not Found");
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json(customers);
   } catch (error) {
     next(error);
   }

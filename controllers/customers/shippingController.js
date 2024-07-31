@@ -167,6 +167,7 @@ exports.insert = async (req, res, next) => {
         }
       }
     }
+    
     OPADID = `${checkShipping}${shinppingNum + 1}`;
 
     await Shipping.create({

@@ -34,11 +34,11 @@ exports.insert = async (req, res, next) => {
         MOORCA: 311,
         orderNo: item.orderNo,
         itemNo: item.itemNo,
-        MORFTX: item.OKALCU + "=>" + item.customerNo,
+        MORFTX: item.OKALCU + " " + item.customerNo,
         MORPRT: 1,
         MOTRQT: item.OBORQT * -1,
         MOALMT: 0,
-        MOCALI: 5,
+        MOCALI: 1,
         MOLMTS: Date.now(),
       });
     }

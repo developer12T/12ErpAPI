@@ -48,6 +48,11 @@ const Shipping = sequelize.define(
       allowNull: false,
       field: "OPPHNO",
     },
+    shippingRoute: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPULZO",
+    },
   },
   {
     freezeTableName: true,
