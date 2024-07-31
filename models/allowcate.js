@@ -14,7 +14,7 @@ const Allowcate = sequelize.define(
       allowNull: false,
       field: "MOWHLO",
     },
-    itemNo: {
+    itemCode: {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "MOITNO",
@@ -50,7 +50,7 @@ const Allowcate = sequelize.define(
       field: "MORIDN",
       primaryKey: true,
     },
-    productNo: {
+    itemNo: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "MORIDL",

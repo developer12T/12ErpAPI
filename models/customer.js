@@ -6,6 +6,7 @@ const Customer = sequelize.define(
     customerNo: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "OKCUNO",
     },
     customerStatus: {
@@ -26,6 +27,7 @@ const Customer = sequelize.define(
     coNo: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "OKCONO",
     },
     customerAddress1: {

@@ -125,78 +125,19 @@ exports.update = async (req, res, next) => {
 
 exports.insert = async (req, res, next) => {
   try {
-    const {
-      customerNo,
-      // OPADID,
-      customerName,
-      shippingAddress1,
-      shippingAddress2,
-      shippingAddress3,
-      shippingPoscode,
-      shippingPhone,
-      OPULZO,
-    } = req.body;
+    const shippings = req.body.shippings;
 
-    const query = `
-INSERT INTO [MVXJDTA].[OCUSAD] 
-  ([OPCONO],
-  [OPCUNO],
-  [OPADRT],
-  [OPADID],
-  [OPCUNM],
-  [OPCUA1],
-  [OPCUA2],
-  [OPCUA3],
-  [OPCUA4],
-  [OPPONO],
-  [OPMODL],
-  [OPTEDL],
-  [OPPHNO],
-  [OPCSCD],
-  [OPEDES],
-  [OPULZO],
-  [OPGEOC],
-  [OPFVDT],
-  [OPLVDT],
-  [OPDTID],
-  [OPBCKO],
-  [OPPADL],
-  [OPRGDT],
-  [OPRGTM],
-  [OPLMDT],
-  [OPCHNO],
-  [OPCHID],
-  [OPLMTS]
-  ) VALUES (
-     :coNO,
-     :customerNo,
-     :OPADRT,
-     :OPADID,
-     :customerName,
-     :shippingAddress1,
-     :shippingAddress2,
-     :shippingAddress3,
-     :shippingAddress4,
-     :shippingPoscode,
-     :OPMODL,
-     :OPTEDL,
-     :shippingPhone,
-     :OPCSCD,
-     :OPEDES,
-     :OPULZO,
-     :OPGEOC,
-     :OPFVDT,
-     :OPLVDT,
-     :OPDTID,
-     :OPBCKO,
-     :OPPADL,
-     :OPRGDT,
-     :OPRGTM,
-     :OPLMDT,
-     :OPCHNO,
-     :OPCHID,
-     :OPLMTS)`;
-    const jsonPath = path.join(__dirname, "..", "Jsons", "shipping.json");
+    // customerNo,
+    // // OPADID,
+    // customerName,
+    // shippingAddress1,
+    // shippingAddress2,
+    // shippingAddress3,
+    // shippingPoscode,
+    // shippingPhone,
+    // OPULZO,
+   
+    const jsonPath = path.join(__dirname, "../../", "Jsons", "shipping.json");
     let existingData = [];
     if (fs.existsSync(jsonPath)) {
       const jsonData = fs.readFileSync(jsonPath, "utf-8");
@@ -209,8 +150,7 @@ INSERT INTO [MVXJDTA].[OCUSAD]
       },
       where: {
         customerNo: customerNo,
-        coNo: "410",
-        // addressID: "INVTSP",
+        coNo: 410,
       },
     });
 
@@ -229,7 +169,7 @@ INSERT INTO [MVXJDTA].[OCUSAD]
     }
     OPADID = `${checkShipping}${shinppingNum + 1}`;
 
-    const replacements = {
+    await Shipping.create({
       coNO: existingData.OPCONO, // OPCONO,
       customerNo: customerNo, // OPCUNO
       OPADRT: existingData.OPADRT, // OPPART
@@ -238,7 +178,7 @@ INSERT INTO [MVXJDTA].[OCUSAD]
       shippingAddress1: shippingAddress1, // OPCUA1
       shippingAddress2: shippingAddress2, // OPCUA2
       shippingAddress3: shippingAddress3, // OPCUA3
-      shippingAddress4: shippingAddress3, // OKCUA4
+      shippingAddress4: shippingAddress4, // OKCUA4
       shippingPoscode: shippingPoscode, // OPPONO
       // OPEALO: existingData.OPEALO, // OPEALO
       // OPECAR: '', // OPECAR
@@ -262,12 +202,12 @@ INSERT INTO [MVXJDTA].[OCUSAD]
       OPCHNO: existingData.OPCHNO, // OPCHNO
       OPCHID: existingData.OPCHID, // OPCHID
       OPLMTS: Date.now(), // OPLMTS
-    };
-
-    const result = await sequelize.query(query, {
-      replacements,
-      type: sequelize.QueryTypes.INSERT,
     });
+
+    // const result = await sequelize.query(query, {
+    //   replacements,
+    //   type: sequelize.QueryTypes.INSERT,
+    // });
     // res.status(201).json(replacements);
 
     res.status(201).json({

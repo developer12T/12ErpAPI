@@ -13,7 +13,7 @@ const ItemFac = sequelize.define(
       allowNull: false,
       field: "M9FACI",
     },
-    itemNo: {
+    itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "M9ITNO",
@@ -46,7 +46,7 @@ const ItemMaster = sequelize.define(
       allowNull: false,
       field: "MMSTAT",
     },
-    itemNo: {
+    itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "MMITNO",
@@ -109,7 +109,7 @@ const ItemUnit = sequelize.define(
       allowNull: false,
       field: "MUAUTP",
     },
-    itemNo: {
+    itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "MUITNO",

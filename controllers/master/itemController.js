@@ -7,7 +7,7 @@ exports.index = async (req, res, next) => {};
 
 exports.fac = async (req, res, next) => {
   try {
-    const { itemNo } = req.body;
+    const { itemCode } = req.body;
     const itemData = await ItemFac.findAll({
       //   limit: 10,
       attributes: {
@@ -15,13 +15,13 @@ exports.fac = async (req, res, next) => {
       },
       where: {
         coNo: 410,
-        itemNo: itemNo,
+        itemCode: itemCode,
       },
     });
     const items = itemData.map((item) => {
-      const itemNo = item.itemNo.trim();
+      const itemCode = item.itemCode.trim();
       return {
-        itemNo: itemNo,
+        itemCode: itemCode,
         M9FACI: item.M9FACI,
         cost: item.cost,
       };
@@ -34,7 +34,7 @@ exports.fac = async (req, res, next) => {
 
 exports.unit = async (req, res, next) => {
   try {
-    const { itemNo, unit } = req.body;
+    const { itemCode, unit } = req.body;
 
     const itemData = await ItemUnit.findAll({
       //   limit: 10,
@@ -43,16 +43,16 @@ exports.unit = async (req, res, next) => {
       },
       where: {
         coNo: 410,
-        itemNo: itemNo,
+        itemCode: itemCode,
         unit: unit,
         facType: 1,
       },
     });
     const items = itemData.map((item) => {
-      const itemNo = item.itemNo.trim();
+      const itemCode = item.itemCode.trim();
       const unit = item.unit.trim();
       return {
-        itemNo: itemNo,
+        itemCode: itemCode,
         facType: item.facType,
         factor: item.factor,
         unit: unit,
@@ -66,7 +66,7 @@ exports.unit = async (req, res, next) => {
 
 exports.items = async (req, res, next) => {
   try {
-    const { itemNo } = req.body;
+    const { itemCode } = req.body;
     const itemData = await ItemMaster.findAll({
       //   limit: 10,
       attributes: {
@@ -77,13 +77,13 @@ exports.items = async (req, res, next) => {
       },
     });
     const items = itemData.map((item) => {
-      const itemNo = item.itemNo.trim();
+      const itemCode = item.itemCode.trim();
       const itemName = item.itemName.trim();
       const MMITGR = item.MMITGR.trim();
       const MMITCL = item.MMITCL.trim();
       const itemGroup = item.itemGroup.trim();
       return {
-        itemNo: itemNo,
+        itemCode: itemCode,
         status: item.status,
         itemName: itemName,
         itemType: item.itemType,
@@ -102,7 +102,7 @@ exports.items = async (req, res, next) => {
 
 exports.itemsingle = async (req, res, next) => {
   try {
-    const { itemNo } = req.body;
+    const { itemCode } = req.body;
     const itemData = await ItemMaster.findAll({
       //   limit: 10,
       attributes: {
@@ -110,17 +110,17 @@ exports.itemsingle = async (req, res, next) => {
       },
       where: {
         coNo: 410,
-        itemNo: itemNo,
+        itemCode: itemCode,
       },
     });
     const items = itemData.map((item) => {
-      const itemNo = item.itemNo.trim();
+      const itemCode = item.itemCode.trim();
       const itemName = item.itemName.trim();
       const MMITGR = item.MMITGR.trim();
       const MMITCL = item.MMITCL.trim();
       const itemGroup = item.itemGroup.trim();
       return {
-        itemNo: itemNo,
+        itemCode: itemCode,
         status: item.status,
         itemName: itemName,
         itemType: item.itemType,

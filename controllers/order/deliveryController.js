@@ -14,12 +14,7 @@ exports.index = async (req, res, next) => {};
 exports.insertL = async (req, res, next) => {
   try {
     const items = req.body.items;
-
-    // res.json(items)
- 
     for (let item of items) {
-      // console.log(runningNumber);
-
       const jsonPath = path.join(
         __dirname,
         "../../",
@@ -31,14 +26,13 @@ exports.insertL = async (req, res, next) => {
         const jsonData = fs.readFileSync(jsonPath, "utf-8");
         deliveryLData = JSON.parse(jsonData);
       }
-
       await DeliverySL.create({
         coNo: item.coNo,
         URDLIX: item.runningNumberH,
         URRORC: deliveryLData.URRORC,
-        URRIDN: formatDate(),
-        URRIDL: item.productNo,
-        URITNO: item.itemNo,
+        URRIDN: item.orderNo,
+        URRIDL: item.itemNo,
+        URITNO: item.itemCode,
         URFACI: deliveryLData.URFACI,
         URTRQT: deliveryLData.URTRQT,
         URSTCD: deliveryLData.URSTCD,
@@ -63,7 +57,7 @@ exports.insertL = async (req, res, next) => {
 
 exports.insertH = async (req, res, next) => {
   try {
-    const { warehouse, runningNumberH } = req.body;
+    const { coNo,warehouse, runningNumberH,orderNo } = req.body;
 
     const jsonPath = path.join(__dirname, "../../", "Jsons", "deliverySH.json");
     let deliveryHData = [];
@@ -72,7 +66,7 @@ exports.insertH = async (req, res, next) => {
       deliveryHData = JSON.parse(jsonData);
     }
     await DeliverySH.create({
-      coNo: item.coNo,
+      coNo: coNo,
       OQDLIX: runningNumberH,
       OQDPOL: deliveryHData.OQDPOL,
       OQWHLO: warehouse,
@@ -86,7 +80,7 @@ exports.insertH = async (req, res, next) => {
       OQROUT: deliveryHData.OQROUT,
       OQRORC: deliveryHData.OQRORC,
       OQTTYP: deliveryHData.OQTTYP,
-      OQRIDN: 20414757,
+      OQRIDN: orderNo,
       OQEDES: deliveryHData.OQEDES,
       OQNEWE: deliveryHData.OQNEWE,
       OQGRWE: deliveryHData.OQGRWE,

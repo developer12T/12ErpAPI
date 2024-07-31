@@ -25,17 +25,17 @@ exports.insertItem = async (req, res, next) => {
     }
 
     // res.json(fs.existsSync(jsonPath))
-    // let productNo = 1;
+    // let itemNo = 1;
     // for (let item of items) {
     //   await OLINE.create({
     //     coNo: existingData.OBCONO, //
     //     OBDIVI: existingData.OBDIVI, //
     //     orderNo: item.orderNo,
-    //     productNo: item.productNo,
+    //     itemNo: item.itemNo,
     //     orderStatus: item.orderStatus,
     //     OBFACI: existingData.OBFACI,
     //     warehouse: item.warehouse,
-    //     itemNo: item.itemNo,
+    //     itemCode: item.itemCode,
     //     OBITDS: existingData.OBITDS,
     //     itemName: item.itemName,
     //     OBORQT: existingData.OBORQT,
@@ -72,8 +72,8 @@ exports.insertItem = async (req, res, next) => {
         orderType: item.orderType,
         orderStatus: item.orderStatus,
         payer: item.payer,
+        itemCode: item.itemCode,
         itemNo: item.itemNo,
-        productNo: item.productNo,
         itemCode: item.itemCode,
         itemName: item.itemName,
         qty: item.qty,
@@ -124,7 +124,7 @@ exports.item = async (req, res, next) => {
   for (let i = 0; i < OLINEData.length; i++) {
     orderLineData[orderNo].push({
       productNumber: OLINEData[i].productNumber,
-      itemNo: OLINEData[i].itemNo,
+      itemCode: OLINEData[i].itemCode,
       itemName: OLINEData[i].itemName,
       qty: OLINEData[i].qty,
       unit: OLINEData[i].unit,
@@ -174,14 +174,14 @@ exports.item = async (req, res, next) => {
   }
 
   const Oline = orderLineData[orderNo].map((OLINE) => {
-    const itemNo = OLINE.itemNo.trim();
+    const itemCode = OLINE.itemCode.trim();
     const promotionCode = OLINE.promotionCode.trim();
     const promotion = promotionData[orderNo].find(
       (promo) => promo.promotionCode === OLINE.promotionCode
     );
     return {
       productNumber: OLINE.productNumber,
-      itemNo: itemNo,
+      itemCode: itemCode,
       itemName: OLINE.itemName,
       qty: OLINE.qty,
       unit: OLINE.unit,
@@ -212,8 +212,8 @@ exports.deleteitem = async (req, res, next) => {
         },
         where: {
           orderNo: item.orderNo,
+          itemCode: item.itemCode,
           itemNo: item.itemNo,
-          productNo: item.productNo,
         },
       }
     );

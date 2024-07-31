@@ -15,28 +15,28 @@ exports.itemdetails = async (req, res, next) => {
     const itemFacObj = {};
     const itemUnitObj = {};
     let unitarr = [];
-    let { itemNo } = req.body;
+    let { itemCode } = req.body;
     const itemData = await ItemMaster.findAll({
       attributes: {
         exclude: ["id"],
       },
       where: {
         coNo: 410,
-        itemNo: itemNo,
+        itemCode: itemCode,
       },
     });
 
-    // Gather itemNo values to make a batch request
-    itemNo = itemData.map((item) => item.itemNo.trim());
+    // Gather itemCode values to make a batch request
+    itemCode = itemData.map((item) => item.itemCode.trim());
 
     const facData = await axios({
       method: "post",
       url: `${HOST}master/fac`,
-      data: { itemNo },
+      data: { itemCode },
     });
 
     facData.data.forEach((fac) => {
-      itemFacObj[fac.itemNo] = fac.cost;
+      itemFacObj[fac.itemCode] = fac.cost;
     });
 
     // res.json(facData.data);
@@ -46,7 +46,7 @@ exports.itemdetails = async (req, res, next) => {
         attributes: {
           exclude: ["id"],
         },
-        where: { itemNo: itemData[i].itemNo, coNo: 410 },
+        where: { itemCode: itemData[i].itemCode, coNo: 410 },
         // group: ["MMFUDS"],
       });
       for (let j = 0; j < itemUnitData.length; j++) {
@@ -59,16 +59,16 @@ exports.itemdetails = async (req, res, next) => {
     }
 
     const items = itemData.map((item) => {
-      const itemNo = item.itemNo.trim();
+      const itemCode = item.itemCode.trim();
       const itemName = item.itemName.trim();
       const itemType = item.itemType.trim();
       const MMITGR = item.MMITGR.trim();
       const MMITCL = item.MMITCL.trim();
       const itemGroup = item.itemGroup.trim();
-      const cost = itemFacObj[itemNo] || 0;
+      const cost = itemFacObj[itemCode] || 0;
       return {
         coNo: item.coNo,
-        itemNo: itemNo,
+        itemCode: itemCode,
         status: item.status,
         itemName: itemName,
         MMITGR: MMITGR,
@@ -89,21 +89,21 @@ exports.itemdetails = async (req, res, next) => {
 
 exports.calWight = async (req, res, next) => {
   try {
-    const { itemNo, qty } = req.body;
+    const { itemCode, qty } = req.body;
     const itemData = await ItemMaster.findAll({
       //   limit: 10,
       attributes: {
         exclude: ["id"],
       },
       where: {
-        itemNo: itemNo,
+        itemCode: itemCode,
       },
     });
 
     const items = itemData.map((item) => {
-      const itemNo = item.itemNo.trim();
+      const itemCode = item.itemCode.trim();
       return {
-        itemNo: itemNo,
+        itemCode: itemCode,
         status: item.status,
         netWight: Math.round(item.netWight * qty * 100000) / 100000,
         grossWight: Math.round(item.grossWight * qty * 100000) / 100000,
@@ -118,22 +118,22 @@ exports.calWight = async (req, res, next) => {
 
 exports.calCost = async (req, res, next) => {
   try {
-    const { itemNo, qty } = req.body;
+    const { itemCode, qty } = req.body;
     const itemData = await ItemFac.findAll({
       //   limit: 10,
       attributes: {
         exclude: ["id"],
       },
       where: {
-        itemNo: itemNo,
+        itemCode: itemCode,
         coNo: 410,
       },
     });
 
     const items = itemData.map((item) => {
-      const itemNo = item.itemNo.trim();
+      const itemCode = item.itemCode.trim();
       return {
-        itemNo: itemNo,
+        itemCode: itemCode,
         cost: Math.round(item.cost * qty * 1000000) / 1000000,
       };
     });
@@ -145,7 +145,7 @@ exports.calCost = async (req, res, next) => {
 
 exports.runningNumber = async (req, res, next) => {
   try {
-    const { series, seriesType, seriesName, coNo } = req.body;
+    const { series, seriesType, coNo } = req.body;
     const result = await NumberSeries.findAll({
       attributes: {
         exclude: ["id"],
@@ -154,7 +154,6 @@ exports.runningNumber = async (req, res, next) => {
         coNo: coNo,
         series: series,
         seriesType: seriesType,
-        // seriesName: seriesName,
       },
     });
     res.json(result);
@@ -185,22 +184,22 @@ exports.updateRunningNumber = async (req, res, next) => {
 
 exports.warehouse = async (req, res, next) => {
   try {
-    // const { itemNo, qty } = req.body;
+    // const { itemCode, qty } = req.body;
     const warehouse = await Warehouse.findAll({
       //   limit: 10,
       attributes: {
         exclude: ["id"],
       },
       where: {
-        // itemNo: itemNo,
+        // itemCode: itemCode,
         coNo: 410,
       },
     });
 
     // const items = itemData.map((item) => {
-    //   const itemNo = item.itemNo.trim();
+    //   const itemCode = item.itemCode.trim();
     //   return {
-    //     itemNo: itemNo,
+    //     itemCode: itemCode,
     //     cost: Math.round(item.cost * qty * 1000000) / 1000000,
     //   };
     // });

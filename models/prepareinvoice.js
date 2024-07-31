@@ -25,7 +25,7 @@ const PrepareInvoA = sequelize.define(
       field: "OUORNO",
       primaryKey: true,
     },
-    productNo: {
+    itemNo: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "OUPONR",
@@ -95,7 +95,7 @@ const PrepareInvoA = sequelize.define(
       allowNull: true,
       field: "OUWHLO",
     },
-    itemNo: {
+    itemCode: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "OUITNO",
@@ -335,7 +335,7 @@ const PrepareInvoB = sequelize.define(
       allowNull: false,
       field: "UCDLIX",
     },
-    productNo: {
+    itemNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "UCPONR",
@@ -440,7 +440,7 @@ const PrepareInvoB = sequelize.define(
       allowNull: false,
       field: "UCWHLO",
     },
-    itemNo: {
+    itemCode: {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "UCITNO",

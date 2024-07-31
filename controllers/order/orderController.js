@@ -55,7 +55,7 @@ exports.index = async (req, res, next) => {
       for (let j = 0; j < OLINEData.length; j++) {
         orderLineData[orderData[i].orderNo].push({
           productNumber: OLINEData[j].productNumber,
-          itemNo: OLINEData[j].itemNo,
+          itemCode: OLINEData[j].itemCode,
           itemName: OLINEData[j].itemName,
           qty: OLINEData[j].qty,
           unit: OLINEData[j].unit,
@@ -119,11 +119,11 @@ exports.index = async (req, res, next) => {
           (promo) => promo.promotionCode === OLINE.promotionCode
         );
         const itemName = OLINE.itemName.trim();
-        const itemNo = OLINE.itemNo.trim();
+        const itemCode = OLINE.itemCode.trim();
         const promotionCode = OLINE.promotionCode.trim();
         return {
           productNumber: OLINE.productNumber,
-          itemNo: itemNo,
+          itemCode: itemCode,
           itemName: itemName,
           qty: OLINE.qty,
           unit: OLINE.unit,
@@ -185,7 +185,7 @@ exports.single = async (req, res, next) => {
       for (let i = 0; i < OLINEData.length; i++) {
         OLINEarr.push({
           productNumber: OLINEData[i].productNumber,
-          itemNo: OLINEData[i].itemNo,
+          itemCode: OLINEData[i].itemCode,
           itemName: OLINEData[i].itemName,
           qty: OLINEData[i].qty,
           unit: OLINEData[i].unit,
@@ -269,7 +269,7 @@ exports.single = async (req, res, next) => {
       }
       return {
         productNumber: OLINE.productNumber,
-        itemNo: OLINE.itemNo,
+        itemCode: OLINE.itemCode,
         itemName: OLINE.itemName,
         qty: OLINE.qty,
         unit: OLINE.unit,
@@ -377,29 +377,27 @@ exports.insert = async (req, res, next) => {
       });
     }
 
-    // const running = await axios({
-    //   method: "post",
-    //   url: `${HOST}master/runningNumber/`,
-    //   data: {
-    //     coNo: 410,
-    //     series: "B",
-    //     seriesType: "07",
-    //     seriesName: "0",
-    //   },
-    // });
-    // const runningNumberH = running.data[0].lastNo + 1;
+    const running = await axios({
+      method: "post",
+      url: `${HOST}master/runningNumber/`,
+      data: {
+        coNo: 410,
+        series: "B",
+        seriesType: "07",
+      },
+    });
+    const runningNumberH = running.data[0].lastNo + 1;
 
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}master/runningNumber/update`,
-    //   data: {
-    //     coNo: 410,
-    //     series: "B",
-    //     seriesType: "07",
-    //     seriesName: "0",
-    //     lastNo: runningNumberH,
-    //   },
-    // });
+    await axios({
+      method: "post",
+      url: `${HOST}master/runningNumber/update`,
+      data: {
+        coNo: 410,
+        series: "B",
+        seriesType: "07",
+        lastNo: runningNumberH,
+      },
+    });
     const jsonPath = path.join(__dirname, "../../", "Jsons", "orederItem.json");
     let existingData = [];
 
@@ -414,12 +412,12 @@ exports.insert = async (req, res, next) => {
         OBDIVI: existingData.OBDIVI,
         orderNo: orderNo,
         OKALCU: OKALCU,
-        // runningNumberH: runningNumberH,
+        runningNumberH: runningNumberH,
         orderType: orderType,
         orderStatus: orderStatus,
         payer: payer,
+        itemCode: item.itemCode,
         itemNo: item.itemNo,
-        productNo: item.productNo,
         itemCode: item.itemCode,
         itemName: item.itemName,
         qty: item.qty,
@@ -440,22 +438,22 @@ exports.insert = async (req, res, next) => {
       };
     });
 
-    let productNo = 1;
-    // let productNo2 = 1;
+    let itemNo = 1;
+    // let itemNo2 = 1;
     itemsData = itemsData.map((item) => {
       const result = {
         ...item, // Spread the properties of the original item
-        productNo: productNo, // Add the productNo property
+        itemNo: itemNo, // Add the itemNo property
       };
-      productNo++;
+      itemNo++;
       return result;
     });
 
-    await axios({
-      method: "post",
-      url: `${HOST}allowcate/insert`,
-      data: { items: itemsData },
-    });
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}allowcate/insert`,
+    //   data: { items: itemsData },
+    // });
 
     // await axios({
     //   method: "post",
@@ -465,23 +463,25 @@ exports.insert = async (req, res, next) => {
 
     // res.json(itemsData);
     // Insert Delivery H
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}delivery/insertH`,
-    //   data: {
-    //     warehouse: warehouse,
-    //     runningNumberH: runningNumberH,
-    //   },
-    // });
+    await axios({
+      method: "post",
+      url: `${HOST}delivery/insertH`,
+      data: {
+        coNo:existingData.OBCONO,
+        warehouse: warehouse,
+        orderNo:orderNo,
+        runningNumberH: runningNumberH,
+      },
+    });
 
-    // // Insert Delivery L
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}delivery/insertL`,
-    //   data: {
-    //     items: itemsData,
-    //   },
-    // });
+    // Insert Delivery L
+    await axios({
+      method: "post",
+      url: `${HOST}delivery/insertL`,
+      data: {
+        items: itemsData,
+      },
+    });
 
     // // Insert Prepare Invoice A
     // await axios({
@@ -530,8 +530,8 @@ exports.deleted = async (req, res, next) => {
     const itemsData = items.map((item) => {
       return {
         orderNo: orderNo,
+        itemCode: item.itemCode,
         itemNo: item.itemNo,
-        productNo: item.productNo,
       };
     });
 

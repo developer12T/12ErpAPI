@@ -12,13 +12,13 @@ exports.index = async (req, res, next) => {};
 exports.insertA = async (req, res, next) => {
   try {
     const items = req.body.items;
-    let productNo = 1;
+    let itemNo = 1;
     // const prepareData = items.map((item) => {
     //   const result = {
     //     ...item, // Spread the properties of the original item
-    //     productNo: productNo, // Add the productNo property
+    //     itemNo: itemNo, // Add the itemNo property
     //   };
-    //   productNo++;
+    //   itemNo++;
     //   return result;
     // });
 
@@ -28,7 +28,7 @@ exports.insertA = async (req, res, next) => {
         method: "post",
         url: `${HOST}master/calwight`,
         data: {
-          itemNo: item.itemNo,
+          itemCode: item.itemCode,
           qty: item.qty,
         },
       });
@@ -36,7 +36,7 @@ exports.insertA = async (req, res, next) => {
         method: "post",
         url: `${HOST}master/calcost`,
         data: {
-          itemNo: item.itemNo,
+          itemCode: item.itemCode,
           qty: item.qty,
         },
       });
@@ -44,14 +44,14 @@ exports.insertA = async (req, res, next) => {
         method: "post",
         url: `${HOST}master/itemsingle`,
         data: {
-          itemNo: item.itemNo,
+          itemCode: item.itemCode,
         },
       });
       let itemUnitData = await axios({
         method: "post",
         url: `${HOST}master/unit`,
         data: {
-          itemNo: item.itemNo,
+          itemCode: item.itemCode,
           unit: item.unit,
           facTyitempe: 1,
         },
@@ -68,7 +68,7 @@ exports.insertA = async (req, res, next) => {
         OUDIVI: item.coNo,
         OUFACI: item.OBDIVI,
         orderNo: item.orderNo,
-        productNo: item.productNo,
+        itemNo: item.itemNo,
         OUOSSQ: 1,
         OUOSDT: formatDate(),
         OUOSPE: 202112,
@@ -82,7 +82,7 @@ exports.insertA = async (req, res, next) => {
         OUCSCD: "TH ",
         OUFRE1: "YSEND",
         warehouse: item.warehouse,
-        itemNo: item.itemNo,
+        itemCode: item.itemCode,
         OUITGR: itemData.data[0].MMITGR,
         itemType: itemData.data[0].itemType,
         OUITCL: itemData.data[0].MMITCL,
@@ -140,7 +140,7 @@ exports.insertB = async (req, res, next) => {
         method: "post",
         url: `${HOST}master/calwight`,
         data: {
-          itemNo: item.itemNo,
+          itemCode: item.itemCode,
           qty: item.qty,
         },
       });
@@ -148,7 +148,7 @@ exports.insertB = async (req, res, next) => {
         method: "post",
         url: `${HOST}master/calcost`,
         data: {
-          itemNo: item.itemNo,
+          itemCode: item.itemCode,
           qty: item.qty,
         },
       });
@@ -156,14 +156,14 @@ exports.insertB = async (req, res, next) => {
         method: "post",
         url: `${HOST}master/itemsingle`,
         data: {
-          itemNo: item.itemNo,
+          itemCode: item.itemCode,
         },
       });
       let itemUnitData = await axios({
         method: "post",
         url: `${HOST}master/unit`,
         data: {
-          itemNo: item.itemNo,
+          itemCode: item.itemCode,
           unit: item.unit,
           facTyitempe: 1,
         },
@@ -182,7 +182,7 @@ exports.insertB = async (req, res, next) => {
         UCFACI: item.OBFACI,
         orderNo: item.orderNo,
         UCDLIX: 256144,
-        productNo: item.productNo,
+        itemNo: item.itemNo,
         UCIVNO: 121024301,
         UCORDT: formatDate(),
         UCDWDT: formatDate(),
@@ -203,7 +203,7 @@ exports.insertB = async (req, res, next) => {
         UCCSCD: "TH ",
         UCFRE1: "YSEND",
         warehouse: item.warehouse,
-        itemNo: item.itemNo,
+        itemCode: item.itemCode,
         UCITGR: itemData.data[0].MMITGR,
         itemType: itemData.data[0].itemType,
         UCITCL: itemData.data[0].MMITCL,

@@ -63,47 +63,65 @@ exports.stock = async (req, res, next) => {
       where: {
         warehouse: warehouse,
         coNo: 410,
+        itemCode: {
+          [Op.and]: [
+            { [Op.notLike]: "ZNS%" },
+            { [Op.notLike]: "800%" },
+            { [Op.notLike]: "PRO%" },
+            { [Op.notLike]: "DIS%" },
+          ],
+        },
       },
     });
+    // res.json(BalanceData);
 
     for (let i = 0; i < BalanceData.length; i++) {
       locateData[BalanceData[i].itemCode] = [];
 
-      // let locate = await axios({
-      //   method: "post",
-      //   url: `${HOST}master/locate`,
-      //   data: {
-      //     warehouse: BalanceData[i].warehouse,
-      //     itemCode: BalanceData[i].itemCode,
-      //   },
-      // });
-
-      const LocateData = await Locate.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
-        where: { itemCode: BalanceData[i].itemCode },
+      const locate = await axios({
+        method: "post",
+        url: `${HOST}master/locate`,
+        data: { warehouse: warehouse, itemCode: itemCode },
       });
 
-      for (let j = 0; j < LocateData.length; j++) {
-        locateData[BalanceData[i].itemCode].push({
-          lot: BalanceData[j].lot,
+      for (let i = 0; i < locate.data.length; i++) {
+        locateData[BalanceData[i].itemCode].pushh({
+          location: locate.data[i].location,
+          lot: locate.data[i].lot,
+          itemOnHand: locate.data[i].itemOnHand,
+          itemAllowcated: locate.data[i].itemAllowcated,
         });
       }
 
-      // console.log(locate.data)
-      // for (let j = 0; j < locate.data.length; j++) {
+      // const LocateData = await Locate.findAll({
+      //   attributes: {
+      //     exclude: ["id"],
+      //   },
+      //   where: {
+      //     itemCode: BalanceData[i].itemCode,
+      //     warehouse: BalanceData[i].warehouse,
+      //   },
+      // });
+      // for (let j = 0; j < LocateData.length; j++) {
       //   locateData[BalanceData[i].itemCode].push({
-      //     lot: locate[j].data.lot,
+      //     location: LocateData[j].location,
+      //     lot: LocateData[j].lot,
+      //     itemOnHand: LocateData[j].itemOnHand,
+      //     itemAllowcated: LocateData[j].itemAllowcated,
       //   });
       // }
     }
-    // console.log(locateData);
-    // res.json(locateData);
     const stocks = BalanceData.map((stock) => {
-      const locate = locateData[itemCode] || [];
+      const locate = locateData[stock.itemCode] || [];
       return {
-        locate: locate,
+        coNo: stock.coNo,
+        warehouse: stock.warehouse,
+        itemCode: stock.itemCode,
+        itemPcs: stock.itemPcs,
+        allowcateMethod: stock.allowcateMethod,
+        itemAllowcated: stock.itemAllowcated,
+        itemAllowcatable: stock.itemAllowcatable,
+        lot: locate,
       };
     });
     res.json(stocks);
@@ -127,11 +145,33 @@ exports.stocksingle = async (req, res, next) => {
         coNo: 410,
       },
     });
-    await axios({
+    const locate = await axios({
       method: "post",
       url: `${HOST}master/locate`,
       data: { warehouse: warehouse, itemCode: itemCode },
     });
+
+    for (let i = 0; i < locate.data.length; i++) {
+      locatearr.push({
+        location: locate.data[i].location,
+        lot: locate.data[i].lot,
+        itemOnHand: locate.data[i].itemOnHand,
+        itemAllowcated: locate.data[i].itemAllowcated,
+      });
+    }
+    const stocks = BalanceData.map((stock) => {
+      return {
+        coNo: stock.coNo,
+        warehouse: stock.warehouse,
+        itemCode: stock.itemCode,
+        itemPcs: stock.itemPcs,
+        allowcateMethod: stock.allowcateMethod,
+        itemAllowcated: stock.itemAllowcated,
+        itemAllowcatable: stock.itemAllowcatable,
+        lot: locatearr,
+      };
+    });
+    res.json(stocks);
   } catch (error) {
     next(error);
   }

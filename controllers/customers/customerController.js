@@ -15,7 +15,6 @@ exports.index = async (req, res, next) => {
   try {
     const { customerChannel, customerNo, OKCFC1 } = req.body;
     const customersData = await Customer.findAll({
-      //   limit: 10,
       attributes: {
         exclude: ["id"],
       },
@@ -114,6 +113,7 @@ exports.index = async (req, res, next) => {
       const OKCFC6 = customer.OKCFC6.trim();
       const salePayer = customer.salePayer.trim();
       const taxno = customer.taxno.trim();
+      const OKALCU = customer.OKALCU.trim();
       return {
         customerNo: customerNo,
         customerStatus: customer.customerStatus,
@@ -122,6 +122,7 @@ exports.index = async (req, res, next) => {
           customerChannel == "102" || "103"
             ? customer.customerName + customer.customerAddress4
             : customer.customerName,
+        OKALCU: OKALCU,
         coNo: customer.coNo,
         customerAddress1: customer.customerAddress1,
         customerAddress2: customer.customerAddress2,
@@ -254,7 +255,7 @@ exports.update = async (req, res, next) => {
       },
       where: {
         customerNo: customerNo,
-        coNo: "410",
+        coNo: 410,
       },
     });
 
@@ -390,139 +391,24 @@ exports.insert = async (req, res, next) => {
       creditLimit,
       taxno,
       saleCode,
+      saleZone,
     } = req.body;
     let { customerAddress4, customerName } = req.body;
+    const shippings = req.body.shippings;
 
     if ((customerName.trim().length > 36 && customerChannel == !105) || 103) {
       customerAddress4 = customerName.trim().slice(35);
       customerName = customerName.trim().slice(0, 35);
-      // console.log(customerAddress4);
-      // console.log(customerName);
     }
 
-    const jsonPath = path.join(__dirname, "..", "Jsons", "customer.json");
+    const jsonPath = path.join(__dirname, "../../", "Jsons", "customer.json");
     let existingData = [];
     if (fs.existsSync(jsonPath)) {
       const jsonData = fs.readFileSync(jsonPath, "utf-8");
       existingData = JSON.parse(jsonData);
     }
-    const query = `
-INSERT INTO [MVXJDTA].[OCUSMA] 
-  ([OKCUNO],
-  [OKCONO],
-  [OKSTAT],
-  [OKCUCL],
-  [OKORTP],
-  [OKCUNM],
-  [OKCUA1],
-  [OKCUA2],
-  [OKCUA3],
-  [OKCUA4],
-  [OKPONO],
-  [OKPHNO],
-  [OKWHLO],
-  [OKSDST],
-  [OKCFC8],
-  [OKCFC1],
-  [OKCFC3],
-  [OKCFC6],
-  [OKPYNO],
-  [OKCRL2],
-  [OKVRNO],
-  [OKSMCD],
-  [OKCUTP],
-  [OKCORG],
-  [OKTEPY],
-  [OKOT75],
-  [OKTEDL],
-  [OKMODL],
-  [OKDIPC],
-  [OKTXAP],
-  [OKCUCD],
-  [OKCRTP],
-  [OKDTFM],
-  [OKPRIC],
-  [OKCSCD],
-  [OKLHCD],
-  [OKDOGR],
-  [OKEDES],
-  [OKPYCD],
-  [OKGRPY],
-  [OKTINC],
-  [OKPRDL],
-  [OKIVGP],
-  [OKFACI],
-  [OKRESP],
-  [OKUSR1],
-  [OKUSR2],
-  [OKUSR3],
-  [OKDTE1],
-  [OKDTE2],
-  [OKDTE3],
-  [OKRGDT],
-  [OKRGTM],
-  [OKLMDT],
-  [OKCHID],
-  [OKLMTS]
-) VALUES (
-  :customerNo,
-  :coNo,
-  :customerStatus,
-  :customerChannel,
-  :orderType,
-  :customerName,
-  :customerAddress1,
-  :customerAddress2,
-  :customerAddress3,
-  :customerAddress4,
-  :customerPoscode,
-  :customerPhone,
-  :warehouse,
-  :OKSDST,
-  :saleTeam,
-  :OKCFC1,
-  :OKCFC3,
-  :OKCFC6,
-  :salePayer,
-  :creditLimit,
-  :taxno,
-  :saleCode,
-  :OKCUTP,
-  :OKCORG,
-  :creditTerm,
-  :OKOT75,
-  :OKTEDL,
-  :OKMODL,
-  :OKDIPC,
-  :OKTXAP,
-  :OKCUCD,
-  :OKCRTP,
-  :OKDTFM,
-  :OKPRIC,
-  :OKCSCD,
-  :OKLHCD,
-  :OKDOGR,
-  :OKEDES,
-  :OKPYCD,
-  :OKGRPY,
-  :OKTINC,
-  :OKPRDL,
-  :OKIVGP,
-  :OKFACI,
-  :OKRESP,
-  :OKUSR1,
-  :OKUSR2,
-  :OKUSR3,
-  :OKDTE1,
-  :OKDTE2,
-  :OKDTE3,
-  :OKRGDT,
-  :OKRGTM,
-  :OKLMDT,
-  :OKCHID,
-  :OKLMTS)`;
 
-    const replacements = {
+    await Customer.create({
       customerNo: customerNo, // OKCUNO,
       coNo: existingData.OKCONO, // OKCONO
       customerStatus: customerStatus, // OKSTAT
@@ -579,10 +465,29 @@ INSERT INTO [MVXJDTA].[OCUSMA]
       OKLMDT: formatDate(), // OKLMDT
       OKCHID: existingData.USER, // OKCHID
       OKLMTS: Date.now(), // OKLMTS
-    };
-    await sequelize.query(query, {
-      replacements,
-      type: sequelize.QueryTypes.INSERT,
+      saleZone: saleZone,
+    });
+
+    let shippingData = shippings.map((shipping) => {
+      return {
+        customerNo: shipping.customerNo,
+        customerName: shipping.customerName,
+        shippingAddress1: shipping.shippingAddress1,
+        shippingAddress2: shipping.shippingAddress2,
+        shippingAddress3: shipping.shippingAddress3,
+        shippingAddress4: shipping.shippingAddress4,
+        shippingPoscode: shipping.shippingPoscode,
+        shippingPhone: shipping.shippingPhone,
+        OPULZO: shipping.OPULZO,
+      };
+    });
+    // Insert Shipping
+    await axios({
+      method: "post",
+      url: `${HOST}shinpping/insert`,
+      data: {
+        shippings: shippingData,
+      },
     });
     res.status(201).json({
       message: "Created",

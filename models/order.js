@@ -137,7 +137,7 @@ const OLINE = sequelize.define(
       primaryKey: true,
       field: "OBORNO",
     },
-    productNo: {
+    itemNo: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
@@ -158,7 +158,7 @@ const OLINE = sequelize.define(
       allowNull: true,
       field: "OBWHLO",
     },
-    itemNo: {
+    itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
