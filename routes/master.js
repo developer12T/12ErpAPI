@@ -12,6 +12,7 @@ const {
   runningNumber,
   updateRunningNumber,
   warehouse,
+  singlepolicy,
 } = require("../controllers/master/masterContorller");
 
 const {
@@ -32,8 +33,6 @@ const {
   indexdoc,
   singledoc,
 } = require("../controllers/master/documentTypeController");
-
-
 
 // Item
 //http://localhost:3000/master/
@@ -95,5 +94,7 @@ router.post("/documenttype", indexdoc);
 //http://localhost:3000/master/calWight
 router.post("/documenttype/single", singledoc);
 
+//http://localhost:3000/master/calWight
+router.post("/policy/single", singlepolicy);
 
 module.exports = router;

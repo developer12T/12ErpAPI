@@ -258,6 +258,46 @@ const Balance = sequelize.define(
   }
 );
 
+const Policy = sequelize.define(
+  "MHDIPO",
+  {
+    coNo: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      field: "EDCONO",
+    },
+    EDDPOL: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      field: "EDDPOL",
+    },
+    EDTX40: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "EDTX40",
+    },
+    EDTX15: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "EDTX15",
+    },
+    EDTRLV: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "EDTRLV",
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+    primaryKey: false,
+  }
+);
+
 module.exports = {
   ItemFac,
   ItemMaster,
@@ -265,4 +305,5 @@ module.exports = {
   Warehouse,
   Locate,
   Balance,
+  Policy,
 };

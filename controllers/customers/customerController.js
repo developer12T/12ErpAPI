@@ -209,6 +209,8 @@ exports.single = async (req, res, next) => {
         OKCFC6: OKCFC6,
         creditLimit: customer.creditLimit,
         taxno: taxno,
+        OKCSCD: customer.OKCSCD,
+        OKECAR: customer.OKECAR,
       };
     });
 
@@ -500,6 +502,7 @@ exports.insert = async (req, res, next) => {
     next(error);
   }
 };
+
 exports.onlycus = async (req, res, next) => {
   try {
     const { saleZone } = req.body;

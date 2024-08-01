@@ -70,6 +70,7 @@ const Order = sequelize.define(
       allowNull: false,
       field: "OANTLA",
     },
+
     totalVat: {
       type: DataTypes.VIRTUAL,
       get() {
@@ -106,6 +107,16 @@ const Order = sequelize.define(
       set(value) {
         throw new Error("Do not try to set the `totalNonVat` value!");
       },
+    },
+    grossWight: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      field: "OAGRWE",
+    },
+    netWight: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      field: "OANEWE",
     },
   },
   {
@@ -169,10 +180,15 @@ const OLINE = sequelize.define(
       allowNull: false,
       field: "OBTEDS",
     },
-    qty: {
+    qtyCTN: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OBORQA",
+    },
+    qtyPCS: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OBORQT",
     },
     unit: {
       type: DataTypes.STRING,
@@ -220,11 +236,6 @@ const OLINE = sequelize.define(
       allowNull: true,
       field: "OBPRIO",
     },
-    OBORQT: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "OBORQT",
-    },
     OBIVQA: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -269,6 +280,21 @@ const OLINE = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
       field: "OBCHID",
+    },
+    OBLMTS: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBLMTS",
+    },
+    OBDIA2: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBLMTS",
+    },
+    OBLMTS: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBLMTS",
     },
     OBLMTS: {
       type: DataTypes.STRING,

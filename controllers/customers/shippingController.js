@@ -13,7 +13,7 @@ const {
 } = require("../../middleware/filterString");
 exports.index = async (req, res, next) => {
   try {
-    const { customerNo, OPADID } = req.body;
+    const { customerNo, addressID } = req.body;
     const shippingData = await Shipping.findAll({
       attributes: {
         exclude: ["id"],
@@ -27,7 +27,7 @@ exports.index = async (req, res, next) => {
       return {
         coNo: shipping.coNo,
         customerNo: customerNo,
-        OPADID: shipping.OPADID,
+        addressID: shipping.addressID,
         customerName: shipping.customerName,
         shippingAddress1: shipping.shippingAddress1,
         shippingAddress2: shipping.shippingAddress2,
@@ -47,7 +47,7 @@ exports.update = async (req, res, next) => {
     const updateFields = {};
     const {
       customerNo,
-      OPADID,
+      addressID,
       customerName,
       shippingAddress1,
       shippingAddress2,
@@ -59,7 +59,7 @@ exports.update = async (req, res, next) => {
       attributes: {
         exclude: ["id"],
       },
-      where: { customerNo: customerNo, OPADID: OPADID, coNo: "410" },
+      where: { customerNo: customerNo, addressID: addressID, coNo: "410" },
     });
     const shippings = shippingData.map((shipping) => {
       const customerNo = shipping.customerNo.trim();
@@ -68,7 +68,7 @@ exports.update = async (req, res, next) => {
       return {
         coNo: shipping.coNo,
         customerNo: customerNo,
-        OPADID: shipping.OPADID,
+        addressID: shipping.addressID,
         customerName: shipping.customerName,
         shippingAddress1: shipping.shippingAddress1,
         shippingAddress2: shipping.shippingAddress2,
@@ -83,8 +83,8 @@ exports.update = async (req, res, next) => {
     if (shippings[0].customerName !== customerName) {
       updateFields.customerName = customerName;
     }
-    if (shippings[0].OPADID !== OPADID) {
-      updateFields.OPADID = OPADID;
+    if (shippings[0].addressID !== addressID) {
+      updateFields.addressID = addressID;
     }
     if (shippings[0].shippingAddress1 !== shippingAddress1) {
       updateFields.shippingAddress1 = shippingAddress1;
@@ -105,7 +105,7 @@ exports.update = async (req, res, next) => {
       attributes: { exclude: ["id"] },
       where: {
         customerNo: customerNo,
-        OPADID: OPADID,
+        addressID: addressID,
         coNo: "410",
       },
     });
@@ -128,7 +128,7 @@ exports.insert = async (req, res, next) => {
     const shippings = req.body.shippings;
 
     // customerNo,
-    // // OPADID,
+    // // addressID,
     // customerName,
     // shippingAddress1,
     // shippingAddress2,
@@ -136,7 +136,7 @@ exports.insert = async (req, res, next) => {
     // shippingPoscode,
     // shippingPhone,
     // OPULZO,
-   
+
     const jsonPath = path.join(__dirname, "../../", "Jsons", "shipping.json");
     let existingData = [];
     if (fs.existsSync(jsonPath)) {
@@ -157,7 +157,7 @@ exports.insert = async (req, res, next) => {
     // res.json(shinppingData);
     let checkShipping = "INVTSP";
     let shinppingNum = 0;
-    let OPADID = "";
+    let addressID = "";
 
     for (let shinpping of shinppingData) {
       if (filterStringEN(shinpping.addressID) === "SHIP") {
@@ -167,14 +167,14 @@ exports.insert = async (req, res, next) => {
         }
       }
     }
-    
-    OPADID = `${checkShipping}${shinppingNum + 1}`;
+
+    addressID = `${checkShipping}${shinppingNum + 1}`;
 
     await Shipping.create({
       coNO: existingData.OPCONO, // OPCONO,
       customerNo: customerNo, // OPCUNO
       OPADRT: existingData.OPADRT, // OPPART
-      OPADID: OPADID, // OPADID
+      addressID: addressID, // addressID
       customerName: customerName, // OPCUNM
       shippingAddress1: shippingAddress1, // OPCUA1
       shippingAddress2: shippingAddress2, // OPCUA2
@@ -243,6 +243,40 @@ exports.deleted = async (req, res, next) => {
         message: "Not Modified",
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.single = async (req, res, next) => {
+  try {
+    const { customerNo, addressID, coNo } = req.body;
+    const shippingData = await Shipping.findAll({
+      attributes: { exclude: ["id"] },
+      where: {
+        coNo: 410,
+        customerNo: customerNo,
+        addressID: addressID,
+      },
+    });
+    const shippings = shippingData.map((shipping) => {
+      const customerNo = shipping.customerNo.trim();
+      const shippingPoscode = shipping.shippingPoscode.trim();
+      const shippingPhone = shipping.shippingPhone.trim();
+      return {
+        coNo: shipping.coNo,
+        customerNo: customerNo,
+        shippingRoute: shipping.shippingRoute,
+        addressID: shipping.addressID,
+        customerName: shipping.customerName,
+        shippingAddress1: shipping.shippingAddress1,
+        shippingAddress2: shipping.shippingAddress2,
+        shippingAddress3: shipping.shippingAddress3,
+        shippingPoscode: shippingPoscode,
+        shippingPhone: shippingPhone,
+      };
+    });
+    res.json(shippings);
   } catch (error) {
     next(error);
   }

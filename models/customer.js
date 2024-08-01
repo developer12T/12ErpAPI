@@ -185,6 +185,16 @@ const Customer = sequelize.define(
       allowNull: true,
       field: "OKALCU",
     },
+    OKCSCD: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OKCSCD",
+    },
+    OKECAR: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OKECAR",
+    },
   },
   {
     freezeTableName: true,

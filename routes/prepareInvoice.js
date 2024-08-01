@@ -3,7 +3,6 @@ const router = express.Router();
 const {
   insertA,
   index,
-  insertB,
 } = require("../controllers/order/prepareInvoiceController");
 
 /* GET home page. */
@@ -14,6 +13,6 @@ router.get("/", index);
 router.post("/insertA", insertA);
 
 //http://localhost:3000/customer/insert
-router.post("/insertB", insertB);
+// router.post("/insertB", insertB);
 
 module.exports = router;

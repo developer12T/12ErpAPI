@@ -10,8 +10,122 @@ const {
 } = require("../../middleware/getDateTime");
 
 exports.index = async (req, res, next) => {};
+exports.insertHead = async (req, res, next) => {
+  try {
+    const {
+      coNo,
+      warehouse,
+      runningNumberH,
+      orderNo,
+      orderType,
+      customerNo,
+      addressID,
+      OARLDT,
+      OARGTM,
+      OATIZO,
+      grossWight,
+      netWight,
+    } = req.body;
 
-exports.insertL = async (req, res, next) => {
+    const jsonPath = path.join(__dirname, "../../", "Jsons", "delivery.json");
+    let deliveryData = [];
+    if (fs.existsSync(jsonPath)) {
+      const jsonData = fs.readFileSync(jsonPath, "utf-8");
+      deliveryData = JSON.parse(jsonData);
+    }
+    // res.json(deliveryData[0].HEAD);
+
+    const policy = await axios({
+      method: "post",
+      url: `${HOST}master/policy/single`,
+      data: { orderType: orderType },
+    });
+
+    const shinpping = await axios({
+      method: "post",
+      url: `${HOST}shinpping/single`,
+      data: {
+        customerNo: customerNo,
+        addressID: addressID,
+      },
+    });
+
+    const route = await axios({
+      method: "post",
+      url: `${HOST}route/single`,
+      data: {
+        shippingRoute: shinpping.data[0].shippingRoute,
+      },
+    });
+
+    const customer = await axios({
+      method: "post",
+      url: `${HOST}customer/single`,
+      data: {
+        customerNo: customerNo,
+      },
+    });
+
+    await DeliverySH.create({
+      coNo: coNo,
+      OQDLIX: runningNumberH,
+      OQDPOL: policy.data[0].EDDPOL, // POLICY
+      OQWHLO: warehouse,
+      OQINOU: deliveryData[0].HEAD.OQINOU,
+      OQCONA: warehouse, //OOHEAD.OAWHLO
+      OQSDES: route.data[0].place, // ROUTE PLACE
+      OQDSDT: OARLDT, //OOHEAD OARLDT requestDate
+      OQTRDT: OARLDT, //OOHEAD OAORDT
+
+      OQTRTM: OARGTM, //OOHEAD
+      OQSROT: route.data[0].routeCode, // ROUTE
+      OQROUT: route.data[0].routeCode, // ROUTE
+      OQRORC: deliveryData[0].HEAD.OQRORC, // 3
+      OQDSHM: route.data[0].departureTime, // departureTime
+      OQDTHM: route.data[0].departureTime, // departureTime
+      // OQDSHM:// departureTime
+      // OQDTHM             // departureTime
+      OQTTYP: deliveryData[0].HEAD.OQTTYP,
+      OQRIDN: orderNo,
+      OQEDES: route.data[0].place, // ROUTE PLACE
+      OQNEWE: netWight, // OOLINE SUM
+      OQGRWE: grossWight, // OOLINE SUM
+      OQTIZO: OATIZO, // OOHEAD.OATIZO
+      OQDTDT: formatDate(), // OOHEAD requestDate
+      OQDOCR: deliveryData[0].HEAD.OQDOCR, // 1
+      OQDOCE: deliveryData[0].HEAD.OQDOCE, // 11
+      OQDEWD: deliveryData[0].HEAD.OQDEWD, // 0
+      OQSEEQ: deliveryData[0].HEAD.OQSEEQ, // 50
+      OQIVSS: deliveryData[0].HEAD.OQIVSS, // 2
+      OQPRIO: deliveryData[0].HEAD.OQPRIO, // 5
+
+      OQCSCD: customer.data[0].OKCSCD, // OCUSMA
+      OQCUCL: route.data[0].customerChannel, // OCUSMA
+      OQECAR: customer.data[0].OKECAR, // OCUSMA
+
+      OQPONO: shinpping.data[0].shippingPoscode, // OCUSAD
+      OQULZO: route.data[0].shippingRoute, // OCUSAD
+
+      OQFWNS: route.data[0].forwarding, // Route forwarding
+      OQFWNO: route.data[0].forwarding, // Route forwarding
+      OQAGKY: deliveryData[0].HEAD.OQAGKY, // emthy
+
+      OQRGDT: formatDate(),
+      OQRGTM: getCurrentTimeFormatted(),
+      OQLMDT: formatDate(),
+      OQCHNO: deliveryData[0].HEAD.OQCHNO,
+      OQCHID: deliveryData[0].HEAD.OQCHID,
+      OQSCES: deliveryData[0].HEAD.OQSCES, //90
+      OQLMTS: Date.now(),
+    });
+
+    res.status(201).json("Created");
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.insertLine = async (req, res, next) => {
   try {
     const items = req.body.items;
     for (let item of items) {
@@ -19,101 +133,37 @@ exports.insertL = async (req, res, next) => {
         __dirname,
         "../../",
         "Jsons",
-        "deliverySL.json"
+        "delivery.json"
       );
-      let deliveryLData = [];
+      let deliveryData = [];
       if (fs.existsSync(jsonPath)) {
         const jsonData = fs.readFileSync(jsonPath, "utf-8");
-        deliveryLData = JSON.parse(jsonData);
+        deliveryData = JSON.parse(jsonData);
       }
+      // res.json(deliveryData)
       await DeliverySL.create({
         coNo: item.coNo,
         URDLIX: item.runningNumberH,
-        URRORC: deliveryLData.URRORC, // MHDISH 
+        URRORC: deliveryData[0].HEAD.OQRORC, // MHDISH
         URRIDN: item.orderNo,
         URRIDL: item.itemNo,
         URITNO: item.itemCode,
-        URFACI: deliveryLData.URFACI, // json
-        URTRQT: deliveryLData.URTRQT, // ooline qty (pcs)
-        URSTCD: deliveryLData.URSTCD, // 1
-        URGRWE: deliveryLData.URGRWE, // OOLINE
-        URNEWE: deliveryLData.URNEWE, // OOLINE
+        URFACI: deliveryData[0].LINE.URFACI, // json
+        URTRQT: item.qtyPCS, // ooline qtyCTN (pcs)
+        URSTCD: deliveryData[0].LINE.URSTCD, // 1
+        URGRWE: item.grossWight, // OOLINE
+        URNEWE: item.netWight, // OOLINE
         // URALUN OOLINE
-
+        URALUN: item.unit, 
         URRGDT: formatDate(),
         URRGTM: getCurrentTimeFormatted(),
         URLMDT: formatDate(),
-        URCHNO: deliveryLData.URCHNO,
-        URCHID: deliveryLData.URCHID,
+        URCHNO: deliveryData[0].LINE.URCHNO,
+        URCHID: deliveryData[0].LINE.URCHID,
         URLMTS: Date.now(),
-        URSCES: deliveryLData.URSCES, // MHDISH
+        URSCES: deliveryData[0].HEAD.OQSCES, // MHDISH
       });
     }
-    res.status(201).json("Created");
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.insertH = async (req, res, next) => {
-  try {
-    const { coNo, warehouse, runningNumberH, orderNo } = req.body;
-
-    const jsonPath = path.join(__dirname, "../../", "Jsons", "deliverySH.json");
-    let deliveryHData = [];
-    if (fs.existsSync(jsonPath)) {
-      const jsonData = fs.readFileSync(jsonPath, "utf-8");
-      deliveryHData = JSON.parse(jsonData[0].HEAD);
-    }
-    await DeliverySH.create({
-      coNo: coNo,
-      OQDLIX: runningNumberH,
-      OQDPOL: deliveryHData.OQDPOL, // POLICY
-      OQWHLO: warehouse,
-      OQINOU: deliveryHData.OQINOU,
-      OQCONA: warehouse, //OOHEAD.OAWHLO
-      OQSDES: deliveryHData.OQSDES,  // ROUTE PLACE
-      OQDSDT: formatDate(),  //OOHEAD OARLDT requestDate
-      OQTRDT: formatDate(),  //OOHEAD OAORDT
-      
-      OQTRTM: getCurrentTimeFormatted(), //OOHEAD
-      OQSROT: deliveryHData.OQSROT, // ROUTE
-      OQROUT: deliveryHData.OQROUT, // ROUTE
-      OQRORC: deliveryHData.OQRORC, // 3
-      // OQDSHM:// departureTime
-      // OQDTHM             // departureTime       
-      OQTTYP: deliveryHData.OQTTYP,
-      OQRIDN: orderNo,
-      OQEDES: deliveryHData.OQEDES, // ROUTE PLACE
-      OQNEWE: deliveryHData.OQNEWE, // OOLINE SUM
-      OQGRWE: deliveryHData.OQGRWE, // OOLINE SUM
-      OQTIZO: deliveryHData.OQTIZO, // OOHEAD.OATIZO
-      OQDTDT: formatDate(), // OOHEAD requestDate
-      OQDOCR: deliveryHData.OQDOCR, // 1
-      OQDOCE: deliveryHData.OQDOCE, // 11
-      OQDEWD: deliveryHData.OQDEWD, // 0
-      OQSEEQ: deliveryHData.OQSEEQ, // 50
-      OQIVSS: deliveryHData.OQIVSS, // 2
-      OQPRIO: deliveryHData.OQPRIO, // 5
-      OQCSCD: deliveryHData.OQCSCD, // OCUSMA
-      OQCUCL: deliveryHData.OQCUCL, // OCUSMA
-      OQECAR: deliveryHData.OQECAR, // OCUSMA
-    
-      OQPONO: deliveryHData.OQPONO, // OCUSAD
-      OQULZO: deliveryHData.OQULZO, // OCUSAD 
-      // OQFWNS Route forwarding
-      // OQFWNO Route forwarding
-      // OQAGKY: deliveryHData.OQAGKY,  emthy
-
-      OQRGDT: formatDate(), 
-      OQRGTM: getCurrentTimeFormatted(),  
-      OQLMDT: formatDate(),  
-      OQCHNO: deliveryHData.OQCHNO,
-      OQCHID: deliveryHData.OQCHID,
-      OQSCES: deliveryHData.OQSCES, //90
-      OQLMTS: Date.now(),  
-    });
-
     res.status(201).json("Created");
   } catch (error) {
     next(error);

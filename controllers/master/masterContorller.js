@@ -3,6 +3,7 @@ const {
   ItemMaster,
   ItemUnit,
   Warehouse,
+  Policy,
 } = require("../../models/master");
 const NumberSeries = require("../../models/runningnumber");
 const { HOST } = require("../../config/index");
@@ -46,7 +47,7 @@ exports.itemdetails = async (req, res, next) => {
         attributes: {
           exclude: ["id"],
         },
-        where: { itemCode: itemData[i].itemCode, coNo: 410 },
+        where: { itemCode: itemData[i].itemCode, coNo: 410, facType: 1 },
         // group: ["MMFUDS"],
       });
       for (let j = 0; j < itemUnitData.length; j++) {
@@ -204,6 +205,45 @@ exports.warehouse = async (req, res, next) => {
     //   };
     // });
     res.json(warehouse);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.singlepolicy = async (req, res, next) => {
+  try {
+    const { orderType } = req.body;
+    let policy = "";
+    if (orderType == "031" || orderType == "A31" || orderType == "A51") {
+      policy = "API";
+    } else if (orderType === "011" || orderType === "A11") {
+      policy = "C11";
+    } else if (orderType === "021") {
+      policy = "C12";
+    } else if (orderType === "091") {
+      policy = "C13";
+    } else if (orderType === "041") {
+      policy = "C14";
+    } else if (orderType === "051") {
+      policy = "C15";
+    }
+    const results = await Policy.findAll({
+      where: {
+        EDDPOL: policy,
+        coNo: 410,
+      },
+    });
+    const data = results.map((result) => {
+      const EDTX15 = result.EDTX40.trim();
+      return {
+        coNo: result.coNo,
+        EDDPOL: result.EDDPOL,
+        EDTX40: result.EDTX40,
+        EDTX15: EDTX15,
+        EDTRLV: result.EDTRLV,
+      };
+    });
+    res.json(data);
   } catch (error) {
     next(error);
   }
