@@ -1,6 +1,6 @@
 const { sequelize, DataTypes } = require("../config/m3db");
 
-const DeliverySL = sequelize.define(
+const DeliveryLine = sequelize.define(
   "MHDISL",
   {
     coNo: {
@@ -94,16 +94,16 @@ const DeliverySL = sequelize.define(
   }
 );
 
-const DeliverySH = sequelize.define(
+const DeliveryHead = sequelize.define(
   "MHDISH",
   {
     coNo: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQCONO",
     },
     OQDLIX: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       field: "OQDLIX",
@@ -114,17 +114,17 @@ const DeliverySH = sequelize.define(
       field: "OQDPOL",
     },
     OQWHLO: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQWHLO",
     },
     OQINOU: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQINOU",
     },
     OQCONA: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQCONA",
     },
@@ -134,17 +134,17 @@ const DeliverySH = sequelize.define(
       field: "OQSDES",
     },
     OQDSDT: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQDSDT",
     },
     OQTRDT: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQTRDT",
     },
     OQTRTM: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQTRTM",
     },
@@ -154,7 +154,7 @@ const DeliverySH = sequelize.define(
       field: "OQROUT",
     },
     OQRORC: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQRORC",
     },
@@ -175,12 +175,12 @@ const DeliverySH = sequelize.define(
     },
 
     OQNEWE: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQNEWE",
     },
     OQGRWE: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQGRWE",
     },
@@ -190,37 +190,37 @@ const DeliverySH = sequelize.define(
       field: "OQTIZO",
     },
     OQDTDT: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQDTDT",
     },
     OQDOCR: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQDOCR",
     },
     OQDOCE: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.STRING,
       allowNull: false,
       field: "OQDOCE",
     },
     OQDEWD: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQDEWD",
     },
     OQSEEQ: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQSEEQ",
     },
     OQIVSS: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQIVSS",
     },
     OQPRIO: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQPRIO",
     },
@@ -235,22 +235,22 @@ const DeliverySH = sequelize.define(
       field: "OQAGKY",
     },
     OQRGDT: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQRGDT",
     },
     OQRGTM: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQRGTM",
     },
     OQLMDT: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQLMDT",
     },
     OQCHNO: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQCHNO",
     },
@@ -260,22 +260,22 @@ const DeliverySH = sequelize.define(
       field: "OQCHID",
     },
     OQSCES: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQSCES",
     },
     OQLMTS: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQLMTS",
     },
     OQDSHM: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQDSHM",
     },
     OQDTHM: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OQDTHM",
     },
@@ -289,4 +289,4 @@ const DeliverySH = sequelize.define(
   }
 );
 
-module.exports = { DeliverySH, DeliverySL };
+module.exports = { DeliveryHead, DeliveryLine };

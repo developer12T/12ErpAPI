@@ -1,4 +1,4 @@
-const { DeliverySH, DeliverySL } = require("../../models/delivery");
+const { DeliveryHead, DeliveryLine } = require("../../models/delivery");
 const axios = require("axios");
 const { HOST } = require("../../config/index");
 const { sequelize } = require("../../config/m3db");
@@ -66,7 +66,7 @@ exports.insertHead = async (req, res, next) => {
       },
     });
 
-    await DeliverySH.create({
+    await DeliveryHead.create({
       coNo: coNo,
       OQDLIX: runningNumberH,
       OQDPOL: policy.data[0].EDDPOL, // POLICY
@@ -92,9 +92,11 @@ exports.insertHead = async (req, res, next) => {
       OQGRWE: grossWight, // OOLINE SUM
       OQTIZO: OATIZO, // OOHEAD.OATIZO
       OQDTDT: formatDate(), // OOHEAD requestDate
+
       OQDOCR: deliveryData[0].HEAD.OQDOCR, // 1
-      OQDOCE: deliveryData[0].HEAD.OQDOCE, // 11
+      OQDOCE: deliveryData[0].HEAD.OQDOCE, // 1 ** 1 digit in Database TST
       OQDEWD: deliveryData[0].HEAD.OQDEWD, // 0
+
       OQSEEQ: deliveryData[0].HEAD.OQSEEQ, // 50
       OQIVSS: deliveryData[0].HEAD.OQIVSS, // 2
       OQPRIO: deliveryData[0].HEAD.OQPRIO, // 5
@@ -141,7 +143,7 @@ exports.insertLine = async (req, res, next) => {
         deliveryData = JSON.parse(jsonData);
       }
       // res.json(deliveryData)
-      await DeliverySL.create({
+      await DeliveryLine.create({
         coNo: item.coNo,
         URDLIX: item.runningNumberH,
         URRORC: deliveryData[0].HEAD.OQRORC, // MHDISH

@@ -320,15 +320,10 @@ exports.insert = async (req, res, next) => {
       warehouse,
       orderStatus,
       total,
-      totalDiscount,
       totalNet,
-      totalVat,
-      totalNonVat,
       addressID,
       payer,
       OKALCU,
-      netWight,
-      grossWight,
       OAFRE1,
     } = req.body;
 
@@ -493,7 +488,6 @@ exports.insert = async (req, res, next) => {
           MOPLDT: orderJson[0].LINE.OBPLDT,
           MOTIHM: orderJson[0].LINE.OBPLHM,
           MOPRIO: orderJson[0].LINE.OBPRIO,
-          OBORQT: orderJson[0].LINE.OBORQT,
           OBSAPR: item.OBSAPR,
           OBNEPR: item.OBNEPR,
           OBCOFA: factor.data[0].factor,
@@ -513,7 +507,7 @@ exports.insert = async (req, res, next) => {
       return result;
     });
 
-    res.json(itemsData);
+    // res.json(itemsData);
 
     // let calCost = await axios({
     //   method: "post",
@@ -552,19 +546,19 @@ exports.insert = async (req, res, next) => {
     //     customerNo: customerNo,
     //     OARLDT: requestDate,
     //     OARGTM: getCurrentTimeFormatted(),
-    //     OATIZO: orderJson.OATIZO,
+    //     OATIZO: orderJson[0].HEAD.OATIZO,
     //     grossWight: totalGrossWight,
     //     netWight: totalNetWight,
     //   },
     // });
-    // // Insert Delivery Line
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}delivery/insertLine`,
-    //   data: {
-    //     items: itemsData,
-    //   },
-    // });
+    // Insert Delivery Line
+    await axios({
+      method: "post",
+      url: `${HOST}delivery/insertLine`,
+      data: {
+        items: itemsData,
+      },
+    });
 
     // // Insert Prepare Invoice A
     // await axios({

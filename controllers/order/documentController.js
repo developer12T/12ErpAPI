@@ -13,23 +13,22 @@ exports.index = async (req, res, next) => {};
 
 exports.insert = async (req, res, next) => {
   try {
-    const { orderType, orderNo } = req.body;
+    const { orderType, orderNo, coNo } = req.body;
     let documentTypes = await axios({
       method: "post",
       url: `${HOST}master/documenttype/single`,
       data: { orderType: orderType },
     });
+    // res.json(documentTypes.data);
     for (let documentType of documentTypes.data) {
       await Document.create({
-        coNo: 410,
-        // OFDIVI: "   ",
+        coNo: coNo,
         orderNo: orderNo,
         OFDONR: documentType.UODONR,
-        // OFDOVA: "  ",
         OFDOTP: documentType.UODOTP,
         OFNOEX: documentType.UONOEX,
         OFDOCD: documentType.UODOCD,
-        OFDODT: documentType.UODODT,
+        OFDODT: formatDate(),
         OFTXID: documentType.UOTXID,
         OFRGDT: formatDate(),
         OFRGTM: getCurrentTimeFormatted(),

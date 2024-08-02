@@ -8,11 +8,6 @@ const Document = sequelize.define(
       allowNull: false,
       field: "OFCONO",
     },
-    OFDIVI: {
-      type: DataTypes.NUMBER,
-      allowNull: true,
-      field: "OFDIVI",
-    },
     orderNo: {
       type: DataTypes.NUMBER,
       primaryKey: true,
@@ -25,11 +20,7 @@ const Document = sequelize.define(
       primaryKey: true,
       field: "OFDONR",
     },
-    OFDOVA: {
-      type: DataTypes.NUMBER,
-      allowNull: false,
-      field: "OFDOVA",
-    },
+
     OFDOTP: {
       type: DataTypes.NUMBER,
       allowNull: false,

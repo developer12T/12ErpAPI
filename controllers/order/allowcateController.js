@@ -14,7 +14,7 @@ exports.index = async (req, res, next) => {};
 exports.insert = async (req, res, next) => {
   try {
     const items = req.body.items;
-    const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
+    const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "allowcate.json");
     let allowcateJson = [];
 
     if (fs.existsSync(jsonPathOrder)) {
@@ -31,14 +31,14 @@ exports.insert = async (req, res, next) => {
         MOTIHM: item.itemNo,
         MOSTAT: item.orderStatus,
         MOPRIO: item.MOPRIO,
-        MOORCA: 311,
+        MOORCA: allowcateJson.MOORCA,
         orderNo:item.orderNo,
         itemNo: item.itemNo,
         MORFTX: item.OKALCU + "    " + item.customerNo,
-        MORPRT: 1,
-        MOTRQT: item.OBORQT * -1,
-        MOALMT: 0,
-        MOCALI: 1,
+        MORPRT: allowcateJson.MORPRT,
+        MOTRQT: item.qtyPCS * -1,
+        MOALMT: allowcateJson.MOALMT,
+        MOCALI: allowcateJson.MOCALI,
         MOLMTS: Date.now(),
       });
     }
