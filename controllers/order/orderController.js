@@ -329,6 +329,7 @@ exports.insert = async (req, res, next) => {
       OKALCU,
       netWight,
       grossWight,
+      OAFRE1,
     } = req.body;
 
     const items = req.body.item;
@@ -344,7 +345,7 @@ exports.insert = async (req, res, next) => {
 
     if (Hcase === 1) {
       await Order.create({
-        coNo: orderJson.OACONO, // OACONO,
+        coNo: orderJson.HEAD.OACONO, // OACONO,
         OADIVI: orderJson.OADIVI, // OADIVI
         orderNo: orderNo, // OAORNO
         orderType: orderType, // OAFACI
@@ -431,7 +432,7 @@ exports.insert = async (req, res, next) => {
     // res.json(totalGrossWight + " " + totalNetWight);
 
     let itemsData = await Promise.all(
-      items.map(async(item) => {
+      items.map(async (item) => {
         const { data } = await axios({
           method: "post",
           url: `${HOST}master/calwight`,
@@ -441,23 +442,24 @@ exports.insert = async (req, res, next) => {
           },
         });
         return {
-          coNo: existingData.OBCONO,
-          requestDate:requestDate,
-          OACUCD :orderJson.OACUCD,
-          // saleCode : saleCode,
-          OACUCD :orderJson.OACUCD,
-          OBDIVI: existingData.OBDIVI,
+          coNo: orderJson[0].LINE.OBCONO,
+          OACUCD: orderJson[0].HEAD.OACUCD,
+          OBDIVI: orderJson[0].LINE.OBDIVI,
+          OBORCO: orderJson[0].LINE.OBORCO,
           orderNo: orderNo,
           OKALCU: OKALCU,
           runningNumberH: runningNumberH,
           orderType: orderType,
           orderStatus: orderStatus,
+          orderDate: orderDate,
+          requestDate: requestDate,
+          OAFRE1: OAFRE1,
           payer: payer,
           itemCode: item.itemCode,
           itemNo: item.itemNo,
           itemName: item.itemName,
           qtyPCS: item.qtyPCS,
-          qtyCTN:item.qtyCTN,
+          qtyCTN: item.qtyCTN,
           unit: item.unit,
           price: item.price,
           discount: item.discount,
@@ -468,16 +470,20 @@ exports.insert = async (req, res, next) => {
           promotionCode: item.promotionCode,
           warehouse: warehouse,
           customerNo: customerNo,
-          customerChannel: customerChannel,
+          // customerChannel: customerChannel,
           addressID: addressID,
-          MOPLDT: existingData.OBPLDT,
-          MOTIHM: existingData.OBPLHM,
-          MOPRIO: existingData.OBPRIO,
-          OBORQT: existingData.OBORQT,
+          MOPLDT: orderJson[0].LINE.OBPLDT,
+          MOTIHM: orderJson[0].LINE.OBPLHM,
+          MOPRIO: orderJson[0].LINE.OBPRIO,
+          OBORQT: orderJson[0].LINE.OBORQT,
+          OBCOFA: item.OBCOFA,
+          OBSAPR: item.OBSAPR,
+          OBNEPR: item.OBNEPR,
+          OBUCOS: item.OBUCOS,
         };
       })
     );
-   
+
     let itemNo = 1;
     // let itemNo2 = 1;
     itemsData = itemsData.map((item) => {

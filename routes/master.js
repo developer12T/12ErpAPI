@@ -20,6 +20,8 @@ const {
   items,
   unit,
   itemsingle,
+  unitmin,
+  unitmax,
 } = require("../controllers/master/itemController");
 
 const {
@@ -46,6 +48,12 @@ router.post("/fac", fac);
 
 //http://localhost:3000/master/
 router.post("/unit", unit);
+
+//http://localhost:3000/master/
+router.post("/unitmin", unitmin);
+
+//http://localhost:3000/master/
+router.post("/unitmax", unitmax);
 
 //http://localhost:3000/master/
 router.post("/itemdetails", itemdetails);

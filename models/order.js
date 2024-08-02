@@ -39,7 +39,6 @@ const Order = sequelize.define(
       allowNull: false,
       field: "OARLDT",
     },
-
     customerNo: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -70,7 +69,16 @@ const Order = sequelize.define(
       allowNull: false,
       field: "OANTLA",
     },
-
+    OAFRE1: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAFRE1",
+    },
+    OADISY: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OADISY",
+    },
     totalVat: {
       type: DataTypes.VIRTUAL,
       get() {
@@ -181,12 +189,12 @@ const OLINE = sequelize.define(
       field: "OBTEDS",
     },
     qtyCTN: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OBORQA",
     },
     qtyPCS: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "OBORQT",
     },
@@ -200,10 +208,35 @@ const OLINE = sequelize.define(
       allowNull: false,
       field: "OBSAPR",
     },
+    OBDIA1: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OBDIA1",
+    },
     discount: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OBDIA2",
+    },
+    OBDIA3: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OBDIA3",
+    },
+    OBDIA4: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OBDIA4",
+    },
+    OBDIA5: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OBDIA5",
+    },
+    OBDIA6: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OBDIA6",
     },
     netPrice: {
       type: DataTypes.STRING,
@@ -286,20 +319,30 @@ const OLINE = sequelize.define(
       allowNull: true,
       field: "OBLMTS",
     },
-    OBDIA2: {
+    OBORCO: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OBLMTS",
+      field: "OBORCO",
     },
-    OBLMTS: {
-      type: DataTypes.STRING,
+    OBSAPR: {
+      type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OBLMTS",
+      field: "OBSAPR",
     },
-    OBLMTS: {
-      type: DataTypes.STRING,
+    OBNEPR: {
+      type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OBLMTS",
+      field: "OBNEPR",
+    },
+    OBLNAM: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OBLNAM",
+    },
+    OBUCOS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OBUCOS",
     },
   },
   {

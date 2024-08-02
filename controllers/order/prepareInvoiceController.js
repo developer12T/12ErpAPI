@@ -5,11 +5,11 @@ const {
 const { HOST } = require("../../config/index");
 const axios = require("axios");
 const { PrepareInvoA, PrepareInvoB } = require("../../models/prepareinvoice");
-const { warehouse } = require("../master/masterContorller");
 const now = new Date();
 const currentYear = now.getFullYear();
 const fs = require("fs");
 const path = require("path");
+const { totalNonVat, nonVat } = require("../../middleware/calVat");
 
 exports.index = async (req, res, next) => {};
 
@@ -38,25 +38,13 @@ exports.insertA = async (req, res, next) => {
         },
       });
 
-      const itemUnitData = await ItemUnit.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
-        where: {
+      let itemUnitMinData = await axios({
+        method: "post",
+        url: `${HOST}master/unitmin`,
+        data: {
           itemCode: item.itemCode,
-          coNo: 410,
-          facType: 1,
         },
-        // group: ["MMFUDS"],
       });
-
-      // let itemUnitData = await axios({
-      //   method: "post",
-      //   url: `${HOST}master/itemdetails`,
-      //   data: {
-      //     itemCode: item.itemCode,
-      //   },
-      // });
 
       let customerData = await axios({
         method: "post",
@@ -66,24 +54,26 @@ exports.insertA = async (req, res, next) => {
         },
       });
 
+      console.log(nonVat(item.OBUCOS * item.qtyCTN));
+
       await PrepareInvoA.create({
         coNo: item.coNo,
         OUDIVI: item.OBDIVI,
-        OUFACI: item.OUFACI,
+        OUFACI: "F10",
         orderNo: item.orderNo,
         itemNo: item.itemNo,
-        OUOSSQ: prepareJson.OUOSSQ,
+        OUOSSQ: prepareJson[0].HEAD.OUOSSQ,
         OUOSDT: item.orderDate, // OOHEAD.OAORDT
-        OUOSPE: item.orderDate.toString().substring(0, 7), // OOHEAD.OAORDT 6 digit font
+        OUOSPE: parseInt(item.orderDate.toString().slice(0, 6)), // OOHEAD.OAORDT 6 digit font
         customerNo: item.customerNo,
-        customerChannel: customerData.data[0].customerChannel, // OOLINE
+        customerChannel: customerData.data[0].customerChannel, // OOLINE *ไม่มีใน OOLINE และ OOHEAD
         OUCUST: item.customerNo, // customerNo
         orderType: item.orderType, //
         payer: item.payer,
         OUCUCD: item.OACUCD, // OOHEAD
         saleCode: customerData.data[0].saleCode, // OOHEAD
-        OUCSCD: "TH ", // OOHEAD
-        OUFRE1: "YSEND", // OOHEAD
+        OUCSCD: item.OBORCO, // OOHEAD   **OOHEAD but OOLINE.OBORCO
+        OUFRE1: item.OAFRE1, // OOHEAD
         warehouse: item.warehouse,
         itemCode: item.itemCode,
         OUITGR: itemData.data[0].MMITGR,
@@ -93,33 +83,33 @@ exports.insertA = async (req, res, next) => {
         OUORQT: item.qtyPCS, // OOLINE QT = PCS
         OUORQA: item.qtyCTN,
         unit: item.unit,
-        OUCOFA: 1, // OOLINE
-        OUDMCF: prepareJson.data[0].EDDPOL, // 1
-        OUSPUN: itemData.data[0].unit[0], // หน่วยเล็กสุดของ item
-        OUORQS: prepareJson.OUORQS, // OOLINE CTN
+        OUCOFA: item.OBCOFA, // OOLINE
+        OUDMCF: prepareJson[0].HEAD.OUDMCF, // 1
+        OUSPUN: itemUnitMinData.data[0].unit, // หน่วยเล็กสุดของ item
+        OUORQS: item.qtyCTN, // OOLINE CTN
         OUSTUN: item.unit,
         grossWight: item.grossWight, // OOLINE
         netWight: item.netWight, // OOLINE
         OUDCCD: prepareJson[0].HEAD.OUDCCD, // 2
-        OUSAPR: 70, //non vat OOLINE.OBSATR
-        OUGRPR: 140, //non vat OOLINE OBNATR
-        OUSAAM: 140, //OOLINE OBLANM
+        OUSAPR: nonVat(item.OBSAPR), //non vat OOLINE.OBSAPR
+        OUGRPR: nonVat(item.OBNEPR), //non vat OOLINE OBNEPR
+        OUSAAM: item.OBLNAM, //OOLINE OBLNAM
         OUPRMO: prepareJson[0].HEAD.OUPRMO, // 8
-        OUDISY: "CREDIT 18 ", //OOHEAD
+        OUDISY: item.OUDISY, //OOHEAD
         // add OOLINE OBDIC 1-6 use 2,5 other defult 1
         // OUDIA2  OOLINE non vat OBDIA2 * OBORQA
         // OUOFRA  OOLINE non vat OBDIA2 * OBORQA
-        OUOFRA: OUOFRA, // OOLINE non vat OBDIA2 * OBORQA
-        OUDIA2: OUOFRA, //OOLINE non vat OBDIA2 * OBORQA
+        OUOFRA: nonVat(item.OBUCOS * item.qtyCTN), // OOLINE non vat OBDIA2 * OBORQA
+        OUDIA2: nonVat(item.OBUCOS * item.qtyCTN), //OOLINE non vat OBDIA2 * OBORQA
         OUDWDT: item.requesetDate, //OOHEAD OARLDT
         OUCODT: item.requesetDate, //OOHEAD OARLDT
-        OUUCOS: calCost.data[0].cost, //OOLINE OBUCOS * OBORQT
+        OUUCOS: item.OBUCOS * item.qtyPCS, //OOLINE OBUCOS * OBORQT
         OUUCCD: prepareJson[0].HEAD.OUUCCD, // 1
-        OUUNMS: item.unit, // หน่วยเล็กสุดของ item
+        OUUNMS: itemUnitMinData.data[0].unit, // หน่วยเล็กสุดของ item
         OUORTK: prepareJson[0].HEAD.OUORTK, // 1
         addressID: item.addressID,
-        // OUSDEP
-        // OUBUAR
+        OUSDEP: "",
+        OUBUAR: "",
         OUINRC: item.customerNo, // customer
         OURGDT: formatDate(),
         OURGTM: getCurrentTimeFormatted(),
@@ -127,8 +117,8 @@ exports.insertA = async (req, res, next) => {
         OUCHNO: prepareJson[0].HEAD.OUCHNO, // 1
         OUCHID: prepareJson[0].HEAD.OUCHID,
         OULMTS: Date.now(),
-        OUACOS: 73, //OOLINE OBUCOS * OBORQT
-        OUTEPY: 30, //OCUSMA
+        OUACOS: nonVat(item.OBUCOS * item.qtyPCS), //OOLINE OBUCOS * OBORQT
+        OUTEPY: customerData.data[0].creditTerm, //OCUSMA
         OUDECU: item.customerNo, // customer
         OURQWH: item.warehouse, // warehouse
       });

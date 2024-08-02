@@ -64,6 +64,94 @@ exports.unit = async (req, res, next) => {
   }
 };
 
+exports.unitmin = async (req, res, next) => {
+  try {
+    const { itemCode } = req.body;
+
+    const min = await ItemUnit.min("factor", {
+      //   limit: 10,
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        coNo: 410,
+        itemCode: itemCode,
+        facType: 1,
+      },
+    });
+
+    const itemData = await ItemUnit.findAll({
+      //   limit: 10,
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        coNo: 410,
+        itemCode: itemCode,
+        facType: 1,
+        factor: min,
+      },
+    });
+    const items = itemData.map((item) => {
+      const itemCode = item.itemCode.trim();
+      const unit = item.unit.trim();
+      return {
+        itemCode: itemCode,
+        facType: item.facType,
+        factor: item.factor,
+        unit: unit,
+      };
+    });
+    res.json(items);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.unitmax = async (req, res, next) => {
+  try {
+    const { itemCode } = req.body;
+
+    const max = await ItemUnit.max("factor", {
+      //   limit: 10,
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        coNo: 410,
+        itemCode: itemCode,
+        facType: 1,
+      },
+    });
+
+    const itemData = await ItemUnit.findAll({
+      //   limit: 10,
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        coNo: 410,
+        itemCode: itemCode,
+        facType: 1,
+        factor: max,
+      },
+    });
+    const items = itemData.map((item) => {
+      const itemCode = item.itemCode.trim();
+      const unit = item.unit.trim();
+      return {
+        itemCode: itemCode,
+        facType: item.facType,
+        factor: item.factor,
+        unit: unit,
+      };
+    });
+    res.json(items);
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.items = async (req, res, next) => {
   try {
     const { itemCode } = req.body;

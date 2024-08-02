@@ -2,18 +2,13 @@
   {
     "HEAD": {
       "OUOSSQ": 1,
-      "OUCSCD": "TH ",
-      "OUFRE1": "YSEND",
-      "OUCOFA": 1,
       "OUDMCF": 1,
-      "OUORQS": 2,
-      "OUORQB": 0,
       "OUDCCD": 2,
       "OUPRMO": 8,
       "OUUCCD": 1,
       "OUORTK": 1,
       "OUCHNO": 1,
-      "OUCHID": "MVXSECOFR "
+      "OUCHID": "MVXSECOFR"
     },
     "LINE": {
       "UCCONO": 410,
