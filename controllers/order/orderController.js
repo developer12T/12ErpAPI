@@ -433,12 +433,30 @@ exports.insert = async (req, res, next) => {
 
     let itemsData = await Promise.all(
       items.map(async (item) => {
-        const { data } = await axios({
+        const calWight = await axios({
           method: "post",
           url: `${HOST}master/calwight`,
           data: {
             itemCode: item.itemCode,
             qty: item.qtyPCS,
+          },
+        });
+
+        const factor = await axios({
+          method: "post",
+          url: `${HOST}master/unit`,
+          data: {
+            itemCode: item.itemCode,
+            unit: item.unit,
+          },
+        });
+
+        const calcost = await axios({
+          method: "post",
+          url: `${HOST}master/calcost`,
+          data: {
+            itemCode: item.itemCode,
+            qty: item.qtyCTN,
           },
         });
         return {
@@ -465,8 +483,8 @@ exports.insert = async (req, res, next) => {
           discount: item.discount,
           netPrice: item.netPrice,
           total: item.total,
-          netWight: data[0].netWight,
-          grossWight: data[0].grossWight,
+          netWight: calWight.data[0].netWight,
+          grossWight: calWight.data[0].grossWight,
           promotionCode: item.promotionCode,
           warehouse: warehouse,
           customerNo: customerNo,
@@ -476,10 +494,10 @@ exports.insert = async (req, res, next) => {
           MOTIHM: orderJson[0].LINE.OBPLHM,
           MOPRIO: orderJson[0].LINE.OBPRIO,
           OBORQT: orderJson[0].LINE.OBORQT,
-          OBCOFA: item.OBCOFA,
           OBSAPR: item.OBSAPR,
           OBNEPR: item.OBNEPR,
-          OBUCOS: item.OBUCOS,
+          OBCOFA: factor.data[0].factor,
+          OBUCOS: calcost.data[0].cost,
         };
       })
     );
