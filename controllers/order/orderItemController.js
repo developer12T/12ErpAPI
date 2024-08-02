@@ -26,78 +26,48 @@ exports.insertItem = async (req, res, next) => {
 
     // res.json(fs.existsSync(jsonPath))
     // let itemNo = 1;
-    // for (let item of items) {
-    //   await OLINE.create({
-    //     coNo: existingData.OBCONO, //
-    //     OBDIVI: existingData.OBDIVI, //
-    //     orderNo: item.orderNo,
-    //     itemNo: item.itemNo,
-    //     orderStatus: item.orderStatus,
-    //     OBFACI: existingData.OBFACI,
-    //     warehouse: item.warehouse,
-    //     itemCode: item.itemCode,
-    //     OBITDS: existingData.OBITDS,
-    //     itemName: item.itemName,
-    //     OBORQT: existingData.OBORQT,
-    //     qtyCTN: item.qtyCTN,
-    //     OBIVQT: existingData.OBIVQT,
-    //     OBIVQA: existingData.OBIVQA,
-    //     unit: item.unit,
-    //     price: item.price,
-    //     netPrice: item.netPrice,
-    //     discount: item.discount,
-    //     total: item.total,
-    //     promotionCode: item.promotionCode,
-    //     OBATPR: existingData.OBATPR,
-    //     OBMODL: existingData.OBMODL,
-    //     OBTEDL: existingData.OBTEDL,
-    //     OBRGDT: formatDate(),
-    //     OBRGTM: getCurrentTimeFormatted(),
-    //     OBLMDT: formatDate(),
-    //     OBCHNO: existingData.OBCHNO,
-    //     OBCHID: existingData.OBCHID,
-    //     OBLMTS: Date.now(),
-    //     creditTerm: existingData.OBTEPY,
-    //     OBPLDT: existingData.OBPLDT,
-    //     OBPLHM: existingData.OBPLHM,
-    //     OBPRIO: existingData.OBPRIO,
-    //   });
-    // }
-
-    let itemsData = items.map((item) => {
-      return {
-        coNo: 410,
-        OBDIVI: "OTT",
+    for (let item of items) {
+      await OLINE.create({
+        coNo: existingData.OBCONO, //
+        OBDIVI: existingData.OBDIVI, //
         orderNo: item.orderNo,
-        orderType: item.orderType,
-        orderStatus: item.orderStatus,
-        payer: item.payer,
-        itemCode: item.itemCode,
         itemNo: item.itemNo,
+        orderStatus: item.orderStatus,
+        OBFACI: existingData.OBFACI,
+        warehouse: item.warehouse,
         itemCode: item.itemCode,
+        OBITDS: existingData.OBITDS,
         itemName: item.itemName,
+        qtyPCS: item.qtyPCS,
         qtyCTN: item.qtyCTN,
+        OBIVQT: existingData.OBIVQT,
+        OBIVQA: existingData.OBIVQA,
         unit: item.unit,
         price: item.price,
-        discount: item.discount,
         netPrice: item.netPrice,
+        discount: item.discount,
+        OBDIA5: 0,
         total: item.total,
         promotionCode: item.promotionCode,
-        warehouse: item.warehouse,
-        customerNo: item.customerNo,
-        customerChannel: item.customerChannel,
-        addressID: item.addressID,
-        MOPLDT: existingData.OBPLDT,
-        MOTIHM: existingData.OBPLHM,
-        MOPRIO: existingData.OBPRIO,
-      };
-    });
-
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}allowcate/insert`,
-    //   data: { items: itemsData },
-    // });
+        OBATPR: existingData.OBATPR,
+        OBMODL: existingData.OBMODL,
+        OBTEDL: existingData.OBTEDL,
+        OBRGDT: formatDate(),
+        OBRGTM: getCurrentTimeFormatted(),
+        OBLMDT: formatDate(),
+        OBCHNO: existingData.OBCHNO,
+        OBCHID: existingData.OBCHID,
+        OBLMTS: Date.now(),
+        creditTerm: existingData.OBTEPY,
+        OBPLDT: formatDate(),
+        OBPLHM: existingData.OBPLHM,
+        OBPRIO: existingData.OBPRIO,
+        OBUCOS: item.OBUCOS,
+        OBCOFA: item.OBCOFA,
+        OBORCO: item.OBORCO,
+        OBLNAM: item.price, // recheck
+      });
+    }
 
     res.status(201).json({
       message: "Created",

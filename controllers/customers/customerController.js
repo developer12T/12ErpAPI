@@ -170,6 +170,78 @@ exports.single = async (req, res, next) => {
         customerNo: customerNo,
       },
     });
+
+    let shippingarr = [];
+    let salearr = [];
+
+    for (let i = 0; i < customersData.length; i++) {
+      const shippingData = await Shipping.findAll({
+        attributes: {
+          exclude: ["id"],
+        },
+        where: { customerNo: customersData[i].customerNo, coNo: "410" },
+        // group: ["MMFUDS"],
+      });
+      for (let i = 0; i < shippingData.length; i++) {
+        shippingarr.push({
+          addressID: shippingData[i].addressID,
+          customerName: shippingData[i].customerName,
+          shippingAddress1: shippingData[i].shippingAddress1,
+          shippingAddress2: shippingData[i].shippingAddress2,
+          shippingAddress3: shippingData[i].shippingAddress3,
+          shippingPoscode: shippingData[i].shippingPoscode,
+          shippingPhone: shippingData[i].shippingPhone,
+        });
+      }
+    }
+
+    const shippings = shippingarr.map((shipping) => {
+      const shippingPoscode = shipping.shippingPoscode.trim();
+      const shippingPhone = shipping.shippingPhone.trim();
+      const shippingAddress1 = shipping.shippingAddress1.trim();
+      const shippingAddress2 = shipping.shippingAddress2.trim();
+      const shippingAddress3 = shipping.shippingAddress3.trim();
+      return {
+        addressID: shipping.addressID,
+        customerName: shipping.customerName,
+        shippingAddress1: shippingAddress1,
+        shippingAddress2: shippingAddress2,
+        shippingAddress3: shippingAddress3,
+        shippingPoscode: shippingPoscode,
+        shippingPhone: shippingPhone,
+      };
+    });
+
+    for (let i = 0; i < customersData.length; i++) {
+      const saleData = await Sale.findAll({
+        attributes: {
+          exclude: ["id"],
+        },
+        where: {
+          saleCode: customersData[i].saleCode,
+          CTSTCO: "SMCD",
+          coNo: 410,
+        },
+        // group: ["MMFUDS"],
+      });
+      const sales = saleData.map((sale) => {
+        const OKSMCD = sale.saleCode.trim();
+        const saleName = sale.saleName.trim();
+        return {
+          saleCode: OKSMCD,
+
+          saleName: filterStringParentTH(saleName),
+        };
+      });
+      for (let i = 0; i < sales.length; i++) {
+        // const saleCode = saleData[].customerNo.trim();
+        salearr.push({
+          saleCode: sales[i].saleCode,
+          sale_name: sales[i].saleName,
+        });
+      }
+    }
+
     const customers = customersData.map((customer) => {
       const customerNo = customer.customerNo.trim();
       const customerPoscode = customer.customerPoscode.trim();
@@ -179,6 +251,7 @@ exports.single = async (req, res, next) => {
       const OKCFC1 = customer.OKCFC1.trim();
       const OKCFC3 = customer.OKCFC3.trim();
       const OKCFC6 = customer.OKCFC6.trim();
+      const OKCSCD = customer.OKCSCD.trim();
       const salePayer = customer.salePayer.trim();
       const taxno = customer.taxno.trim();
       const saleCode = customer.saleCode.trim();
@@ -209,8 +282,10 @@ exports.single = async (req, res, next) => {
         OKCFC6: OKCFC6,
         creditLimit: customer.creditLimit,
         taxno: taxno,
-        OKCSCD: customer.OKCSCD,
+        OKCSCD: OKCSCD,
         OKECAR: customer.OKECAR,
+        shippings: shippings,
+        sale: salearr,
       };
     });
 

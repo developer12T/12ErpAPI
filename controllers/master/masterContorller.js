@@ -135,7 +135,9 @@ exports.calCost = async (req, res, next) => {
       const itemCode = item.itemCode.trim();
       return {
         itemCode: itemCode,
-        cost: Math.round(item.cost * qty * 1000000) / 1000000,
+        cost: Number(
+          Math.round((Math.round(item.cost * qty * 100000) / 100000) * 10000) / 10000
+        ),
       };
     });
     res.json(items);

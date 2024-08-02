@@ -125,7 +125,18 @@ exports.update = async (req, res, next) => {
 
 exports.insert = async (req, res, next) => {
   try {
-    const shippings = req.body.shippings;
+    // const shippings = req.body.shippings;
+    const {
+      customerNo,
+      customerName,
+      shippingAddress1,
+      shippingAddress2,
+      shippingAddress3,
+      shippingAddress4,
+      shippingPhone,
+      shippingPoscode,
+      OPULZO,
+    } = req.body;
 
     // customerNo,
     // // addressID,
@@ -171,7 +182,7 @@ exports.insert = async (req, res, next) => {
     addressID = `${checkShipping}${shinppingNum + 1}`;
 
     await Shipping.create({
-      coNO: existingData.OPCONO, // OPCONO,
+      coNo: existingData.OPCONO, // OPCONO,
       customerNo: customerNo, // OPCUNO
       OPADRT: existingData.OPADRT, // OPPART
       addressID: addressID, // addressID
@@ -190,7 +201,7 @@ exports.insert = async (req, res, next) => {
       OPCSCD: existingData.OPCSCD, // OPCSCD
       OPEDES: existingData.OPEDES, // OPEDES
       // OPRODN: '', // OPRODN
-      OPULZO: OPULZO, // OPULZO
+      shippingRoute: OPULZO, // OPULZO
       OPGEOC: existingData.OPGEOC, // OPGEOC
       OPFVDT: existingData.OPFVDT, // OPFVDT
       OPLVDT: existingData.OPLVDT, // OPLVDT

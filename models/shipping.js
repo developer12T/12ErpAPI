@@ -6,6 +6,7 @@ const Shipping = sequelize.define(
     coNo: {
       type: DataTypes.STRING,
       allowNull: false,
+      
       field: "OPCONO",
     },
     customerNo: {
@@ -16,6 +17,7 @@ const Shipping = sequelize.define(
     addressID: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey:true,
       field: "OPADID",
     },
     customerName: {

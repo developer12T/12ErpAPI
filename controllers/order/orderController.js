@@ -338,44 +338,6 @@ exports.insert = async (req, res, next) => {
       orderJson = JSON.parse(jsonDataOrder);
     }
 
-    if (Hcase === 1) {
-      await Order.create({
-        coNo: orderJson.HEAD.OACONO, // OACONO,
-        OADIVI: orderJson.OADIVI, // OADIVI
-        orderNo: orderNo, // OAORNO
-        orderType: orderType, // OAFACI
-        OAFACI: orderJson.OAFACI, // OAORTP
-        warehouse: warehouse, // OAWHLO
-        orderStatus: orderStatus, // OAORST
-        OAORSL: orderStatus, // OAORSL
-        customerNo: customerNo, // OACUNO
-        orderDate: orderDate, // OAORDT
-        OACUDT: formatDate(), // OACUDT
-        requestDate: requestDate, // OARLDT
-        OARLDZ: formatDate(), // OARLDZ
-        OATIZO: orderJson.OATIZO, // OAMODL
-        OATEPY: orderJson.OATEPY, // OATEPY
-        OAMODL: orderJson.OAMODL, // OAMODL
-        OATEDL: orderJson.OATEDL, // OATEDL
-        addressID: addressID, // OAADID
-        OALOCD: orderJson.OALOCD, // OALOCD
-        OACUCD: orderJson.OACUCD, // OACUCD
-        total: total, // OABRLA
-        totalNet: totalNet, // OANTLA
-        OARGDT: formatDate(), // OARGDT
-        OARGTM: getCurrentTimeFormatted(), // OARGTM
-        OALMDT: formatDate(), // OALMDT
-        OACHID: orderJson.OACHID, // OACHID
-        OALMTS: Date.now(), // OALMTS
-      });
-
-      await axios({
-        method: "post",
-        url: `${HOST}document/insert`,
-        data: { orderType: orderType, orderNo: orderNo },
-      });
-    }
-
     const running = await axios({
       method: "post",
       url: `${HOST}master/runningNumber/`,
@@ -492,6 +454,8 @@ exports.insert = async (req, res, next) => {
           OBNEPR: item.OBNEPR,
           OBCOFA: factor.data[0].factor,
           OBUCOS: calcost.data[0].cost,
+          OBLNAM: item.netPrice, // ***
+
         };
       })
     );
@@ -509,48 +473,81 @@ exports.insert = async (req, res, next) => {
 
     // res.json(itemsData);
 
-    // let calCost = await axios({
-    //   method: "post",
-    //   url: `${HOST}master/calcost`,
-    //   data: {
-    //     itemCode: item.itemCode,
-    //     qtyCTN: item.qtyCTN,
-    //   },
-    // });
-    // console.log(itemsData);
+    if (Hcase === 1) {
+      await Order.create({
+        coNo: orderJson[0].HEAD.OACONO, // OACONO,
+        OADIVI: orderJson[0].HEAD.OADIVI, // OADIVI
+        orderNo: orderNo, // OAORNO
+        orderType: orderType, // OAORTP
+        OAFRE1: OAFRE1,
+        OADISY: orderJson[0].HEAD.OADISY,
+        OAFACI: orderJson[0].HEAD.OAFACI, // OAFACI
+        warehouse: warehouse, // OAWHLO
+        orderStatus: orderStatus, // OAORST
+        OAORSL: orderStatus, // OAORSL
+        customerNo: customerNo, // OACUNO
+        orderDate: orderDate, // OAORDT
+        OACUDT: formatDate(), // OACUDT
+        requestDate: requestDate, // OARLDT
+        grossWight: totalGrossWight,
+        netWight: totalNetWight,
+        OARLDZ: formatDate(), // OARLDZ
+        OATIZO: orderJson[0].HEAD.OATIZO, // OATIZO
+        OATEPY: orderJson[0].HEAD.OATEPY, // OATEPY
+        OAMODL: orderJson[0].HEAD.OAMODL, // OAMODL
+        OATEDL: orderJson[0].HEAD.OATEDL, // OATEDL
+        addressID: addressID, // OAADID
+        OALOCD: orderJson[0].HEAD.OALOCD, // OALOCD
+        OACUCD: orderJson[0].HEAD.OACUCD, // OACUCD
+        total: total, // OABRLA
+        totalNet: totalNet, // OANTLA
+        OARGDT: formatDate(), // OARGDT
+        OARGTM: getCurrentTimeFormatted(), // OARGTM
+        OALMDT: formatDate(), // OALMDT
+        OACHID: orderJson[0].HEAD.OACHID, // OACHID
+        OALMTS: Date.now(), // OALMTS
+      });
 
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}allowcate/insert`,
-    //   data: { items: itemsData },
-    // });
+      await axios({
+        method: "post",
+        url: `${HOST}document/insert`,
+        data: { orderType: orderType, orderNo: orderNo, coNo: 410 },
+      });
+    }
 
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}order/insertorderitem`,
-    //   data: { items: itemsData },
-    // });
+  
+    await axios({
+      method: "post",
+      url: `${HOST}allowcate/insert`,
+      data: { items: itemsData },
+    });
+
+    await axios({
+      method: "post",
+      url: `${HOST}order/insertorderitem`,
+      data: { items: itemsData },
+    });
 
     // res.json(itemsData);
     // // Insert Delivery Head
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}delivery/insertHead`,
-    //   data: {
-    //     warehouse: 101,
-    //     coNo: 410,
-    //     runningNumberH: runningNumberH,
-    //     orderNo: orderNo,
-    //     orderType: orderType,
-    //     addressID: addressID,
-    //     customerNo: customerNo,
-    //     OARLDT: requestDate,
-    //     OARGTM: getCurrentTimeFormatted(),
-    //     OATIZO: orderJson[0].HEAD.OATIZO,
-    //     grossWight: totalGrossWight,
-    //     netWight: totalNetWight,
-    //   },
-    // });
+    await axios({
+      method: "post",
+      url: `${HOST}delivery/insertHead`,
+      data: {
+        warehouse: 101,
+        coNo: 410,
+        runningNumberH: runningNumberH,
+        orderNo: orderNo,
+        orderType: orderType,
+        addressID: addressID,
+        customerNo: customerNo,
+        OARLDT: requestDate,
+        OARGTM: getCurrentTimeFormatted(),
+        OATIZO: orderJson[0].HEAD.OATIZO,
+        grossWight: totalGrossWight,
+        netWight: totalNetWight,
+      },
+    });
     // Insert Delivery Line
     await axios({
       method: "post",
@@ -560,16 +557,16 @@ exports.insert = async (req, res, next) => {
       },
     });
 
-    // // Insert Prepare Invoice A
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}prepare/insertA`,
-    //   data: {
-    //     items: itemsData,
-    //   },
-    // });
+    // Insert Prepare Invoice A
+    await axios({
+      method: "post",
+      url: `${HOST}prepare/insertA`,
+      data: {
+        items: itemsData,
+      },
+    });
 
-    // // Insert Prepare Invoice B
+    // Insert Prepare Invoice B
     // await axios({
     //   method: "post",
     //   url: `${HOST}prepare/insertB`,

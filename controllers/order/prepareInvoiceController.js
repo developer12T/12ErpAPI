@@ -54,7 +54,7 @@ exports.insertA = async (req, res, next) => {
         },
       });
 
-      console.log(nonVat(item.OBUCOS * item.qtyCTN));
+      // console.log(nonVat(item.OBUCOS * item.qtyCTN));
 
       await PrepareInvoA.create({
         coNo: item.coNo,
@@ -91,8 +91,8 @@ exports.insertA = async (req, res, next) => {
         grossWight: item.grossWight, // OOLINE
         netWight: item.netWight, // OOLINE
         OUDCCD: prepareJson[0].HEAD.OUDCCD, // 2
-        OUSAPR: nonVat(item.OBSAPR), //non vat OOLINE.OBSAPR
-        OUGRPR: nonVat(item.OBNEPR), //non vat OOLINE OBNEPR
+        OUSAPR: nonVat(item.price), //non vat OOLINE.OBSAPR
+        OUGRPR: nonVat(item.netPrice), //non vat OOLINE OBNEPR
         OUSAAM: item.OBLNAM, //OOLINE OBLNAM
         OUPRMO: prepareJson[0].HEAD.OUPRMO, // 8
         OUDISY: item.OUDISY, //OOHEAD

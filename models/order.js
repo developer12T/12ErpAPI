@@ -164,23 +164,23 @@ const OLINE = sequelize.define(
     },
     orderStatus: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBORST",
     },
     OBFACI: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBFACI",
     },
     warehouse: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBWHLO",
     },
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey: true,
+      primaryKey: false,
       field: "OBITNO",
     },
     itemName: {
@@ -210,7 +210,7 @@ const OLINE = sequelize.define(
     },
     OBDIA1: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "OBDIA1",
     },
     discount: {
@@ -220,22 +220,22 @@ const OLINE = sequelize.define(
     },
     OBDIA3: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "OBDIA3",
     },
     OBDIA4: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "OBDIA4",
     },
     OBDIA5: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "OBDIA5",
     },
     OBDIA6: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "OBDIA6",
     },
     netPrice: {
@@ -250,99 +250,95 @@ const OLINE = sequelize.define(
     },
     promotionCode: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBPIDE",
     },
     OBPLDT: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBPLDT",
     },
     OBPLHM: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBPLHM",
     },
 
     OBPRIO: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBPRIO",
     },
     OBIVQA: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBIVQA",
     },
     OBATPR: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBATPR",
     },
     OBMODL: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBMODL",
     },
     OBTEDL: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBTEDL",
     },
     OBRGDT: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBRGDT",
     },
     OBRGTM: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBRGTM",
     },
     OBLMDT: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBLMDT",
     },
     OBCHNO: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBCHNO",
     },
     OBCHID: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBCHID",
     },
     OBLMTS: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBLMTS",
     },
     OBORCO: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       field: "OBORCO",
     },
-    OBSAPR: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      field: "OBSAPR",
-    },
-    OBNEPR: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      field: "OBNEPR",
-    },
+
     OBLNAM: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       field: "OBLNAM",
     },
     OBUCOS: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       field: "OBUCOS",
+    },
+    OBCOFA: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "OBCOFA",
     },
   },
   {
