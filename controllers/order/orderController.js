@@ -11,7 +11,6 @@ const {
 const fs = require("fs");
 const path = require("path");
 const Shipping = require("../../models/shipping");
-const { calWight } = require("../master/masterContorller");
 
 // Get the current year and month
 const now = new Date();
@@ -421,13 +420,13 @@ exports.insert = async (req, res, next) => {
           OACUCD: orderJson[0].HEAD.OACUCD,
           OBDIVI: orderJson[0].LINE.OBDIVI,
           OBORCO: orderJson[0].LINE.OBORCO,
-          orderNo: orderNo,
+          orderNo: orderNo, //OAORNO
           OKALCU: OKALCU,
-          runningNumberH: runningNumberH,
-          orderType: orderType,
-          orderStatus: orderStatus,
-          orderDate: orderDate,
-          requestDate: requestDate,
+          runningNumberH: runningNumberH, //OQDLIX
+          orderType: orderType, //OAORTP
+          orderStatus: orderStatus, //OAORSL
+          orderDate: orderDate, //OAORDT
+          requestDate: requestDate, //OARLDT
           OAFRE1: OAFRE1,
           payer: payer,
           itemCode: item.itemCode,
@@ -446,7 +445,7 @@ exports.insert = async (req, res, next) => {
           warehouse: warehouse,
           customerNo: customerNo,
           // customerChannel: customerChannel,
-          addressID: addressID,
+          addressID: addressID, 
           MOPLDT: formatDate(),
 
           MOTIHM: orderJson[0].LINE.OBPLHM,

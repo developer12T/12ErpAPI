@@ -10,7 +10,9 @@ const {
   calCost,
   calWight,
   runningNumber,
+  runningNumberInvoice,
   updateRunningNumber,
+  updateRunningNumberInvoice,
   warehouse,
   singlepolicy,
 } = require("../controllers/master/masterContorller");
@@ -77,6 +79,12 @@ router.post("/runningNumber/s", runningNumber);
 
 //http://localhost:3000/master/runningNumber/edit
 router.post("/runningNumber/update", updateRunningNumber);
+
+//http://localhost:3000/master/runningNumber/
+router.post("/runningNumberInvoice/s", runningNumberInvoice);
+
+//http://localhost:3000/master/runningNumber/edit
+router.post("/runningNumberInvoice/update", updateRunningNumberInvoice);
 
 // Warehouse
 //http://localhost:3000/master/calWight

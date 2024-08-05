@@ -5,7 +5,10 @@ const {
   Warehouse,
   Policy,
 } = require("../../models/master");
-const NumberSeries = require("../../models/runningnumber");
+const {
+  NumberSeries,
+  NumberSeriesInvoice,
+} = require("../../models/runningnumber");
 const { HOST } = require("../../config/index");
 const axios = require("axios");
 
@@ -136,7 +139,8 @@ exports.calCost = async (req, res, next) => {
       return {
         itemCode: itemCode,
         cost: Number(
-          Math.round((Math.round(item.cost * qty * 100000) / 100000) * 10000) / 10000
+          Math.round((Math.round(item.cost * qty * 100000) / 100000) * 10000) /
+            10000
         ),
       };
     });
@@ -165,10 +169,29 @@ exports.runningNumber = async (req, res, next) => {
   }
 };
 
+exports.runningNumberInvoice = async (req, res, next) => {
+  try {
+    const { series, year, coNo } = req.body;
+    const result = await NumberSeriesInvoice.findAll({
+      attributes: {
+        exclude: ["id"],
+      },
+      where: {
+        coNo: coNo,
+        series: series,
+        year: year,
+      },
+    });
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.updateRunningNumber = async (req, res, next) => {
   try {
     const { coNo, lastNo, seriesType, series } = req.body;
-    const update = await NumberSeries.update(
+    const update = await NumberSeriesInvoice.update(
       { lastNo: lastNo },
       {
         attributes: { exclude: ["id"] },
@@ -176,6 +199,26 @@ exports.updateRunningNumber = async (req, res, next) => {
           coNo: coNo,
           series: series,
           seriesType: seriesType,
+        },
+      }
+    );
+    res.json(update);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateRunningNumberInvoice = async (req, res, next) => {
+  try {
+    const { coNo, lastNo, year, series } = req.body;
+    const update = await NumberSeriesInvoice.update(
+      { lastNo: lastNo },
+      {
+        attributes: { exclude: ["id"] },
+        where: {
+          coNo: coNo,
+          series: series,
+          year: year,
         },
       }
     );
