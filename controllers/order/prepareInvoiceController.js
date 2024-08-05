@@ -46,6 +46,15 @@ exports.insertA = async (req, res, next) => {
         },
       });
 
+      let itemUnitMaxData = await axios({
+        method: "post",
+        url: `${HOST}master/unitmax`,
+        data: {
+          itemCode: item.itemCode,
+        },
+      });
+      
+
       let customerData = await axios({
         method: "post",
         url: `${HOST}customer/single`,
@@ -72,6 +81,7 @@ exports.insertA = async (req, res, next) => {
         payer: item.payer,
         OUCUCD: item.OACUCD, // OOHEAD
         saleCode: customerData.data[0].saleCode, // OOHEAD
+        // OUSDST
         OUCSCD: item.OBORCO, // OOHEAD   **OOHEAD but OOLINE.OBORCO
         OUFRE1: item.OAFRE1, // OOHEAD
         warehouse: item.warehouse,
@@ -85,9 +95,9 @@ exports.insertA = async (req, res, next) => {
         unit: item.unit,
         OUCOFA: item.OBCOFA, // OOLINE
         OUDMCF: prepareJson[0].HEAD.OUDMCF, // 1
-        OUSPUN: itemUnitMinData.data[0].unit, // หน่วยเล็กสุดของ item
+        OUSPUN: itemUnitMaxData.data[0].unit, // Bigest
         OUORQS: item.qtyCTN, // OOLINE CTN
-        OUSTUN: item.unit,
+        OUSTUN: itemUnitMinData.data[0].unit, // ** smallest
         grossWight: item.grossWight, // OOLINE
         netWight: item.netWight, // OOLINE
         OUDCCD: prepareJson[0].HEAD.OUDCCD, // 2
@@ -99,11 +109,12 @@ exports.insertA = async (req, res, next) => {
         // add OOLINE OBDIC 1-6 use 2,5 other defult 1
         // OUDIA2  OOLINE non vat OBDIA2 * OBORQA
         // OUOFRA  OOLINE non vat OBDIA2 * OBORQA
-        OUOFRA: nonVat(item.OBUCOS * item.qtyCTN), // OOLINE non vat OBDIA2 * OBORQA
+        // OOLINE non vat OBDIA2 * OBORQA
         OUDIA2: nonVat(item.OBUCOS * item.qtyCTN), //OOLINE non vat OBDIA2 * OBORQA
+        OUOFRA: nonVat(item.OBUCOS * item.qtyCTN),
         OUDWDT: item.requesetDate, //OOHEAD OARLDT
         OUCODT: item.requesetDate, //OOHEAD OARLDT
-        OUUCOS: item.OBUCOS * item.qtyPCS, //OOLINE OBUCOS * OBORQT
+        OUUCOS: nonVat(item.OBUCOS * item.qtyPCS), //OOLINE OBUCOS * OBORQT
         OUUCCD: prepareJson[0].HEAD.OUUCCD, // 1
         OUUNMS: itemUnitMinData.data[0].unit, // หน่วยเล็กสุดของ item
         OUORTK: prepareJson[0].HEAD.OUORTK, // 1
@@ -116,6 +127,7 @@ exports.insertA = async (req, res, next) => {
         OULMDT: formatDate(),
         OUCHNO: prepareJson[0].HEAD.OUCHNO, // 1
         OUCHID: prepareJson[0].HEAD.OUCHID,
+        // OUCAWE
         OULMTS: Date.now(),
         OUACOS: nonVat(item.OBUCOS * item.qtyPCS), //OOLINE OBUCOS * OBORQT
         OUTEPY: customerData.data[0].creditTerm, //OCUSMA

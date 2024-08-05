@@ -16,56 +16,92 @@ exports.insertItem = async (req, res, next) => {
   try {
     const items = req.body.items;
 
-    const jsonPath = path.join(__dirname, "../../", "Jsons", "orederItem.json");
-    let existingData = [];
-
-    if (fs.existsSync(jsonPath)) {
-      const jsonData = fs.readFileSync(jsonPath, "utf-8");
-      existingData = JSON.parse(jsonData);
+    const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
+    let orderJson = [];
+    if (fs.existsSync(jsonPathOrder)) {
+      const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
+      orderJson = JSON.parse(jsonDataOrder);
     }
 
     // res.json(fs.existsSync(jsonPath))
     // let itemNo = 1;
     for (let item of items) {
       await OLINE.create({
-        coNo: existingData.OBCONO, //
-        OBDIVI: existingData.OBDIVI, //
+        coNo: orderJson[0].LINE.OBCONO, //
+        OBDIVI: orderJson[0].LINE.OBDIVI, //
         orderNo: item.orderNo,
         itemNo: item.itemNo,
         orderStatus: item.orderStatus,
-        OBFACI: existingData.OBFACI,
+        OBFACI: orderJson[0].LINE.OBFACI,
         warehouse: item.warehouse,
         itemCode: item.itemCode,
-        OBITDS: existingData.OBITDS,
+        OBITDS: orderJson[0].LINE.OBITDS,
         itemName: item.itemName,
         qtyPCS: item.qtyPCS,
         qtyCTN: item.qtyCTN,
-        OBIVQT: existingData.OBIVQT,
-        OBIVQA: existingData.OBIVQA,
+        OBIVQT: item.qtyPCS,
+        OBIVQA: item.qtyCTN,
         unit: item.unit,
+        // OBDCCA
+        // OBOCFA
+        // OBDMCF
+        // OBSPUN
+        // OBPCOF
+        // OBDCCS
+        // OBCOFS
+        // OBDMCS
         price: item.price,
         netPrice: item.netPrice,
         discount: item.discount,
+        OBLNAM: item.price, // recheck
+        // OBDIC1
+        // OBDIC2
+        // OBDIC3
+        // OBDIC4
+        // OBDIC5
+        // OBDIC6
+        // OBDIA1
+        // OBDIA2
+        // OBDIA3
+        // OBDIA4
+        // OBDIA5
+        // OBDIA6
+        // OBDWDT
+        // OBCODT
+        // OBCOHM
+        // OBDWDZ
+        // OBCODZ
+        // OBCOHZ
+        // OBTIZO
+        // OBSTCD
+        // OBUCOS
+        // OBCOCD
+        // OBUCCD
+        // OBVTCD
+        // OBSMCD
         OBDIA5: 0,
         total: item.total,
         promotionCode: item.promotionCode,
-        OBATPR: existingData.OBATPR,
-        OBMODL: existingData.OBMODL,
-        OBTEDL: existingData.OBTEDL,
+        OBATPR: orderJson[0].LINE.OBATPR,
+        OBMODL: orderJson[0].LINE.OBMODL,
+        OBTEDL: orderJson[0].LINE.OBTEDL,
         OBRGDT: formatDate(),
         OBRGTM: getCurrentTimeFormatted(),
         OBLMDT: formatDate(),
-        OBCHNO: existingData.OBCHNO,
-        OBCHID: existingData.OBCHID,
+        OBCHNO: orderJson[0].LINE.OBCHNO,
+        OBCHID: orderJson[0].LINE.OBCHID,
         OBLMTS: Date.now(),
-        creditTerm: existingData.OBTEPY,
+  
+
         OBPLDT: formatDate(),
-        OBPLHM: existingData.OBPLHM,
-        OBPRIO: existingData.OBPRIO,
+        OBPLHM: orderJson[0].LINE.OBPLHM,
+        OBPRIO: orderJson[0].LINE.OBPRIO,
         OBUCOS: item.OBUCOS,
         OBCOFA: item.OBCOFA,
         OBORCO: item.OBORCO,
-        OBLNAM: item.price, // recheck
+        creditTerm: orderJson[0].LINE.OBTEPY,
+        //OBDECU
+        //OBPRIO
       });
     }
 

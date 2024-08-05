@@ -57,12 +57,12 @@ exports.login = async (req, res, next) => {
     });
 
   //decode วันหมดอายุ
-    const expires_in = jwt.decode(token);
-    return res.status(200).json({
-      access_token: token,
-      expires_in: expires_in.exp,
-      token_type: "Bearer",
-    });
+    // const expires_in = jwt.decode(token);
+    // return res.status(200).json({
+    //   access_token: token,
+    //   expires_in: expires_in.exp,
+    //   token_type: "Bearer",
+    // });
   } catch (error) {
     next(error);
   }

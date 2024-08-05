@@ -447,7 +447,8 @@ exports.insert = async (req, res, next) => {
           customerNo: customerNo,
           // customerChannel: customerChannel,
           addressID: addressID,
-          MOPLDT: orderJson[0].LINE.OBPLDT,
+          MOPLDT: formatDate(),
+
           MOTIHM: orderJson[0].LINE.OBPLHM,
           MOPRIO: orderJson[0].LINE.OBPRIO,
           OBSAPR: item.OBSAPR,
@@ -455,7 +456,6 @@ exports.insert = async (req, res, next) => {
           OBCOFA: factor.data[0].factor,
           OBUCOS: calcost.data[0].cost,
           OBLNAM: item.netPrice, // ***
-
         };
       })
     );
@@ -479,8 +479,6 @@ exports.insert = async (req, res, next) => {
         OADIVI: orderJson[0].HEAD.OADIVI, // OADIVI
         orderNo: orderNo, // OAORNO
         orderType: orderType, // OAORTP
-        OAFRE1: OAFRE1,
-        OADISY: orderJson[0].HEAD.OADISY,
         OAFACI: orderJson[0].HEAD.OAFACI, // OAFACI
         warehouse: warehouse, // OAWHLO
         orderStatus: orderStatus, // OAORST
@@ -489,23 +487,48 @@ exports.insert = async (req, res, next) => {
         orderDate: orderDate, // OAORDT
         OACUDT: formatDate(), // OACUDT
         requestDate: requestDate, // OARLDT
-        grossWight: totalGrossWight,
-        netWight: totalNetWight,
-        OARLDZ: formatDate(), // OARLDZ
+        // OARLDZ
         OATIZO: orderJson[0].HEAD.OATIZO, // OATIZO
+        // OAOPRI
+        // OAAICD
+        // OAOT38
+        // OALNCD
         OATEPY: orderJson[0].HEAD.OATEPY, // OATEPY
         OAMODL: orderJson[0].HEAD.OAMODL, // OAMODL
         OATEDL: orderJson[0].HEAD.OATEDL, // OATEDL
         addressID: addressID, // OAADID
+        // OASMCD
+        // OAOREF
+        // OAVRCD
+        OAFRE1: OAFRE1,
+        // OAPYNO
+        // OAINRC
+        OADISY: orderJson[0].HEAD.OADISY,
+        // OATINC
         OALOCD: orderJson[0].HEAD.OALOCD, // OALOCD
         OACUCD: orderJson[0].HEAD.OACUCD, // OACUCD
+        // OADCCD
+        // OACRTP
+        // OADMCU
+        grossWight: totalGrossWight,
+        netWight: totalNetWight,
+        // OACOAM
         total: total, // OABRLA
+        // OANTAM
         totalNet: totalNet, // OANTLA
+        // OAFDED
+        // OALDED
+        // OARESP
+        // OABLRO
+        // OATXAP
+        OARLDZ: formatDate(), // OARLDZ
+
         OARGDT: formatDate(), // OARGDT
         OARGTM: getCurrentTimeFormatted(), // OARGTM
         OALMDT: formatDate(), // OALMDT
         OACHID: orderJson[0].HEAD.OACHID, // OACHID
         OALMTS: Date.now(), // OALMTS
+        //OADECU CUSTOMER NO
       });
 
       await axios({
@@ -515,7 +538,8 @@ exports.insert = async (req, res, next) => {
       });
     }
 
-  
+    // res.json(itemsData);
+
     await axios({
       method: "post",
       url: `${HOST}allowcate/insert`,
@@ -541,7 +565,8 @@ exports.insert = async (req, res, next) => {
         orderType: orderType,
         addressID: addressID,
         customerNo: customerNo,
-        OARLDT: requestDate,
+        requestDate: requestDate,
+        orderDate: orderDate,
         OARGTM: getCurrentTimeFormatted(),
         OATIZO: orderJson[0].HEAD.OATIZO,
         grossWight: totalGrossWight,
@@ -557,7 +582,7 @@ exports.insert = async (req, res, next) => {
       },
     });
 
-    // Insert Prepare Invoice A
+    // // Insert Prepare Invoice A
     await axios({
       method: "post",
       url: `${HOST}prepare/insertA`,

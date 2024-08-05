@@ -1,13 +1,6 @@
 const Allowcate = require("../../models/allowcate");
-const axios = require("axios");
-const { HOST } = require("../../config/index");
-const { sequelize } = require("../../config/m3db");
 const fs = require("fs");
 const path = require("path");
-const {
-  formatDate,
-  getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
 
 exports.index = async (req, res, next) => {};
 

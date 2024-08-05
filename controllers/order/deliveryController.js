@@ -10,6 +10,7 @@ const {
 } = require("../../middleware/getDateTime");
 
 exports.index = async (req, res, next) => {};
+
 exports.insertHead = async (req, res, next) => {
   try {
     const {
@@ -20,11 +21,12 @@ exports.insertHead = async (req, res, next) => {
       orderType,
       customerNo,
       addressID,
-      OARLDT,
       OARGTM,
       OATIZO,
       grossWight,
       netWight,
+      orderDate,
+      requestDate,
     } = req.body;
 
     const jsonPath = path.join(__dirname, "../../", "Jsons", "delivery.json");
@@ -73,45 +75,56 @@ exports.insertHead = async (req, res, next) => {
       OQWHLO: warehouse,
       OQINOU: deliveryData[0].HEAD.OQINOU,
       OQCONA: warehouse, //OOHEAD.OAWHLO
+      // OQCOAA
+      // OQCOAF
+      // OQCONB
       OQSDES: route.data[0].place, // ROUTE PLACE
-      OQDSDT: OARLDT, //OOHEAD OARLDT requestDate
-      OQTRDT: OARLDT, //OOHEAD OAORDT
-
+      OQDSDT: requestDate, //OOHEAD OARLDT requestDate
+      OQDSHM: route.data[0].departureTime, // departureTime
+      OQTRDT: orderDate, //OOHEAD OAORDT
       OQTRTM: OARGTM, //OOHEAD
       OQSROT: route.data[0].routeCode, // ROUTE
       OQROUT: route.data[0].routeCode, // ROUTE
+      // OQRODN
+      // OQMODL
+      // OQMODF
+      // OQTEDL
+      // OQTEDF
+
       OQRORC: deliveryData[0].HEAD.OQRORC, // 3
-      OQDSHM: route.data[0].departureTime, // departureTime
-      OQDTHM: route.data[0].departureTime, // departureTime
-      // OQDSHM:// departureTime
-      // OQDTHM             // departureTime
+      // OQTTYP
       OQTTYP: deliveryData[0].HEAD.OQTTYP,
       OQRIDN: orderNo,
       OQEDES: route.data[0].place, // ROUTE PLACE
+
+      //OQPUTP
+      //OQPUSN
+      //OQBLOP
+      //OQRLFA
+      //OQRLTD
+      //OQPGRS
+      //OQPCKA
+      //OQPLSX
+
       OQNEWE: netWight, // OOLINE SUM
       OQGRWE: grossWight, // OOLINE SUM
       OQTIZO: OATIZO, // OOHEAD.OATIZO
       OQDTDT: formatDate(), // OOHEAD requestDate
-
+      OQDTHM: route.data[0].departureTime, // departureTime
       OQDOCR: deliveryData[0].HEAD.OQDOCR, // 1
       OQDOCE: deliveryData[0].HEAD.OQDOCE, // 1 ** 1 digit in Database TST
       OQDEWD: deliveryData[0].HEAD.OQDEWD, // 0
-
       OQSEEQ: deliveryData[0].HEAD.OQSEEQ, // 50
       OQIVSS: deliveryData[0].HEAD.OQIVSS, // 2
       OQPRIO: deliveryData[0].HEAD.OQPRIO, // 5
-
-      OQCSCD: customer.data[0].OKCSCD, // OCUSMA
       OQCUCL: route.data[0].customerChannel, // OCUSMA
+      OQCSCD: customer.data[0].OKCSCD, // OCUSMA
       OQECAR: customer.data[0].OKECAR, // OCUSMA
-
       OQPONO: shinpping.data[0].shippingPoscode, // OCUSAD
       OQULZO: route.data[0].shippingRoute, // OCUSAD
-
       OQFWNS: route.data[0].forwarding, // Route forwarding
       OQFWNO: route.data[0].forwarding, // Route forwarding
       OQAGKY: deliveryData[0].HEAD.OQAGKY, // emthy
-
       OQRGDT: formatDate(),
       OQRGTM: getCurrentTimeFormatted(),
       OQLMDT: formatDate(),
@@ -131,12 +144,7 @@ exports.insertLine = async (req, res, next) => {
   try {
     const items = req.body.items;
     for (let item of items) {
-      const jsonPath = path.join(
-        __dirname,
-        "../../",
-        "Jsons",
-        "delivery.json"
-      );
+      const jsonPath = path.join(__dirname, "../../", "Jsons", "delivery.json");
       let deliveryData = [];
       if (fs.existsSync(jsonPath)) {
         const jsonData = fs.readFileSync(jsonPath, "utf-8");
@@ -156,7 +164,7 @@ exports.insertLine = async (req, res, next) => {
         URGRWE: item.grossWight, // OOLINE
         URNEWE: item.netWight, // OOLINE
         // URALUN OOLINE
-        URALUN: item.unit, 
+        URALUN: item.unit,
         URRGDT: formatDate(),
         URRGTM: getCurrentTimeFormatted(),
         URLMDT: formatDate(),

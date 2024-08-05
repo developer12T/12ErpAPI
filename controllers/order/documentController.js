@@ -19,6 +19,14 @@ exports.insert = async (req, res, next) => {
       url: `${HOST}master/documenttype/single`,
       data: { orderType: orderType },
     });
+
+    const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "document.json");
+    let documentJson = [];
+
+    if (fs.existsSync(jsonPathOrder)) {
+      const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
+      documentJson = JSON.parse(jsonDataOrder);
+    }
     // res.json(documentTypes.data);
     for (let documentType of documentTypes.data) {
       await Document.create({
@@ -34,7 +42,7 @@ exports.insert = async (req, res, next) => {
         OFRGTM: getCurrentTimeFormatted(),
         OFLMDT: formatDate(),
         OFCHNO: documentType.UOCHNO,
-        OFCHID: "MVXSECOFR ",
+        OFCHID: documentJson.OFCHID,
       });
     }
 
