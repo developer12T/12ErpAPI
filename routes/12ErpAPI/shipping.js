@@ -6,7 +6,7 @@ const {
   insert,
   deleted,
   single,
-} = require("../controllers/customers/shippingController");
+} = require("../../controllers/customers/shippingController");
 // const passportJWT = require("../../middleware/passportJWT");
 
 /* GET home page. */

@@ -1,6 +1,4 @@
 const DocumentType = require("../../models/documenttype");
-const { HOST } = require("../../config/index");
-const axios = require("axios");
 
 exports.indexdoc = async (req, res, next) => {
   try {

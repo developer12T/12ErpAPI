@@ -15,7 +15,7 @@ const {
   updateRunningNumberInvoice,
   warehouse,
   singlepolicy,
-} = require("../controllers/master/masterContorller");
+} = require("../../controllers/master/masterContorller");
 
 const {
   fac,
@@ -24,19 +24,19 @@ const {
   itemsingle,
   unitmin,
   unitmax,
-} = require("../controllers/master/itemController");
+} = require("../../controllers/master/itemController");
 
 const {
   stock,
   balance,
   locate,
   stocksingle,
-} = require("../controllers/master/stockController");
+} = require("../../controllers/master/stockController");
 
 const {
   indexdoc,
   singledoc,
-} = require("../controllers/master/documentTypeController");
+} = require("../../controllers/master/documentTypeController");
 
 // Item
 //http://localhost:3000/master/
@@ -74,14 +74,11 @@ router.post("/calwight", calWight);
 //http://localhost:3000/master/runningNumber/
 router.post("/runningNumber", runningNumber);
 
-//http://localhost:3000/master/runningNumber/
-router.post("/runningNumber/s", runningNumber);
-
 //http://localhost:3000/master/runningNumber/edit
 router.post("/runningNumber/update", updateRunningNumber);
 
 //http://localhost:3000/master/runningNumber/
-router.post("/runningNumberInvoice/s", runningNumberInvoice);
+router.post("/runningNumberInvoice/", runningNumberInvoice);
 
 //http://localhost:3000/master/runningNumber/edit
 router.post("/runningNumberInvoice/update", updateRunningNumberInvoice);

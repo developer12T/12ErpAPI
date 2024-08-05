@@ -4,7 +4,7 @@ const {
   index,
   insertLine,
   insertHead,
-} = require("../controllers/order/deliveryController");
+} = require("../../controllers/order/deliveryController");
 
 /* GET home page. */
 //http://localhost:3000/sale/

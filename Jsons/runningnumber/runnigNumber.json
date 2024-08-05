@@ -1,0 +1,14 @@
+[
+  {
+    "NUMBER": {
+      "coNo": 410,
+      "series": "B",
+      "seriesType": "07"
+    },
+    "INVOICE": {
+      "coNo": 410,
+      "series": "#",
+      "year": "07"
+    }
+  }
+]

@@ -7,17 +7,19 @@ const passport = require("passport");
 // Routes
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
-const saleRouter = require("./routes/sale");
-const customersRouter = require("./routes/customer");
-const shinppingsRouter = require("./routes/shipping");
-const orderRouter = require("./routes/order");
-const promotionRouter = require("./routes/promotion");
-const masterRouter = require("./routes/master");
-const deliveryRouter = require("./routes/delivery");
-const allowcateRouter = require("./routes/allowcate");
-const prepareInvoiceRouter = require("./routes/prepareInvoice");
-const documentRouter = require("./routes/document");
-const routeRouter = require("./routes/route");
+const saleRouter = require("./routes/12ErpAPI/sale");
+const customersRouter = require("./routes/12ErpAPI/customer");
+const shinppingsRouter = require("./routes/12ErpAPI/shipping");
+const orderRouter = require("./routes/12ErpAPI/order");
+const promotionRouter = require("./routes/12ErpAPI/promotion");
+const masterRouter = require("./routes/12ErpAPI/master");
+const deliveryRouter = require("./routes/12ErpAPI/delivery");
+const allowcateRouter = require("./routes/12ErpAPI/allowcate");
+const prepareInvoiceRouter = require("./routes/12ErpAPI/prepareInvoice");
+const documentRouter = require("./routes/12ErpAPI/document");
+const routeRouter = require("./routes/12ErpAPI/route");
+
+const M3API = require('./routes/12ErpAPI/index')
 
 //import middleware
 const errorHandler = require("./middleware/errorHandler");
@@ -32,6 +34,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //  Set Routes
 app.use("/", indexRouter);
+app.use("/12ErpAPI", M3API);
+
 app.use("/users", usersRouter);
 app.use("/sales", saleRouter);
 app.use("/customer", customersRouter);

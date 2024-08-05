@@ -4,7 +4,7 @@ const {
   dpr,
   udi,
   ute,
-} = require("../controllers/master/routeController");
+} = require("../../controllers/master/routeController");
 const express = require("express");
 const router = express.Router();
 

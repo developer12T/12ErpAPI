@@ -486,18 +486,26 @@ exports.insert = async (req, res, next) => {
     }
 
     await Customer.create({
-      customerNo: customerNo, // OKCUNO,
       coNo: existingData.OKCONO, // OKCONO
+      // OKDIVI 
       customerStatus: customerStatus, // OKSTAT
+      customerNo: customerNo, // OKCUNO,
+
+
       customerChannel: customerChannel, // OKCUCL
+      // OKCUTP
+      // OKALCU
       orderType: "021", // OKORTP
       customerName: customerName, // OKCUNM
       customerAddress1: customerAddress1, // OKCUA1
       customerAddress2: customerAddress2, // OKCUA2
       customerAddress3: customerAddress3, // OKCUA3
       customerAddress4: customerAddress4, // OKCUA4
-      customerPoscode: customerPoscode, // OKPONO
+      // OKADID
       customerPhone: customerPhone, // OKPHNO
+      // OKTREF
+      customerPoscode: customerPoscode, // OKPONO
+      
       warehouse: warehouse, // OKWHLO
       OKSDST: OKSDST, // OKSDST
       saleTeam: saleTeam, // OKCFC8

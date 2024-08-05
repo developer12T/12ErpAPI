@@ -7,8 +7,8 @@ const {
   deleted,
   single,
   onlycus,
-} = require("../controllers/customers/customerController");
-const passportJWT = require("../middleware/passportJWT");
+} = require("../../controllers/customers/customerController");
+const passportJWT = require("../../middleware/passportJWT");
 
 /* GET home page. */
 //http://localhost:3000/customer/

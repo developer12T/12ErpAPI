@@ -182,7 +182,20 @@ exports.runningNumberInvoice = async (req, res, next) => {
         year: year,
       },
     });
-    res.json(result);
+    const numberInvoice = result.map((number) => {
+      const prefix = number.prefix.trim();
+      return {
+        coNo: number.coNo,
+        series: number.series,
+        prefix: prefix,
+        seriesName: number.seriesName,
+        year: number.year,
+        startNo: number.startNo,
+        finalNo: number.finalNo,
+        lastNo: parseInt(`${prefix}${number.lastNo}`),
+      };
+    });
+    res.json(numberInvoice);
   } catch (error) {
     next(error);
   }
