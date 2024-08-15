@@ -84,6 +84,16 @@ const DeliveryLine = sequelize.define(
       allowNull: false,
       field: "URSCES",
     },
+    grossWight: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "URGRWE",
+    },
+    netWight: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "URNEWE",
+    },
   },
   {
     freezeTableName: true,

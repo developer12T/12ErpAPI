@@ -337,6 +337,18 @@ exports.insert = async (req, res, next) => {
       orderJson = JSON.parse(jsonDataOrder);
     }
 
+    const jsonPathRunning = path.join(
+      __dirname,
+      "../../",
+      "Jsons",
+      "runnigNumber.json"
+    );
+    let RunningJson = [];
+    if (fs.existsSync(jsonPathRunning)) {
+      const jsonDataRunning = fs.readFileSync(jsonPathRunning, "utf-8");
+      RunningJson = JSON.parse(jsonDataRunning);
+    }
+
     const running = await axios({
       method: "post",
       url: `${HOST}master/runningNumber/`,
@@ -348,24 +360,19 @@ exports.insert = async (req, res, next) => {
     });
     const runningNumberH = running.data[0].lastNo + 1;
 
-    await axios({
-      method: "post",
-      url: `${HOST}master/runningNumber/update`,
-      data: {
-        coNo: 410,
-        series: "B",
-        seriesType: "07",
-        lastNo: runningNumberH,
-      },
-    });
-    const jsonPath = path.join(__dirname, "../../", "Jsons", "orederItem.json");
-    let existingData = [];
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}master/runningNumber/update`,
+    //   data: {
+    //     coNo: 410,
+    //     series: "B",
+    //     seriesType: "07",
+    //     lastNo: runningNumberH,
+    //   },
+    // });
 
-    if (fs.existsSync(jsonPath)) {
-      const jsonData = fs.readFileSync(jsonPath, "utf-8");
-      existingData = JSON.parse(jsonData);
-    }
     const calWights = [];
+
     for (let item of items) {
       const { data } = await axios({
         method: "post",
@@ -398,6 +405,15 @@ exports.insert = async (req, res, next) => {
           },
         });
 
+        const calWight2 = await axios({
+          method: "post",
+          url: `${HOST}master/calwight`,
+          data: {
+            itemCode: item.itemCode,
+            qty: 1,
+          },
+        });
+
         const factor = await axios({
           method: "post",
           url: `${HOST}master/unit`,
@@ -412,7 +428,16 @@ exports.insert = async (req, res, next) => {
           url: `${HOST}master/calcost`,
           data: {
             itemCode: item.itemCode,
-            qty: item.qtyCTN,
+            qty: 1,
+          },
+        });
+
+        const calcost2 = await axios({
+          method: "post",
+          url: `${HOST}master/calcost`,
+          data: {
+            itemCode: item.itemCode,
+            qty: item.qtyPCS,
           },
         });
         return {
@@ -445,16 +470,16 @@ exports.insert = async (req, res, next) => {
           warehouse: warehouse,
           customerNo: customerNo,
           // customerChannel: customerChannel,
-          addressID: addressID, 
+          addressID: addressID,
           MOPLDT: formatDate(),
-
           MOTIHM: orderJson[0].LINE.OBPLHM,
           MOPRIO: orderJson[0].LINE.OBPRIO,
-          OBSAPR: item.OBSAPR,
-          OBNEPR: item.OBNEPR,
           OBCOFA: factor.data[0].factor,
           OBUCOS: calcost.data[0].cost,
-          OBLNAM: item.netPrice, // ***
+          costPCS: calcost2.data[0].cost,
+          OBLNAM: item.netPrice, 
+          grossWightSingle:calWight2.data[0].grossWight,
+          netWightSingle:calWight2.data[0].netWight
         };
       })
     );
@@ -533,7 +558,11 @@ exports.insert = async (req, res, next) => {
       await axios({
         method: "post",
         url: `${HOST}document/insert`,
-        data: { orderType: orderType, orderNo: orderNo, coNo: 410 },
+        data: {
+          orderType: orderType,
+          orderNo: orderNo,
+          coNo: orderJson[0].HEAD.OACONO,
+        },
       });
     }
 
@@ -557,7 +586,7 @@ exports.insert = async (req, res, next) => {
       method: "post",
       url: `${HOST}delivery/insertHead`,
       data: {
-        warehouse: 101,
+        warehouse: warehouse,
         coNo: 410,
         runningNumberH: runningNumberH,
         orderNo: orderNo,
@@ -572,6 +601,7 @@ exports.insert = async (req, res, next) => {
         netWight: totalNetWight,
       },
     });
+
     // Insert Delivery Line
     await axios({
       method: "post",

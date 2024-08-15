@@ -161,8 +161,8 @@ exports.insertLine = async (req, res, next) => {
         URFACI: deliveryData[0].LINE.URFACI, // json
         URTRQT: item.qtyPCS, // ooline qtyCTN (pcs)
         URSTCD: deliveryData[0].LINE.URSTCD, // 1
-        URGRWE: item.grossWight, // OOLINE
-        URNEWE: item.netWight, // OOLINE
+        grossWight: item.grossWightSingle, // OOLINE
+        netWight: item.netWightSingle, // OOLINE
         // URALUN OOLINE
         URALUN: item.unit,
         URRGDT: formatDate(),

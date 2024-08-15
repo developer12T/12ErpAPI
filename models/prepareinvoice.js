@@ -295,6 +295,16 @@ const PrepareInvoA = sequelize.define(
       allowNull: true,
       field: "OURQWH",
     },
+    OUOFRA: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUOFRA",
+    },
+    OUDIA2: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OUDIA2",
+    },
   },
   {
     freezeTableName: true,
