@@ -201,7 +201,7 @@ exports.runningNumberInvoice = async (req, res, next) => {
 exports.updateRunningNumber = async (req, res, next) => {
   try {
     const { coNo, lastNo, seriesType, series } = req.body;
-    const update = await NumberSeriesInvoice.update(
+    const update = await NumberSeries.update(
       { lastNo: lastNo },
       {
         attributes: { exclude: ["id"] },

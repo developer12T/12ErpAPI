@@ -353,23 +353,23 @@ exports.insert = async (req, res, next) => {
       method: "post",
       url: `${HOST}master/runningNumber/`,
       data: {
-        coNo: 410,
-        series: "B",
-        seriesType: "07",
+        coNo: RunningJson[0].NUMBER.coNo,
+        series: RunningJson[0].NUMBER.series,
+        seriesType: RunningJson[0].NUMBER.seriesType,
       },
     });
     const runningNumberH = running.data[0].lastNo + 1;
 
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}master/runningNumber/update`,
-    //   data: {
-    //     coNo: 410,
-    //     series: "B",
-    //     seriesType: "07",
-    //     lastNo: runningNumberH,
-    //   },
-    // });
+    await axios({
+      method: "post",
+      url: `${HOST}master/runningNumber/update`,
+      data: {
+        coNo: RunningJson[0].NUMBER.coNo,
+        series: RunningJson[0].NUMBER.series,
+        seriesType: RunningJson[0].NUMBER.seriesType,
+        lastNo: runningNumberH,
+      },
+    });
 
     const calWights = [];
 
