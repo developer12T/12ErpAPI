@@ -477,9 +477,9 @@ exports.insert = async (req, res, next) => {
           OBCOFA: factor.data[0].factor,
           OBUCOS: calcost.data[0].cost,
           costPCS: calcost2.data[0].cost,
-          OBLNAM: item.netPrice, 
-          grossWightSingle:calWight2.data[0].grossWight,
-          netWightSingle:calWight2.data[0].netWight
+          OBLNAM: item.netPrice,
+          grossWightSingle: calWight2.data[0].grossWight,
+          netWightSingle: calWight2.data[0].netWight,
         };
       })
     );
@@ -593,8 +593,8 @@ exports.insert = async (req, res, next) => {
         orderType: orderType,
         addressID: addressID,
         customerNo: customerNo,
-        requestDate: requestDate,
         orderDate: orderDate,
+        requestDate: requestDate,
         OARGTM: getCurrentTimeFormatted(),
         OATIZO: orderJson[0].HEAD.OATIZO,
         grossWight: totalGrossWight,
