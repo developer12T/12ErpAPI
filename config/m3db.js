@@ -1,10 +1,11 @@
 const { Sequelize, DataTypes, QueryTypes } = require("sequelize");
 const mssql = require("mssql");
+const { M3DATABASE, M3HOST, M3USER, M3PASSWORD } = require("../config/index");
 
-const sequelize = new Sequelize("M3FDBTST", "sa", "One2@@", {
+const sequelize = new Sequelize(M3DATABASE, M3USER, M3PASSWORD, {
   // const sequelize = new Sequelize('M3FDBTST', 'sa', 'One2@@', {
   dialect: "mssql",
-  host: "192.168.2.74",
+  host: M3HOST,
   schema: "MVXJDTA",
   dialectOptions: {
     options: {

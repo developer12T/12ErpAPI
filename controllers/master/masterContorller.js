@@ -4,6 +4,7 @@ const {
   ItemUnit,
   Warehouse,
   Policy,
+  OOTYPE,
 } = require("../../models/master");
 const {
   NumberSeries,
@@ -268,23 +269,14 @@ exports.warehouse = async (req, res, next) => {
 exports.singlepolicy = async (req, res, next) => {
   try {
     const { orderType } = req.body;
-    let policy = "";
-    if (orderType == "031" || orderType == "A31" || orderType == "A51") {
-      policy = "API";
-    } else if (orderType === "011" || orderType === "A11") {
-      policy = "C11";
-    } else if (orderType === "021") {
-      policy = "C12";
-    } else if (orderType === "091") {
-      policy = "C13";
-    } else if (orderType === "041") {
-      policy = "C14";
-    } else if (orderType === "051") {
-      policy = "C15";
-    }
+    const policy = await OOTYPE.findOne({
+      where: {
+        OOORTP: orderType,
+      },
+    });
     const results = await Policy.findAll({
       where: {
-        EDDPOL: policy,
+        EDDPOL: policy.OODPOL,
         coNo: 410,
       },
     });
@@ -298,7 +290,7 @@ exports.singlepolicy = async (req, res, next) => {
         EDTRLV: result.EDTRLV,
       };
     });
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
     next(error);
   }

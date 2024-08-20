@@ -1,10 +1,15 @@
 const { Sequelize, DataTypes, QueryTypes } = require("sequelize");
 const mssql = require("mssql");
-
-const sequelize = new Sequelize("AntDB", "sa", "F@753951", {
+const {
+  ANTDATABASE,
+  ANTHOST,
+  ANTUSER,
+  ANTPASSWORD,
+} = require("../config/index");
+const sequelize = new Sequelize(ANTDATABASE, ANTUSER, ANTPASSWORD, {
   dialect: "mssql",
-  host: "192.168.0.3",
-//   schema: "AntDB",
+  host: ANTHOST,
+  //   schema: "AntDB",
   dialectOptions: {
     options: {
       enableArithAbort: false,

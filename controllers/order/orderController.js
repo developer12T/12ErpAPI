@@ -495,7 +495,24 @@ exports.insert = async (req, res, next) => {
       return result;
     });
 
-    // res.json(itemsData);
+    let itemNoData = await OLINE.findOne({
+      where: {
+        orderNo: orderNo,
+      },
+      order: [["itemNo", "DESC"]],
+    });
+    if (itemNoData != null) {
+      itemNo = itemNoData.itemNo + 1;
+      itemsData = itemsData.map((item) => {
+        const result = {
+          ...item, // Spread the properties of the original item
+          itemNo: itemNo, // Add the itemNo property
+        };
+        itemNo++;
+        return result;
+      });
+    }
+
 
     if (Hcase === 1) {
       await Order.create({

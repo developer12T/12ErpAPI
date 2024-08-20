@@ -298,6 +298,51 @@ const Policy = sequelize.define(
   }
 );
 
+const OOTYPE = sequelize.define(
+  "OOTYPE",
+  {
+    OOCONO: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      field: "OOCONO",
+    },
+    OOORTP: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      field: "OOORTP",
+    },
+    OOOT05: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OOOT05",
+    },
+    OOOT34: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OOOT34",
+    },
+    OOSPIC: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OOSPIC",
+    },
+    OODPOL: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OODPOL",
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+    primaryKey: false,
+  }
+);
+
 module.exports = {
   ItemFac,
   ItemMaster,
@@ -306,4 +351,5 @@ module.exports = {
   Locate,
   Balance,
   Policy,
+  OOTYPE,
 };
