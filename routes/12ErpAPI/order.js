@@ -1,5 +1,7 @@
 const express = require("express");
+
 const router = express.Router();
+const { body, check } = require("express-validator");
 const {
   index,
   single,
@@ -10,11 +12,12 @@ const {
   insertItem,
   deleteitemsingle,
   item,
-  deleteitem
+  deleteitem,
 } = require("../../controllers/order/orderItemController");
+
 // const passportJWT = require("../../middleware/passportJWT");
 
-// Order 
+// Order
 //http://localhost:3000/order/
 router.post("/", index);
 
@@ -22,7 +25,14 @@ router.post("/", index);
 router.post("/delete", deleted);
 
 //http://localhost:3000/order/insert
-router.post("/insert", insert);
+router.post(
+  "/insert"
+  [
+    body("Hcase").not().isEmpty().withMessage("Missing the orderNo"),
+    body("orderNo").not().isEmpty().withMessage("Missing the orderNo")
+  ],
+  insert
+);
 
 //http://localhost:3000/order/single
 router.post("/single", single);

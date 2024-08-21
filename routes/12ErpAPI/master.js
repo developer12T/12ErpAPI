@@ -15,6 +15,7 @@ const {
   updateRunningNumberInvoice,
   warehouse,
   singlepolicy,
+  singleordertype,
 } = require("../../controllers/master/masterContorller");
 
 const {
@@ -62,6 +63,9 @@ router.post("/itemdetails", itemdetails);
 
 //http://localhost:3000/master/
 router.post("/itemsingle", itemsingle);
+
+// Order Type
+router.post("/ordertype", singleordertype);
 
 // Calculate
 //http://localhost:3000/master/calCost

@@ -11,6 +11,7 @@ const {
 const fs = require("fs");
 const path = require("path");
 const Shipping = require("../../models/shipping");
+const { validationResult } = require("express-validator");
 
 // Get the current year and month
 const now = new Date();
@@ -328,6 +329,15 @@ exports.insert = async (req, res, next) => {
 
     const items = req.body.item;
 
+    //validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("Data is Incorrect");
+      error.statusCode = 422;
+      error.validation = errors.array();
+      throw error;
+    }
+
     // console.log(orderStatus);
 
     const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
@@ -349,23 +359,32 @@ exports.insert = async (req, res, next) => {
       RunningJson = JSON.parse(jsonDataRunning);
     }
 
+    const series = await axios({
+      method: "post",
+      url: `${HOST}master/orderType`,
+      data: {
+        orderType: orderType,
+      },
+    });
+
     const running = await axios({
       method: "post",
       url: `${HOST}master/runningNumber/`,
       data: {
         coNo: RunningJson[0].NUMBER.coNo,
-        series: RunningJson[0].NUMBER.series,
+        series: series.data.OOSPIC,
         seriesType: RunningJson[0].NUMBER.seriesType,
       },
     });
     const runningNumberH = running.data[0].lastNo + 1;
+    // res.status(200).json(runningNumberH);
 
     await axios({
       method: "post",
       url: `${HOST}master/runningNumber/update`,
       data: {
         coNo: RunningJson[0].NUMBER.coNo,
-        series: RunningJson[0].NUMBER.series,
+        series: series.data.OOSPIC,
         seriesType: RunningJson[0].NUMBER.seriesType,
         lastNo: runningNumberH,
       },
@@ -512,7 +531,6 @@ exports.insert = async (req, res, next) => {
         return result;
       });
     }
-
 
     if (Hcase === 1) {
       await Order.create({

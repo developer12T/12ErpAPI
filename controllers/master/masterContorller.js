@@ -295,3 +295,18 @@ exports.singlepolicy = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.singleordertype = async (req, res, next) => {
+  try {
+    const { orderType } = req.body;
+    const ordertype = await OOTYPE.findOne({
+      where: {
+        OOORTP: orderType,
+      },
+    });
+
+    res.status(200).json(ordertype);
+  } catch (error) {
+    next(error);
+  }
+};
