@@ -1,5 +1,7 @@
 const { OLINE, Order } = require("../../models/order");
 const Promotion = require("../../models/promotion");
+const { runningNumber } = require("../master/masterContorller");
+const { singlepolicy } = require("../master/masterContorller");
 const axios = require("axios");
 const { HOST } = require("../../config/index");
 const { Op } = require("sequelize");
@@ -315,7 +317,6 @@ exports.insert = async (req, res, next) => {
       orderDate,
       requestDate,
       customerNo,
-      orderNo,
       orderType,
       warehouse,
       orderStatus,
@@ -326,6 +327,32 @@ exports.insert = async (req, res, next) => {
       OKALCU,
       OAFRE1,
     } = req.body;
+
+    let { orderNo } = req.body;
+
+    const series = await axios({
+      method: "post",
+      url: `${HOST}master/orderType`,
+      data: {
+        orderType: orderType,
+      },
+    });
+
+    if (orderNo == "") {
+      orderNo = "";
+      const orderNoRunning = await axios({
+        method: "post",
+        url: `${HOST}master/runningNumber/`,
+        data: {
+          coNo: 410,
+          series: series.data.OOSPIC,
+          seriesType: "07",
+        },
+      });
+      orderNo = parseInt(orderNoRunning.data[0].lastNo) + 1;
+      orderNo = orderNo.toString();
+    }
+    // res.json(orderNo);
 
     const items = req.body.item;
 
@@ -359,14 +386,6 @@ exports.insert = async (req, res, next) => {
       RunningJson = JSON.parse(jsonDataRunning);
     }
 
-    const series = await axios({
-      method: "post",
-      url: `${HOST}master/orderType`,
-      data: {
-        orderType: orderType,
-      },
-    });
-
     const running = await axios({
       method: "post",
       url: `${HOST}master/runningNumber/`,
@@ -376,7 +395,7 @@ exports.insert = async (req, res, next) => {
         seriesType: RunningJson[0].NUMBER.seriesType,
       },
     });
-    const runningNumberH = running.data[0].lastNo + 1;
+    const runningNumberH = parseInt(running.data[0].lastNo) + 1;
     // res.status(200).json(runningNumberH);
 
     await axios({
