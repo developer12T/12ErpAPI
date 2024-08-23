@@ -14,140 +14,140 @@ router.get("/", index);
 //http://localhost:3000/customer/edit
 router.post(
   "/insertLine",
-  [
-    body("item.*.coNo")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.OBDIVI")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.orderNo")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.OKALCU")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.runningNumberH")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.orderType")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.orderStatus")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.payer")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.itemCode")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.itemNo")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.itemName")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.qtyPCS")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.unit")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.price")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.discount")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.netPrice")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.netWight")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.grossWight")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.promotionCode")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.warehouse")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.customerNo")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("item.*.addressID")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-  ],
+  // [
+  //   body("items.*.coNo")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("items.*.OACUCD")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing OACUCD")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("OACUCD must be exactly 3 characters long"),
+  //   body("items.*.OBDIVI")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing OBDIVI")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("OBDIVI must be exactly 3 characters long"),
+  //   body("items.*.OBORCO")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing OBORCO")
+  //     .isLength({ min: 1, max: 3 })
+  //     .withMessage("OBORCO must be exactly 3 characters long"),
+  //   body("items.*.OKALCU")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing OKALCU")
+  //     .isLength({ min: 1, max: 10 })
+  //     .withMessage("OKALCU must be exactly 3 characters long"),
+  //   body("items.*.orderType")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing runningNumberH")
+  //     .isLength({ min: 0, max: 9 })
+  //     .withMessage("runningNumberH must be exactly 3 characters long"),
+  //   body("items.*.runningNumberH")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing orderType")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("orderType must be exactly 3 characters long"),
+  //   body("items.*.orderStatus")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing orderStatus")
+  //     .isLength({ min: 2, max: 2 })
+  //     .withMessage("orderStatus must be exactly 3 characters long"),
+  //   body("items.*.orderDate")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing orderDate")
+  //     .isLength({ min: 8, max: 8 })
+  //     .withMessage("orderDate must be exactly 3 characters long"),
+  //   body("items.*.requestDate")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing requestDate")
+  //     .isLength({ min: 8, max: 8 })
+  //     .withMessage("requestDate must be exactly 3 characters long"),
+  //   body("items.*.OAFRE1")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing OAFRE1")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("OAFRE1 must be exactly 3 characters long"),
+  //   body("items.*.payer")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing payer")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("payer must be exactly 3 characters long"),
+  //   body("items.*.unit")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("items.*.price")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("items.*.discount")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("items.*.netPrice")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("items.*.netWight")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("items.*.grossWight")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("items.*.promotionCode")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("items.*.warehouse")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("items.*.customerNo")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("items.*.addressID")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  // ],
   insertLine
 );
 

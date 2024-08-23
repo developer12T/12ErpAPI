@@ -620,7 +620,7 @@ exports.insert = async (req, res, next) => {
       });
     }
 
-    res.json(itemsData);
+    // res.json(itemsData);
 
     await axios({
       method: "post",

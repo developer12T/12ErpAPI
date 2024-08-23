@@ -5,6 +5,8 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const passport = require("passport");
+const cors = require('cors')
+
 
 // Routes
 const indexRouter = require("./routes/index");
@@ -28,6 +30,20 @@ const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
+const corsOptions = {
+    origin: true,
+    optionsSuccessStatus: 200 , // some legacy browsers (IE11, various SmartTVs) choke on 204
+    methods: ["POST"],
+    credentials: true,
+    maxAge: 3600
+  }
+// const app = restify.createServer({
+//   name: "myapp",
+//   version: "1.0.0",
+// });
+
+// app.use(restify.plugins.bodyParser());
+app.use(cors(corsOptions))
 app.use(helmet());
 app.use(logger("dev"));
 app.use(express.json());
@@ -35,6 +51,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+
+
+// app.use(xss());
 //  Set Routes
 app.use("/", indexRouter);
 app.use("/12ErpAPI", M3API);
