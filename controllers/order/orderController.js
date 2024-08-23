@@ -329,6 +329,15 @@ exports.insert = async (req, res, next) => {
     } = req.body;
 
     let { orderNo } = req.body;
+    
+    //validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("Data is Incorrect");
+      error.statusCode = 422;
+      error.validation = errors.array();
+      throw error;
+    }
 
     const series = await axios({
       method: "post",
@@ -355,15 +364,6 @@ exports.insert = async (req, res, next) => {
     // res.json(orderNo);
 
     const items = req.body.item;
-
-    //validation
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      const error = new Error("Data is Incorrect");
-      error.statusCode = 422;
-      error.validation = errors.array();
-      throw error;
-    }
 
     // console.log(orderStatus);
 
@@ -620,7 +620,7 @@ exports.insert = async (req, res, next) => {
       });
     }
 
-    // res.json(itemsData);
+    res.json(itemsData);
 
     await axios({
       method: "post",

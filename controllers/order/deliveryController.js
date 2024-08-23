@@ -8,6 +8,7 @@ const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../middleware/getDateTime");
+const { validationResult } = require("express-validator");
 
 exports.index = async (req, res, next) => {};
 
@@ -28,6 +29,15 @@ exports.insertHead = async (req, res, next) => {
       orderDate,
       requestDate,
     } = req.body;
+
+    //validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("Data is Incorrect");
+      error.statusCode = 422;
+      error.validation = errors.array();
+      throw error;
+    }
 
     const jsonPath = path.join(__dirname, "../../", "Jsons", "delivery.json");
     let deliveryData = [];
@@ -143,6 +153,15 @@ exports.insertHead = async (req, res, next) => {
 exports.insertLine = async (req, res, next) => {
   try {
     const items = req.body.items;
+
+    // Validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("Data is Incorrect");
+      error.statusCode = 422;
+      error.validation = errors.array();
+      throw error;
+    }
     for (let item of items) {
       const jsonPath = path.join(__dirname, "../../", "Jsons", "delivery.json");
       let deliveryData = [];

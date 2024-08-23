@@ -1,4 +1,6 @@
 const express = require("express");
+// Helmet used to Security
+const helmet = require("helmet");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -19,13 +21,14 @@ const prepareInvoiceRouter = require("./routes/12ErpAPI/prepareInvoice");
 const documentRouter = require("./routes/12ErpAPI/document");
 const routeRouter = require("./routes/12ErpAPI/route");
 
-const M3API = require('./routes/12ErpAPI/index')
+const M3API = require("./routes/12ErpAPI/index");
 
 //import middleware
 const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
+app.use(helmet());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

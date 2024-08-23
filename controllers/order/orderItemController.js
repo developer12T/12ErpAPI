@@ -91,8 +91,6 @@ exports.insertItem = async (req, res, next) => {
         OBCHNO: orderJson[0].LINE.OBCHNO,
         OBCHID: orderJson[0].LINE.OBCHID,
         OBLMTS: Date.now(),
-  
-
         OBPLDT: formatDate(),
         OBPLHM: orderJson[0].LINE.OBPLHM,
         OBPRIO: orderJson[0].LINE.OBPRIO,
