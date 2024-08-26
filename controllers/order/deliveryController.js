@@ -162,6 +162,7 @@ exports.insertLine = async (req, res, next) => {
       error.validation = errors.array();
       throw error;
     }
+    
     for (let item of items) {
       const jsonPath = path.join(__dirname, "../../", "Jsons", "delivery.json");
       let deliveryData = [];

@@ -5,15 +5,23 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const passport = require("passport");
-const cors = require('cors')
+const cors = require("cors");
+const http = require("http");
+const socketIo = require("socket.io");
 
+var debug = require("debug")("12erpapi:server");
+
+const app = express();
+
+const server = http.createServer(app); // Create HTTP server
+const io = socketIo(server);
 
 // Routes
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const saleRouter = require("./routes/12ErpAPI/sale");
-const customersRouter = require("./routes/12ErpAPI/customer");
-const shinppingsRouter = require("./routes/12ErpAPI/shipping");
+const customersRouter = require("./routes/12ErpAPI/customer")(io);
+const shinppingsRouter = require("./routes/12ErpAPI/shipping")(io);
 const orderRouter = require("./routes/12ErpAPI/order");
 const promotionRouter = require("./routes/12ErpAPI/promotion");
 const masterRouter = require("./routes/12ErpAPI/master");
@@ -28,30 +36,30 @@ const M3API = require("./routes/12ErpAPI/index");
 //import middleware
 const errorHandler = require("./middleware/errorHandler");
 
-const app = express();
-
 const corsOptions = {
-    origin: true,
-    optionsSuccessStatus: 200 , // some legacy browsers (IE11, various SmartTVs) choke on 204
-    methods: ["POST"],
-    credentials: true,
-    maxAge: 3600
-  }
+  origin: true,
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  methods: ["POST"],
+  credentials: true,
+  maxAge: 3600,
+};
 // const app = restify.createServer({
 //   name: "myapp",
 //   version: "1.0.0",
 // });
 
 // app.use(restify.plugins.bodyParser());
-app.use(cors(corsOptions))
+
+// Your other app setup code like middleware
+app.use(express.json()); // Example middleware
+
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
-
 
 // app.use(xss());
 //  Set Routes
@@ -73,4 +81,64 @@ app.use("/route", routeRouter);
 
 app.use(errorHandler);
 
-module.exports = app;
+const port = normalizePort(process.env.PORT || "3000");
+
+server.listen(port);
+server.on("error", onError);
+server.on("listening", onListening);
+
+
+// 
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
+
+  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
+      process.exit(1);
+      break;
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  debug("Listening on " + bind);
+}
+
+// module.exports = app;

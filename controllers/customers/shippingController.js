@@ -11,6 +11,7 @@ const {
   filterStringEN,
   filterStringNumber,
 } = require("../../middleware/filterString");
+
 exports.index = async (req, res, next) => {
   try {
     const { customerNo, addressID } = req.body;
@@ -259,36 +260,43 @@ exports.deleted = async (req, res, next) => {
   }
 };
 
-exports.single = async (req, res, next) => {
-  try {
-    const { customerNo, addressID, coNo } = req.body;
-    const shippingData = await Shipping.findAll({
-      attributes: { exclude: ["id"] },
-      where: {
-        coNo: 410,
-        customerNo: customerNo,
-        addressID: addressID,
-      },
-    });
-    const shippings = shippingData.map((shipping) => {
-      const customerNo = shipping.customerNo.trim();
-      const shippingPoscode = shipping.shippingPoscode.trim();
-      const shippingPhone = shipping.shippingPhone.trim();
-      return {
-        coNo: shipping.coNo,
-        customerNo: customerNo,
-        shippingRoute: shipping.shippingRoute,
-        addressID: shipping.addressID,
-        customerName: shipping.customerName,
-        shippingAddress1: shipping.shippingAddress1,
-        shippingAddress2: shipping.shippingAddress2,
-        shippingAddress3: shipping.shippingAddress3,
-        shippingPoscode: shippingPoscode,
-        shippingPhone: shippingPhone,
-      };
-    });
-    res.json(shippings);
-  } catch (error) {
-    next(error);
-  }
+exports.single = (io) => {
+  return async (req, res, next) => {
+    try {
+      const { customerNo, addressID, coNo } = req.body;
+      const shippingData = await Shipping.findAll({
+        attributes: { exclude: ["id"] },
+        where: {
+          coNo: 410,
+          customerNo: customerNo,
+          addressID: addressID,
+        },
+      });
+
+      const shippings = shippingData.map((shipping) => {
+        const customerNo = shipping.customerNo.trim();
+        const shippingPoscode = shipping.shippingPoscode.trim();
+        const shippingPhone = shipping.shippingPhone.trim();
+        return {
+          coNo: shipping.coNo,
+          customerNo: customerNo,
+          shippingRoute: shipping.shippingRoute,
+          addressID: shipping.addressID,
+          customerName: shipping.customerName,
+          shippingAddress1: shipping.shippingAddress1,
+          shippingAddress2: shipping.shippingAddress2,
+          shippingAddress3: shipping.shippingAddress3,
+          shippingPoscode: shippingPoscode,
+          shippingPhone: shippingPhone,
+        };
+      });
+
+      // Emit data via Socket.io
+      io.emit('shippingData', shippings);
+
+      res.json(shippings);
+    } catch (error) {
+      next(error);
+    }
+  };
 };
