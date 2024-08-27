@@ -9,7 +9,8 @@ const cors = require("cors");
 const http = require("http");
 const socketIo = require("socket.io");
 
-var debug = require("debug")("12erpapi:server");
+const debug = require("debug")("12erpapi:server");
+const { rateLimit } =  require('express-rate-limit');
 
 const app = express();
 
@@ -43,15 +44,18 @@ const corsOptions = {
   credentials: true,
   maxAge: 3600,
 };
-// const app = restify.createServer({
-//   name: "myapp",
-//   version: "1.0.0",
-// });
-
-// app.use(restify.plugins.bodyParser());
+const limiter = rateLimit({
+	windowMs: 60 * 1000, // 1 minutes
+	limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	// store: ... , // Redis, Memcached, etc. See below.
+})
 
 // Your other app setup code like middleware
 app.use(express.json()); // Example middleware
+
+app.use(limiter)
 
 app.use(cors(corsOptions));
 app.use(helmet());

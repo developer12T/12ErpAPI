@@ -22,10 +22,10 @@ module.exports = (io) => {
   router.post("/edit", update);
 
   //http://localhost:3000/customer/insert
-  router.post("/insert", insert);
+  router.post("/insert", insert(io));
 
   //http://localhost:3000/customer/insert
-  router.post("/onlycus", onlycus);
+  router.post("/onlycus", onlycus(io));
 
   //http://localhost:3000/customer/delete
   router.post("/delete", deleted);

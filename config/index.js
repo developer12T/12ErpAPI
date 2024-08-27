@@ -13,4 +13,5 @@ module.exports = {
   ANT_DATABASE: process.env.ANT_DATABASE,
   ANT_USER: process.env.ANT_USER,
   ANT_PASSWORD: process.env.ANT_PASSWORD,
+  SECRET_KEY: process.env.SECRET_KEY
 };

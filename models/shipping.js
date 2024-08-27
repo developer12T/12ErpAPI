@@ -40,6 +40,11 @@ const Shipping = sequelize.define(
       allowNull: false,
       field: "OPCUA3",
     },
+    shippingAddress4: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPCUA4",
+    },
     shippingPoscode: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -54,6 +59,91 @@ const Shipping = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
       field: "OPULZO",
+    },
+    OPADRT: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPADRT",
+    },
+    OPMODL: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPMODL",
+    },
+    OPTEDL: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPTEDL",
+    },
+    OPCSCD: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPCSCD",
+    },
+    OPEDES: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPEDES",
+    },
+    OPGEOC: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPGEOC",
+    },
+    OPFVDT: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPFVDT",
+    },
+    OPLVDT: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPLVDT",
+    },
+    OPDTID: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPDTID",
+    },
+    OPBCKO: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPBCKO",
+    },
+    OPPADL: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPPADL",
+    },
+    OPRGDT: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPRGDT",
+    },
+    OPRGTM: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPRGTM",
+    },
+    OPLMDT: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPLMDT",
+    },
+    OPCHNO: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPCHNO",
+    },
+    OPCHID: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPCHID",
+    },
+    OPLMTS: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPLMTS",
     },
   },
   {
