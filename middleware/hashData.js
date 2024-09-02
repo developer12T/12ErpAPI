@@ -7,6 +7,7 @@ module.exports.encryptData = function (data) {
 };
 
 
+
 module.exports.decryptData = function (ciphertext) {
   const bytes = CryptoJS.AES.decrypt(ciphertext, SECRET_KEY);
   const originalText = bytes.toString(CryptoJS.enc.Utf8);

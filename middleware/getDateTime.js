@@ -14,3 +14,11 @@ module.exports.getCurrentTimeFormatted = () => {
   const seconds = String(now.getSeconds()).padStart(2, "0");
   return `${hours}${minutes}${seconds}`;
 };
+
+module.exports.getCurrentYearMonth = () => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0");
+
+  return `${currentYear}${currentMonth}`;
+};

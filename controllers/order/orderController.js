@@ -16,9 +16,7 @@ const Shipping = require("../../models/shipping");
 const { validationResult } = require("express-validator");
 
 // Get the current year and month
-const now = new Date();
-const currentYear = now.getFullYear();
-const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0");
+const { getCurrentYearMonth} = require("../../middleware/getDateTime");
 
 exports.index = async (req, res, next) => {
   try {
@@ -26,7 +24,7 @@ exports.index = async (req, res, next) => {
     let { orderDate } = req.body;
 
     if (orderDate == "") {
-      orderDate = `${currentYear}${currentMonth}`;
+      orderDate = `${getCurrentYearMonth()}`;
     }
     const orderData = await Order.findAll({
       attributes: {

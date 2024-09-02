@@ -31,6 +31,7 @@ const allowcateRouter = require("./routes/12ErpAPI/allowcate");
 const prepareInvoiceRouter = require("./routes/12ErpAPI/prepareInvoice");
 const documentRouter = require("./routes/12ErpAPI/document");
 const routeRouter = require("./routes/12ErpAPI/route");
+const distributionRouter = require("./routes/12ErpAPI/distribution");
 
 const M3API = require("./routes/12ErpAPI/index");
 
@@ -44,18 +45,18 @@ const corsOptions = {
   credentials: true,
   maxAge: 3600,
 };
-const limiter = rateLimit({
-	windowMs: 60 * 1000, // 1 minutes
-	limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-	// store: ... , // Redis, Memcached, etc. See below.
-})
+// const limiter = rateLimit({
+// 	windowMs: 15*60 * 1000, // 1 minutes
+// 	limit: 500, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+// 	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+// 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+// 	// store: ... , // Redis, Memcached, etc. See below.
+// })
 
 // Your other app setup code like middleware
 app.use(express.json()); // Example middleware
 
-app.use(limiter)
+// app.use(limiter)
 
 app.use(cors(corsOptions));
 app.use(helmet());
@@ -82,6 +83,7 @@ app.use("/delivery", deliveryRouter);
 app.use("/allowcate", allowcateRouter);
 app.use("/document", documentRouter);
 app.use("/route", routeRouter);
+app.use("/distribution", distributionRouter);
 
 app.use(errorHandler);
 
