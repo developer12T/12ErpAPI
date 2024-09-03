@@ -11,18 +11,28 @@ const { HOST } = require("../../config/index");
 const fs = require("fs");
 const path = require("path");
 const { kMaxLength } = require("buffer");
+const {
+  fetchRunningNumber,
+  updateRunningNumber,
+  fetchStock,
+  calWeight
+} = require("../../middleware/apiMaster");
 
-const jsonPathOrder = path.join(
-  __dirname,
-  "../../",
-  "Jsons",
-  "distribution.json"
-);
-let orderJson = [];
-if (fs.existsSync(jsonPathOrder)) {
-  const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
-  orderJson = JSON.parse(jsonDataOrder);
-}
+const { getJsonData } = require("../../middleware/getJsonData");
+const { insertDistributionLine } = require("../../middleware/apiOrder");
+const orderJson = getJsonData("distribution.json");
+
+// const jsonPathOrder = path.join(
+//   __dirname,
+//   "../../",
+//   "Jsons",
+//   "distribution.json"
+// );
+// let orderJson = [];
+// if (fs.existsSync(jsonPathOrder)) {
+//   const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
+//   orderJson = JSON.parse(jsonDataOrder);
+// }
 
 exports.index = async (req, res, next) => {
   try {
@@ -108,40 +118,56 @@ exports.insertHead = async (req, res, next) => {
 
     if (orderNo == "") {
       orderNo = "";
-      const orderNoRunning = await axios({
-        method: "post",
-        url: `${HOST}master/runningNumber/`,
-        data: {
-          coNo: 410,
-          series: "B",
-          seriesType: "14",
-        },
+      const orderNoRunning = await fetchRunningNumber({
+        coNo: 410,
+        series: "B",
+        seriesType: "14",
       });
-      orderNo = parseInt(orderNoRunning.data[0].lastNo) + 1;
-      await axios({
-        method: "post",
-        url: `${HOST}master/runningNumber/update`,
-        data: {
-          coNo: 410,
-          series: "B",
-          seriesType: "14",
-          lastNo: orderNo,
-        },
+      // const orderNoRunning = await axios({
+      //   method: "post",
+      //   url: `${HOST}master/runningNumber/`,
+      //   data: {
+      //     coNo: 410,
+      //     series: "B",
+      //     seriesType: "14",
+      //   },
+      // });
+
+      orderNo = parseInt(orderNoRunning.lastNo) + 1;
+      // await axios({
+      //   method: "post",
+      //   url: `${HOST}master/runningNumber/update`,
+      //   data: {
+      //     coNo: 410,
+      //     series: "B",
+      //     seriesType: "14",
+      //     lastNo: orderNo,
+      //   },
+      // });
+      updateRunningNumber({
+        coNo: 410,
+        series: "B",
+        seriesType: "14",
+        lastNo: orderNo,
       });
       orderNo = orderNo.toString();
       orderNo = orderNo.padStart(10, "0");
     }
 
     for (let item of items) {
-      const { data } = await axios({
-        method: "post",
-        url: `${HOST}master/calWeight`,
-        data: {
-          itemCode: item.itemCode,
-          qty: item.itemQty,
-        },
+      const weight = await calWeight({
+        itemCode: item.itemCode,
+        qty: item.itemQty,
       });
-      calWeights.push(data[0]);
+      // const { data } = await axios({
+      //   method: "post",
+      //   url: `${HOST}master/calWeight`,
+      //   data: {
+      //     itemCode: item.itemCode,
+      //     qty: item.itemQty,
+      //   },
+      // });
+      calWeights.push(weight);
     }
 
     const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
@@ -152,14 +178,18 @@ exports.insertHead = async (req, res, next) => {
 
     let itemsData = await Promise.all(
       items.map(async (item) => {
-        const calWeight = await axios({
-          method: "post",
-          url: `${HOST}master/calWeight`,
-          data: {
-            itemCode: item.itemCode,
-            qty: item.itemQty,
-          },
+        const weight = await calWeight({
+          itemCode: item.itemCode,
+          qty: item.itemQty,
         });
+        // const calWeight = await axios({
+        //   method: "post",
+        //   url: `${HOST}master/calWeight`,
+        //   data: {
+        //     itemCode: item.itemCode,
+        //     qty: item.itemQty,
+        //   },
+        // });
         // const factor = await axios({
         //   method: "post",
         //   url: `${HOST}master/unit`,
@@ -169,14 +199,19 @@ exports.insertHead = async (req, res, next) => {
         //   },
         // });
 
-        const stock = await axios({
-          method: "post",
-          url: `${HOST}master/stocksingle`,
-          data: {
-            warehouse: warehouse,
-            itemCode: item.itemCode,
-          },
+        const stock = fetchStock({
+          warehouse: warehouse,
+          itemCode: item.itemCode,
         });
+
+        // const stock = await axios({
+        //   method: "post",
+        //   url: `${HOST}master/stocksingle`,
+        //   data: {
+        //     warehouse: warehouse,
+        //     itemCode: item.itemCode,
+        //   },
+        // });
 
         return {
           coNo: orderJson[0].LINE.OBCONO,
@@ -189,8 +224,8 @@ exports.insertHead = async (req, res, next) => {
           itemLot: item.itemLot,
           itemStatus: item.itemStatus,
           MRWHLO: item.MRWHLO,
-          MRGRWE: calWeight.data[0].grossWeight,
-          MRSTAS: stock.data[0].allowcateMethod,
+          MRGRWE: weight.grossWeight,
+          MRSTAS: stock.allowcateMethod,
           MRWHSL: item.MRWHSL,
           MRTWSL: item.MRTWSL,
         };
@@ -225,10 +260,10 @@ exports.insertHead = async (req, res, next) => {
         return result;
       });
     }
-    res.json(itemsData);
-    console.log(getCurrentTimeFormatted());
+    // res.json(itemNoData);
+    // console.log(getCurrentTimeFormatted());
 
-    if (Hcase == 0) {
+    if (Hcase == 1) {
       await MGHEAD.create({
         coNo: 410,
         orderNo: orderNo,
@@ -257,6 +292,7 @@ exports.insertHead = async (req, res, next) => {
         MGLMTS: Date.now(),
       });
     }
+    await insertDistributionLine(itemsData);
     // await axios({
     //   method: "post",
     //   url: `${HOST}distribution/insertLine`,

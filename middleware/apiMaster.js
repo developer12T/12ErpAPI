@@ -119,6 +119,19 @@ async function fetchPolicy(orderType) {
   }
 }
 
+async function fetchStock(data) {
+  try {
+    const response = await axiosInstance.post("/master/stocksingle", {
+      warehouse: data.warehouse,
+      itemCode: data.itemCode,
+    });
+    return response.data[0]; // Access the data property
+  } catch (error) {
+    console.error("Error fetching order type:", error);
+    throw error; // Re-throw the error if needed
+  }
+}
+
 module.exports = {
   fetchOrderType,
   fetchOrderNoRunning,
@@ -129,4 +142,5 @@ module.exports = {
   fetchfactor,
   fetchPolicy,
   fetchDocumentType,
+  fetchStock,
 };

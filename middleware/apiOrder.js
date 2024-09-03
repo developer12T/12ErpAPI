@@ -68,17 +68,28 @@ async function insertPrepareInovoice(itemsData) {
 }
 
 async function insertDocument(data) {
-    try {
-      await axiosInstance.post("/document/insert", {
-        orderType: data.orderType,
-        orderNo: data.orderNo,
-        coNo: 410,
-      });
-    } catch (error) {
-      console.error("Error fetching order type:", error);
-      throw error; // Re-throw the error if needed
-    }
+  try {
+    await axiosInstance.post("/document/insert", {
+      orderType: data.orderType,
+      orderNo: data.orderNo,
+      coNo: 410,
+    });
+  } catch (error) {
+    console.error("Error fetching order type:", error);
+    throw error; // Re-throw the error if needed
   }
+}
+
+async function insertDistributionLine(itemsData) {
+  try {
+    await axiosInstance.post("/distribution/insertLine", {
+      items: itemsData,
+    });
+  } catch (error) {
+    console.error("Error fetching order type:", error);
+    throw error; // Re-throw the error if needed
+  }
+}
 
 module.exports = {
   insertAllocate,
@@ -86,5 +97,6 @@ module.exports = {
   insertDeliveryLine,
   insertOrderLine,
   insertPrepareInovoice,
-  insertDocument
+  insertDocument,
+  insertDistributionLine
 };
