@@ -11,11 +11,13 @@ const NumberSeries = sequelize.define(
     series: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "CNNBID",
     },
     seriesType: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "CNNBTY",
     },
     seriesName: {
@@ -59,11 +61,13 @@ const NumberSeriesInvoice = sequelize.define(
     series: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "C2NBID",
     },
     prefix: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "C2INPX",
     },
     seriesName: {

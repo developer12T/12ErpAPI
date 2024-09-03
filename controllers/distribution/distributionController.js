@@ -104,7 +104,7 @@ exports.insertHead = async (req, res, next) => {
 
     const items = req.body.items;
     let { orderNo } = req.body;
-    const calWights = [];
+    const calWeights = [];
 
     if (orderNo == "") {
       orderNo = "";
@@ -135,26 +135,26 @@ exports.insertHead = async (req, res, next) => {
     for (let item of items) {
       const { data } = await axios({
         method: "post",
-        url: `${HOST}master/calwight`,
+        url: `${HOST}master/calWeight`,
         data: {
           itemCode: item.itemCode,
           qty: item.itemQty,
         },
       });
-      calWights.push(data[0]);
+      calWeights.push(data[0]);
     }
 
-    const totalGrossWight = calWights.reduce((accumulator, calWight) => {
-      return accumulator + calWight.grossWight;
+    const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
+      return accumulator + calWeight.grossWeight;
     }, 0);
 
     // res.json(orderNo);
 
     let itemsData = await Promise.all(
       items.map(async (item) => {
-        const calWight = await axios({
+        const calWeight = await axios({
           method: "post",
-          url: `${HOST}master/calwight`,
+          url: `${HOST}master/calWeight`,
           data: {
             itemCode: item.itemCode,
             qty: item.itemQty,
@@ -189,7 +189,7 @@ exports.insertHead = async (req, res, next) => {
           itemLot: item.itemLot,
           itemStatus: item.itemStatus,
           MRWHLO: item.MRWHLO,
-          MRGRWE: calWight.data[0].grossWight,
+          MRGRWE: calWeight.data[0].grossWeight,
           MRSTAS: stock.data[0].allowcateMethod,
           MRWHSL: item.MRWHSL,
           MRTWSL: item.MRTWSL,
@@ -247,7 +247,7 @@ exports.insertHead = async (req, res, next) => {
         MGTRTM: parseInt(getCurrentTimeFormatted()),
         MGRIDT: formatDate(),
         MGRITM: getCurrentTimeFormatted().slice(0, -2),
-        MGGRWE: totalGrossWight,
+        MGGRWE: totalgrossWeight,
         // MGNUGL: 0,
         MGRGDT: formatDate(),
         MGRGTM: getCurrentTimeFormatted(),
@@ -291,7 +291,7 @@ exports.insertLine = async (req, res, next) => {
         itemLocation: item.itemLocation,
         itemLot: item.itemLot,
         itemStatus: item.itemStatus,
-        MRWHLO: item.MRWHLO,
+        MRWHLO: item.warehouse,
         MRGRWE: item.MRGRWE,
         MRTRDT: formatDate(),
         MRSTAS: item.MRSTAS,

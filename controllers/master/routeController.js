@@ -133,7 +133,7 @@ exports.single = async (req, res, next) => {
     const { shippingRoute } = req.body;
     const udiObj = {};
     const uteObj = {};
-    const RouteData = await DRODPR.findAll({
+    let RouteData = await DRODPR.findAll({
       attributes: {
         exclude: ["id"],
       },

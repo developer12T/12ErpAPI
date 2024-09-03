@@ -13,13 +13,15 @@ const DRODPR = sequelize.define(
       allowNull: false,
       field: "DOEDES",
     },
-    shipping: {
+    DOOBV1: {
       type: DataTypes.STRING,
+      primaryKey:true,
       allowNull: false,
       field: "DOOBV1",
     },
     routeCode: {
       type: DataTypes.STRING,
+      primaryKey:true,
       allowNull: false,
       field: "DOROUT",
     },
@@ -64,12 +66,14 @@ const DROUDI = sequelize.define(
     },
     routeCode: {
       type: DataTypes.STRING,
+      primaryKey:true,
       allowNull: false,
       field: "DSROUT",
     },
     DSRODN: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey:true,
       field: "DSRODN",
     },
     DSDETH: {
@@ -108,11 +112,13 @@ const DROUTE = sequelize.define(
     DRRUTP: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey:true,
       field: "DRRUTP",
     },
     routeCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey:true,
       field: "DRROUT",
     },
     routeName: {

@@ -111,13 +111,13 @@ router.post(
   //     .withMessage("Missing coNo")
   //     .isLength({ min: 3, max: 3 })
   //     .withMessage("coNo must be exactly 3 characters long"),
-  //   body("items.*.netWight")
+  //   body("items.*.netWeight")
   //     .not()
   //     .isEmpty()
   //     .withMessage("Missing coNo")
   //     .isLength({ min: 3, max: 3 })
   //     .withMessage("coNo must be exactly 3 characters long"),
-  //   body("items.*.grossWight")
+  //   body("items.*.grossWeight")
   //     .not()
   //     .isEmpty()
   //     .withMessage("Missing coNo")
@@ -214,16 +214,16 @@ router.post(
       .isLength({ min: 1, max: 6 })
       .withMessage("OARGTM must be exactly 6 characters long"),
     body("OATIZO").not().isEmpty().withMessage("Missing OATIZO"),
-    body("grossWight")
+    body("grossWeight")
       .not()
       .isEmpty()
-      .withMessage("Missing grossWight")
+      .withMessage("Missing grossWeight")
       .isNumeric()
       .withMessage("Data is Numeric"),
-    body("netWight")
+    body("netWeight")
       .not()
       .isEmpty()
-      .withMessage("Missing netWight")
+      .withMessage("Missing netWeight")
       .isNumeric()
       .withMessage("Data is Numeric"),
   ],

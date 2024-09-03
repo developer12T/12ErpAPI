@@ -8,7 +8,7 @@ const {
   itemdetails,
   //   unit,
   calCost,
-  calWight,
+  calWeight,
   runningNumber,
   runningNumberInvoice,
   updateRunningNumber,
@@ -71,8 +71,8 @@ router.post("/ordertype", singleordertype);
 //http://localhost:3000/master/calCost
 router.post("/calcost", calCost);
 
-//http://localhost:3000/master/calWight
-router.post("/calwight", calWight);
+//http://localhost:3000/master/calWeight
+router.post("/calweight", calWeight);
 
 // Number Running
 //http://localhost:3000/master/runningNumber/
@@ -88,30 +88,30 @@ router.post("/runningNumberInvoice/", runningNumberInvoice);
 router.post("/runningNumberInvoice/update", updateRunningNumberInvoice);
 
 // Warehouse
-//http://localhost:3000/master/calWight
+//http://localhost:3000/master/calWeight
 router.post("/warehouse", warehouse);
 
 // Stock
-//http://localhost:3000/master/calWight
+//http://localhost:3000/master/calWeight
 router.post("/stock", stock);
 
-//http://localhost:3000/master/calWight
+//http://localhost:3000/master/calWeight
 router.post("/stocksingle", stocksingle);
 
-//http://localhost:3000/master/calWight
+//http://localhost:3000/master/calWeight
 router.post("/balance", balance);
 
-//http://localhost:3000/master/calWight
+//http://localhost:3000/master/calWeight
 router.post("/locate", locate);
 
 // Document
-//http://localhost:3000/master/calWight
+//http://localhost:3000/master/calWeight
 router.post("/documenttype", indexdoc);
 
-//http://localhost:3000/master/calWight
+//http://localhost:3000/master/calWeight
 router.post("/documenttype/single", singledoc);
 
-//http://localhost:3000/master/calWight
+//http://localhost:3000/master/calWeight
 router.post("/policy/single", singlepolicy);
 
 module.exports = router;

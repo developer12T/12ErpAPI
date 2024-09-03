@@ -92,30 +92,21 @@ exports.itemdetails = async (req, res, next) => {
   }
 };
 
-exports.calWight = async (req, res, next) => {
+exports.calWeight = async (req, res, next) => {
   try {
     const { itemCode, qty } = req.body;
-    const itemData = await ItemMaster.findAll({
-      //   limit: 10,
-      attributes: {
-        exclude: ["id"],
-      },
+    let itemData = await ItemMaster.findOne({
       where: {
         itemCode: itemCode,
       },
     });
-
-    const items = itemData.map((item) => {
-      const itemCode = item.itemCode.trim();
-      return {
-        itemCode: itemCode,
-        status: item.status,
-        netWight: Math.round(item.netWight * qty * 100000) / 100000,
-        grossWight: Math.round(item.grossWight * qty * 100000) / 100000,
-      };
-    });
-
-    res.json(items);
+    itemData = {
+      itemCode: itemData.itemCode.trim(),
+      status: itemData.status,
+      netWeight: Math.round(itemData.netWeight * qty * 100000) / 100000,
+      grossWeight: Math.round(itemData.grossWeight * qty * 100000) / 100000,
+    };
+    res.json(itemData);
   } catch (error) {
     next(error);
   }
@@ -124,25 +115,17 @@ exports.calWight = async (req, res, next) => {
 exports.calCost = async (req, res, next) => {
   try {
     const { itemCode, qty } = req.body;
-    const itemData = await ItemFac.findAll({
-      //   limit: 10,
-      attributes: {
-        exclude: ["id"],
-      },
+    let itemData = await ItemFac.findOne({
       where: {
         itemCode: itemCode,
         coNo: 410,
       },
     });
-
-    const items = itemData.map((item) => {
-      const itemCode = item.itemCode.trim();
-      return {
-        itemCode: itemCode,
-        cost: Number(item.cost * qty),
-      };
-    });
-    res.json(items);
+    itemData = {
+      itemCode: itemData.itemCode.trim(),
+      cost: Number(itemData.cost * qty),
+    };
+    res.json(itemData);
   } catch (error) {
     next(error);
   }
@@ -151,10 +134,7 @@ exports.calCost = async (req, res, next) => {
 exports.runningNumber = async (req, res, next) => {
   try {
     const { series, seriesType, coNo } = req.body;
-    const result = await NumberSeries.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
+    const result = await NumberSeries.findOne({
       where: {
         coNo: coNo,
         series: series,
@@ -274,23 +254,21 @@ exports.singlepolicy = async (req, res, next) => {
         OOORTP: orderType,
       },
     });
-    const results = await Policy.findAll({
+    let results = await Policy.findOne({
       where: {
         EDDPOL: policy.OODPOL,
         coNo: 410,
       },
     });
-    const data = results.map((result) => {
-      const EDTX15 = result.EDTX40.trim();
-      return {
-        coNo: result.coNo,
-        EDDPOL: result.EDDPOL,
-        EDTX40: result.EDTX40,
-        EDTX15: EDTX15,
-        EDTRLV: result.EDTRLV,
-      };
-    });
-    res.status(200).json(data);
+    results = {
+      coNo: results.coNo,
+      EDDPOL: results.EDDPOL,
+      EDTX40: results.EDTX40,
+      EDTX15: results.EDTX15.trim(),
+      EDTRLV: results.EDTRLV,
+    };
+
+    res.status(200).json(results);
   } catch (error) {
     next(error);
   }

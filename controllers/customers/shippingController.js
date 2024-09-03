@@ -14,7 +14,7 @@ const {
 
 exports.index = async (req, res, next) => {
   try {
-    const { customerNo, addressId } = req.body;
+    const { customerNo, addressID } = req.body;
     const shippingData = await Shipping.findAll({
       attributes: {
         exclude: ["id"],
@@ -28,7 +28,7 @@ exports.index = async (req, res, next) => {
     const shippings = shippingData.map((shipping) => ({
       coNo: shipping.coNo,
       customerNo: shipping.customerNo.trim(),
-      addressId: shipping.addressId,
+      addressID: shipping.addressID,
       customerName: shipping.customerName,
       shippingAddress1: shipping.shippingAddress1,
       shippingAddress2: shipping.shippingAddress2,
@@ -128,7 +128,7 @@ exports.insert = async (req, res, next) => {
   try {
     const shippings = req.body.shippings;
     // console.log(shippings);
-    
+
     // const {
     //   customerNo,
     //   customerName,
@@ -147,7 +147,7 @@ exports.insert = async (req, res, next) => {
       const jsonData = fs.readFileSync(jsonPath, "utf-8");
       existingData = JSON.parse(jsonData);
     }
-    
+
     for (let shipping of shippings) {
       const shinppingData = await Shipping.findAll({
         attributes: {
@@ -162,7 +162,7 @@ exports.insert = async (req, res, next) => {
       let checkShipping = "SHIP";
       let shinppingNum = 0;
       let addressID = "";
-  
+
       if (shinppingData.length > 0) {
         for (let shinpping of shinppingData) {
           if (filterStringEN(shinpping.addressID) === "SHIP") {
@@ -226,7 +226,7 @@ exports.deleted = async (req, res, next) => {
   try {
     const {
       customerNumber: customerNumber,
-      addressId: addressId,
+      addressID: addressID,
       companyNumber: companyNumber,
     } = req.body;
 
@@ -237,7 +237,7 @@ exports.deleted = async (req, res, next) => {
         where: {
           companyNumber,
           customerNumber,
-          addressId,
+          addressID,
         },
       }
     );
@@ -254,32 +254,30 @@ exports.deleted = async (req, res, next) => {
 
 exports.single = (io) => async (req, res, next) => {
   try {
-    const { customerNo, addressId, coNo } = req.body;
-    const shippingData = await Shipping.findAll({
-      attributes: { exclude: ["id"] },
+    const { customerNo, addressID } = req.body;
+    let shippingData = await Shipping.findOne({
       where: {
         coNo: 410,
         customerNo,
-        addressId,
+        addressID,
       },
     });
 
-    const shippings = shippingData.map((shipping) => ({
-      coNo: shipping.coNo,
-      customerNo: shipping.customerNo.trim(),
-      shippingRoute: shipping.shippingRoute,
-      addressId: shipping.addressId,
-      customerName: shipping.customerName,
-      shippingAddress1: shipping.shippingAddress1,
-      shippingAddress2: shipping.shippingAddress2,
-      shippingAddress3: shipping.shippingAddress3,
-      shippingPoscode: shipping.shippingPoscode.trim(),
-      shippingPhone: shipping.shippingPhone.trim(),
-    }));
+    shippingData = {
+      coNo: shippingData.coNo,
+      customerNo: shippingData.customerNo.trim(),
+      shippingRoute: shippingData.shippingRoute,
+      addressID: shippingData.addressID,
+      customerName: shippingData.customerName,
+      shippingAddress1: shippingData.shippingAddress1,
+      shippingAddress2: shippingData.shippingAddress2,
+      shippingAddress3: shippingData.shippingAddress3,
+      shippingPoscode: shippingData.shippingPoscode.trim(),
+      shippingPhone: shippingData.shippingPhone.trim(),
+    };
 
-    io.emit("shippingData", shippings);
-
-    res.json(shippings);
+    io.emit("shippingData", shippingData);
+    res.json(shippingData);
   } catch (error) {
     next(error);
   }

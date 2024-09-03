@@ -98,8 +98,8 @@ exports.insertA = async (req, res, next) => {
         OUSPUN: itemUnitMaxData.data[0].unit, // Bigest
         OUORQS: item.qtyCTN, // OOLINE CTN
         OUSTUN: itemUnitMinData.data[0].unit, // ** smallest
-        grossWight: item.grossWight, // OOLINE
-        netWight: item.netWight, // OOLINE
+        grossWeight: item.grossWeight, // OOLINE
+        netWeight: item.netWeight, // OOLINE
         OUDCCD: prepareJson[0].HEAD.OUDCCD, // 2
         OUSAPR: nonVat(item.price), //non vat OOLINE.OBSAPR
         OUGRPR: nonVat(item.price * item.qtyCTN), //non vat OOLINE OBNEPR
@@ -147,9 +147,9 @@ exports.insertA = async (req, res, next) => {
 //   try {
 //     const items = req.body.items;
 //     for (let item of items) {
-//       let calWight = await axios({
+//       let calWeight = await axios({
 //         method: "post",
-//         url: `${HOST}master/calwight`,
+//         url: `${HOST}master/calWeight`,
 //         data: {
 //           itemCode: item.itemCode,
 //           qtyCTN: item.qtyCTN,
@@ -234,8 +234,8 @@ exports.insertA = async (req, res, next) => {
 //         UCORQS: 2,
 //         UCORQA: 2,
 //         UCORQB: 2,
-//         grossWight: calWight.data[0].grossWight,
-//         netWight: calWight.data[0].netWight,
+//         grossWeight: calWeight.data[0].grossWeight,
+//         netWeight: calWeight.data[0].netWeight,
 //         UCSAAM: 140,
 //         UCSGAM: 163,
 //         UCCUAM: 140,

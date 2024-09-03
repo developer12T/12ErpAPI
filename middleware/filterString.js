@@ -60,3 +60,9 @@ module.exports.filterStringParentTH = (str) => {
 
   return result.trim();
 };
+
+// create module change string to Hello all world
+module.exports.changeStringToHelloAllWorld = (str) => {
+  return `Hello all ${str}`;
+};
+

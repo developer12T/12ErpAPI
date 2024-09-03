@@ -1,22 +1,34 @@
 const { OLINE, Order } = require("../../models/order");
 const Promotion = require("../../models/promotion");
-const { runningNumber } = require("../master/masterContorller");
-const { singlepolicy } = require("../master/masterContorller");
 const axios = require("axios");
 const { HOST } = require("../../config/index");
 const { Op } = require("sequelize");
-const { sequelize } = require("../../config/m3db");
 const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../middleware/getDateTime");
-const fs = require("fs");
-const path = require("path");
 const Shipping = require("../../models/shipping");
 const { validationResult } = require("express-validator");
-
+const {
+  fetchOrderType,
+  fetchOrderNoRunning,
+  fetchRunningNumber,
+  updateRunningNumber,
+  calCost,
+  calWeight,
+  fetchfactor,
+} = require("../../middleware/apiMaster");
+const {
+  insertAllocate,
+  insertOrderLine,
+  insertDeliveryHead,
+  insertDeliveryLine,
+  insertPrepareInovoice,
+  insertDocument,
+} = require("../../middleware/apiOrder");
+const { getJsonData } = require("../../middleware/getJsonData");
 // Get the current year and month
-const { getCurrentYearMonth} = require("../../middleware/getDateTime");
+const { getCurrentYearMonth } = require("../../middleware/getDateTime");
 
 exports.index = async (req, res, next) => {
   try {
@@ -327,7 +339,7 @@ exports.insert = async (req, res, next) => {
     } = req.body;
 
     let { orderNo } = req.body;
-    
+
     //validation
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -336,27 +348,17 @@ exports.insert = async (req, res, next) => {
       error.validation = errors.array();
       throw error;
     }
+    const series = await fetchOrderType(orderType);
 
-    const series = await axios({
-      method: "post",
-      url: `${HOST}master/orderType`,
-      data: {
-        orderType: orderType,
-      },
-    });
+    // const series = await axiosInstance.post("/master/orderType", {
+    //   orderType: orderType,
+    // });
 
     if (orderNo == "") {
       orderNo = "";
-      const orderNoRunning = await axios({
-        method: "post",
-        url: `${HOST}master/runningNumber/`,
-        data: {
-          coNo: 410,
-          series: series.data.OOSPIC,
-          seriesType: "07",
-        },
-      });
-      orderNo = parseInt(orderNoRunning.data[0].lastNo) + 1;
+      const orderNoRunning = await fetchOrderNoRunning(series.OOSPIC);
+      // console.log(orderNoRunning);
+      orderNo = parseInt(orderNoRunning.lastNo) + 1;
       orderNo = orderNo.toString();
     }
     // res.json(orderNo);
@@ -364,118 +366,141 @@ exports.insert = async (req, res, next) => {
     const items = req.body.item;
 
     // console.log(orderStatus);
+    const orderJson = getJsonData("order.json");
+    const RunningJson = getJsonData("runnigNumber.json");
+    // res.json(orderJson);
+    // console.log(orderJson);
 
-    const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
-    let orderJson = [];
-    if (fs.existsSync(jsonPathOrder)) {
-      const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
-      orderJson = JSON.parse(jsonDataOrder);
-    }
-
-    const jsonPathRunning = path.join(
-      __dirname,
-      "../../",
-      "Jsons",
-      "runnigNumber.json"
-    );
-    let RunningJson = [];
-    if (fs.existsSync(jsonPathRunning)) {
-      const jsonDataRunning = fs.readFileSync(jsonPathRunning, "utf-8");
-      RunningJson = JSON.parse(jsonDataRunning);
-    }
-
-    const running = await axios({
-      method: "post",
-      url: `${HOST}master/runningNumber/`,
-      data: {
-        coNo: RunningJson[0].NUMBER.coNo,
-        series: series.data.OOSPIC,
-        seriesType: RunningJson[0].NUMBER.seriesType,
-      },
+    const running = await fetchRunningNumber({
+      coNo: RunningJson[0].NUMBER.coNo,
+      series: series.OOSPIC,
+      seriesType: RunningJson[0].NUMBER.seriesType,
     });
-    const runningNumberH = parseInt(running.data[0].lastNo) + 1;
+    // const running = await axios({
+    //   method: "post",
+    //   url: `${HOST}master/runningNumber/`,
+    //   data: {
+    //     coNo: RunningJson[0].NUMBER.coNo,
+    //     series: series.OOSPIC,
+    //     seriesType: RunningJson[0].NUMBER.seriesType,
+    //   },
+    // });
+    const runningNumberH = parseInt(running.lastNo) + 1;
+
+    await updateRunningNumber({
+      coNo: RunningJson[0].NUMBER.coNo,
+      series: series.OOSPIC,
+      seriesType: RunningJson[0].NUMBER.seriesType,
+      lastNo: runningNumberH,
+    });
     // res.status(200).json(runningNumberH);
 
-    await axios({
-      method: "post",
-      url: `${HOST}master/runningNumber/update`,
-      data: {
-        coNo: RunningJson[0].NUMBER.coNo,
-        series: series.data.OOSPIC,
-        seriesType: RunningJson[0].NUMBER.seriesType,
-        lastNo: runningNumberH,
-      },
-    });
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}master/runningNumber/update`,
+    //   data: {
+    //     coNo: RunningJson[0].NUMBER.coNo,
+    //     series: series.OOSPIC,
+    //     seriesType: RunningJson[0].NUMBER.seriesType,
+    //     lastNo: runningNumberH,
+    //   },
+    // });
 
-    const calWights = [];
+    const calWeights = [];
 
     for (let item of items) {
-      const { data } = await axios({
-        method: "post",
-        url: `${HOST}master/calwight`,
-        data: {
-          itemCode: item.itemCode,
-          qty: item.qtyPCS,
-        },
+      const Weight = await calWeight({
+        itemCode: item.itemCode,
+        qty: item.qtyPCS,
       });
-      calWights.push(data[0]);
+      // const { data } = await axios({
+      //   method: "post",
+      //   url: `${HOST}master/calWeight`,
+      //   data: {
+      //     itemCode: item.itemCode,
+      //     qty: item.qtyPCS,
+      //   },
+      // });
+      calWeights.push(Weight);
     }
-    const totalGrossWight = calWights.reduce((accumulator, calWight) => {
-      return accumulator + calWight.grossWight;
+    const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
+      return accumulator + calWeight.grossWeight;
     }, 0);
 
-    const totalNetWight = calWights.reduce((accumulator, calWight) => {
-      return accumulator + calWight.netWight;
+    const totalnetWeight = calWeights.reduce((accumulator, calWeight) => {
+      return accumulator + calWeight.netWeight;
     }, 0);
 
-    // res.json(totalGrossWight + " " + totalNetWight);
+    // res.json(totalgrossWeight + " " + totalnetWeight);
 
     let itemsData = await Promise.all(
       items.map(async (item) => {
-        const calWight = await axios({
-          method: "post",
-          url: `${HOST}master/calwight`,
-          data: {
-            itemCode: item.itemCode,
-            qty: item.qtyPCS,
-          },
+        const WeightAll = await calWeight({
+          itemCode: item.itemCode,
+          qty: item.qtyPCS,
+        });
+        const Weight = await calWeight({
+          itemCode: item.itemCode,
+          qty: 1,
+        });
+        // const calWeight = await axios({
+        //   method: "post",
+        //   url: `${HOST}master/calWeight`,
+        //   data: {
+        //     itemCode: item.itemCode,
+        //     qty: item.qtyPCS,
+        //   },
+        // });
+
+        // const calWeight2 = await axios({
+        //   method: "post",
+        //   url: `${HOST}master/calWeight`,
+        //   data: {
+        //     itemCode: item.itemCode,
+        //     qty: 1,
+        //   },
+        // });
+
+        const factor = await fetchfactor({
+          itemCode: item.itemCode,
+          unit: item.unit,
         });
 
-        const calWight2 = await axios({
-          method: "post",
-          url: `${HOST}master/calwight`,
-          data: {
-            itemCode: item.itemCode,
-            qty: 1,
-          },
+        // const factor = await axios({
+        //   method: "post",
+        //   url: `${HOST}master/unit`,
+        //   data: {
+        //     itemCode: item.itemCode,
+        //     unit: item.unit,
+        //   },
+        // });
+        const Cost = await calCost({
+          itemCode: item.itemCode,
+          qty: 1,
         });
 
-        const factor = await axios({
-          method: "post",
-          url: `${HOST}master/unit`,
-          data: {
-            itemCode: item.itemCode,
-            unit: item.unit,
-          },
+        const CostAll = await calCost({
+          itemCode: item.itemCode,
+          qty: item.qtyPCS,
         });
 
-        const calcost = await axios({
-          method: "post",
-          url: `${HOST}master/calcost`,
-          data: {
-            itemCode: item.itemCode,
-            qty: 1,
-          },
-        });
+        // const calcost = await axios({
+        //   method: "post",
+        //   url: `${HOST}master/calcost`,
+        //   data: {
+        //     itemCode: item.itemCode,
+        //     qty: 1,
+        //   },
+        // });
 
-        const calcost2 = await axios({
-          method: "post",
-          url: `${HOST}master/calcost`,
-          data: {
-            itemCode: item.itemCode,
-            qty: item.qtyPCS,
-          },
-        });
+        // const calcost2 = await axios({
+        //   method: "post",
+        //   url: `${HOST}master/calcost`,
+        //   data: {
+        //     itemCode: item.itemCode,
+        //     qty: item.qtyPCS,
+        //   },
+        // });
         return {
           coNo: orderJson[0].LINE.OBCONO,
           OACUCD: orderJson[0].HEAD.OACUCD,
@@ -500,8 +525,8 @@ exports.insert = async (req, res, next) => {
           discount: item.discount,
           netPrice: item.netPrice,
           total: item.total,
-          netWight: calWight.data[0].netWight,
-          grossWight: calWight.data[0].grossWight,
+          netWeight: WeightAll.netWeight,
+          grossWeight: WeightAll.grossWeight,
           promotionCode: item.promotionCode,
           warehouse: warehouse,
           customerNo: customerNo,
@@ -510,12 +535,12 @@ exports.insert = async (req, res, next) => {
           MOPLDT: formatDate(),
           MOTIHM: orderJson[0].LINE.OBPLHM,
           MOPRIO: orderJson[0].LINE.OBPRIO,
-          OBCOFA: factor.data[0].factor,
-          OBUCOS: calcost.data[0].cost,
-          costPCS: calcost2.data[0].cost,
+          OBCOFA: factor.factor,
+          OBUCOS: Cost.cost,
+          costPCS: CostAll.cost,
           OBLNAM: item.netPrice,
-          grossWightSingle: calWight2.data[0].grossWight,
-          netWightSingle: calWight2.data[0].netWight,
+          grossWeightSingle: Weight.grossWeight,
+          netWeightSingle: Weight.netWeight,
         };
       })
     );
@@ -548,6 +573,8 @@ exports.insert = async (req, res, next) => {
         return result;
       });
     }
+
+    // res.status(201).json(itemsData);
 
     if (Hcase === 1) {
       await Order.create({
@@ -586,8 +613,8 @@ exports.insert = async (req, res, next) => {
         // OADCCD
         // OACRTP
         // OADMCU
-        grossWight: totalGrossWight,
-        netWight: totalNetWight,
+        grossWeight: totalgrossWeight,
+        netWeight: totalnetWeight,
         // OACOAM
         total: total, // OABRLA
         // OANTAM
@@ -607,70 +634,85 @@ exports.insert = async (req, res, next) => {
         //OADECU CUSTOMER NO
       });
 
-      await axios({
-        method: "post",
-        url: `${HOST}document/insert`,
-        data: {
-          orderType: orderType,
-          orderNo: orderNo,
-          coNo: orderJson[0].HEAD.OACONO,
-        },
+      await insertDocument({
+        orderType: orderType,
+        orderNo: orderNo,
       });
     }
+  
 
     // res.json(itemsData);
-
-    await axios({
-      method: "post",
-      url: `${HOST}allowcate/insert`,
-      data: { items: itemsData },
+    await insertAllocate(itemsData);
+    await insertOrderLine(itemsData);
+    await insertDeliveryLine(itemsData);
+    await insertPrepareInovoice(itemsData);
+    await insertDeliveryHead({
+      warehouse: warehouse,
+      coNo: 410,
+      runningNumberH: runningNumberH,
+      orderNo: orderNo,
+      orderType: orderType,
+      addressID: addressID,
+      customerNo: customerNo,
+      orderDate: orderDate,
+      requestDate: requestDate,
+      OARGTM: getCurrentTimeFormatted(),
+      OATIZO: orderJson[0].HEAD.OATIZO,
+      grossWeight: totalgrossWeight,
+      netWeight: totalnetWeight,
     });
 
-    await axios({
-      method: "post",
-      url: `${HOST}order/insertorderitem`,
-      data: { items: itemsData },
-    });
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}allowcate/insert`,
+    //   data: { items: itemsData },
+    // });
 
-    // res.json(itemsData);
-    // // Insert Delivery Head
-    await axios({
-      method: "post",
-      url: `${HOST}delivery/insertHead`,
-      data: {
-        warehouse: warehouse,
-        coNo: 410,
-        runningNumberH: runningNumberH,
-        orderNo: orderNo,
-        orderType: orderType,
-        addressID: addressID,
-        customerNo: customerNo,
-        orderDate: orderDate,
-        requestDate: requestDate,
-        OARGTM: getCurrentTimeFormatted(),
-        OATIZO: orderJson[0].HEAD.OATIZO,
-        grossWight: totalGrossWight,
-        netWight: totalNetWight,
-      },
-    });
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}order/insertorderitem`,
+    //   data: { items: itemsData },
+    // });
 
-    // Insert Delivery Line
-    await axios({
-      method: "post",
-      url: `${HOST}delivery/insertLine`,
-      data: {
-        items: itemsData,
-      },
-    });
+    // // res.json(itemsData);
+    // // // Insert Delivery Head
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}delivery/insertHead`,
+    //   data: {
+    //     warehouse: warehouse,
+    //     coNo: 410,
+    //     runningNumberH: runningNumberH,
+    //     orderNo: orderNo,
+    //     orderType: orderType,
+    //     addressID: addressID,
+    //     customerNo: customerNo,
+    //     orderDate: orderDate,
+    //     requestDate: requestDate,
+    //     OARGTM: getCurrentTimeFormatted(),
+    //     OATIZO: orderJson[0].HEAD.OATIZO,
+    //     grossWeight: totalgrossWeight,
+    //     netWeight: totalnetWeight,
+    //   },
+    // });
 
-    // // Insert Prepare Invoice A
-    await axios({
-      method: "post",
-      url: `${HOST}prepare/insertA`,
-      data: {
-        items: itemsData,
-      },
-    });
+    // // Insert Delivery Line
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}delivery/insertLine`,
+    //   data: {
+    //     items: itemsData,
+    //   },
+    // });
+
+    // // // Insert Prepare Invoice A
+    // await axios({
+    //   method: "post",
+    //   url: `${HOST}prepare/insertA`,
+    //   data: {
+    //     items: itemsData,
+    //   },
+    // });
 
     // Insert Prepare Invoice B
     // await axios({

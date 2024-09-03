@@ -24,7 +24,7 @@ exports.fac = async (req, res, next) => {
         itemCode: itemCode,
         M9FACI: item.M9FACI,
         cost: item.cost,
-      };
+    };
     });
     res.json(items);
   } catch (error) {
@@ -36,11 +36,7 @@ exports.unit = async (req, res, next) => {
   try {
     const { itemCode, unit } = req.body;
 
-    const itemData = await ItemUnit.findAll({
-      //   limit: 10,
-      attributes: {
-        exclude: ["id"],
-      },
+    let itemData = await ItemUnit.findOne({
       where: {
         coNo: 410,
         itemCode: itemCode,
@@ -48,17 +44,23 @@ exports.unit = async (req, res, next) => {
         facType: 1,
       },
     });
-    const items = itemData.map((item) => {
-      const itemCode = item.itemCode.trim();
-      const unit = item.unit.trim();
-      return {
-        itemCode: itemCode,
-        facType: item.facType,
-        factor: item.factor,
-        unit: unit,
-      };
-    });
-    res.json(items);
+    itemData = {
+      itemCode: itemData.itemCode.trim(),
+      facType: itemData.facType,
+      factor: itemData.factor,
+      unit: itemData.unit.trim(),
+    };
+    // const items = itemData.map((item) => {
+    //   const itemCode = item.itemCode.trim();
+    //   const unit = item.unit.trim();
+    //   return {
+    //     itemCode: itemCode,
+    //     facType: item.facType,
+    //     factor: item.factor,
+    //     unit: unit,
+    //   };
+    // });
+    res.json(itemData);
   } catch (error) {
     next(error);
   }
@@ -178,8 +180,8 @@ exports.items = async (req, res, next) => {
         MMITGR: MMITGR,
         MMITCL: MMITCL,
         itemGroup: itemGroup,
-        netWight: item.netWight,
-        grossWight: item.grossWight,
+        netWeight: item.netWeight,
+        grossWeight: item.grossWeight,
       };
     });
     res.json(items);
@@ -215,8 +217,8 @@ exports.itemsingle = async (req, res, next) => {
         MMITGR: MMITGR,
         MMITCL: MMITCL,
         itemGroup: itemGroup,
-        netWight: item.netWight,
-        grossWight: item.grossWight,
+        netWeight: item.netWeight,
+        grossWeight: item.grossWeight,
       };
     });
     res.json(items);

@@ -84,12 +84,12 @@ const DeliveryLine = sequelize.define(
       allowNull: false,
       field: "URSCES",
     },
-    grossWight: {
+    grossWeight: {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "URGRWE",
     },
-    netWight: {
+    netWeight: {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "URNEWE",

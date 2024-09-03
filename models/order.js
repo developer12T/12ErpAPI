@@ -54,6 +54,11 @@ const Order = sequelize.define(
       allowNull: false,
       field: "OAORSL",
     },
+    // orderStatus: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    //   field: "OAORSH",
+    // },
     addressID: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -116,12 +121,12 @@ const Order = sequelize.define(
         throw new Error("Do not try to set the `totalNonVat` value!");
       },
     },
-    grossWight: {
+    grossWeight: {
       type: DataTypes.DECIMAL,
       allowNull: false,
       field: "OAGRWE",
     },
-    netWight: {
+    netWeight: {
       type: DataTypes.DECIMAL,
       allowNull: false,
       field: "OANEWE",

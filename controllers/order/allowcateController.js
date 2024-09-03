@@ -1,20 +1,12 @@
 const Allowcate = require("../../models/allowcate");
-const fs = require("fs");
-const path = require("path");
+const { getJsonData } = require("../../middleware/getJsonData");
 
 exports.index = async (req, res, next) => {};
 
 exports.insert = async (req, res, next) => {
   try {
     const items = req.body.items;
-    const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "allowcate.json");
-    let allowcateJson = [];
-
-    if (fs.existsSync(jsonPathOrder)) {
-      const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
-      allowcateJson = JSON.parse(jsonDataOrder);
-    }
-
+    const allowcateJson = getJsonData("allowcate.json");
     for (let item of items) {
       await Allowcate.create({
         coNo: item.coNo,
@@ -25,7 +17,7 @@ exports.insert = async (req, res, next) => {
         MOSTAT: item.orderStatus,
         MOPRIO: item.MOPRIO,
         MOORCA: allowcateJson.MOORCA,
-        orderNo:item.orderNo,
+        orderNo: item.orderNo,
         itemNo: item.itemNo,
         MORFTX: item.OKALCU + "    " + item.customerNo,
         MORPRT: allowcateJson.MORPRT,

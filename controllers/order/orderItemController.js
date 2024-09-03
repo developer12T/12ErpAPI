@@ -1,27 +1,23 @@
 const { OLINE } = require("../../models/order");
 const Promotion = require("../../models/promotion");
-const fs = require("fs");
-const path = require("path");
 const { Op } = require("sequelize");
-const { sequelize } = require("../../config/m3db");
-const axios = require("axios");
-const { HOST } = require("../../config/index");
-
 const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../middleware/getDateTime");
+const { getJsonData } = require("../../middleware/getJsonData");
 
 exports.insertItem = async (req, res, next) => {
   try {
     const items = req.body.items;
+    const orderJson = getJsonData("order.json");
 
-    const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
-    let orderJson = [];
-    if (fs.existsSync(jsonPathOrder)) {
-      const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
-      orderJson = JSON.parse(jsonDataOrder);
-    }
+    // const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
+    // let orderJson = [];
+    // if (fs.existsSync(jsonPathOrder)) {
+    //   const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
+    //   orderJson = JSON.parse(jsonDataOrder);
+    // }
 
     // res.json(fs.existsSync(jsonPath))
     // let itemNo = 1;

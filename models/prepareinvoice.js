@@ -165,12 +165,12 @@ const PrepareInvoA = sequelize.define(
       allowNull: true,
       field: "OUORQB",
     },
-    grossWight: {
+    grossWeight: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "OUGRWE",
     },
-    netWight: {
+    netWeight: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "OUNEWE",
@@ -550,12 +550,12 @@ const PrepareInvoB = sequelize.define(
       allowNull: false,
       field: "UCORQB",
     },
-    grossWight: {
+    grossWeight: {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "UCGRWE",
     },
-    netWight: {
+    netWeight: {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "UCNEWE",

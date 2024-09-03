@@ -11,11 +11,13 @@ const ItemFac = sequelize.define(
     M9FACI: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       field: "M9FACI",
     },
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "M9ITNO",
     },
     cost: {
@@ -49,6 +51,7 @@ const ItemMaster = sequelize.define(
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "MMITNO",
     },
     itemName: {
@@ -59,6 +62,7 @@ const ItemMaster = sequelize.define(
     itemType: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "MMITTY",
     },
     MMITGR: {
@@ -76,12 +80,12 @@ const ItemMaster = sequelize.define(
       allowNull: false,
       field: "MMCFI3",
     },
-    netWight: {
+    netWeight: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "MMNEWE",
     },
-    grossWight: {
+    grossWeight: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "MMGRWE",
@@ -112,11 +116,13 @@ const ItemUnit = sequelize.define(
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey:true,
       field: "MUITNO",
     },
     unit: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey:true,
       field: "MUALUN",
     },
     factor: {

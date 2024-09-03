@@ -6,7 +6,6 @@ const {
   deleted,
   single,
 } = require("../../controllers/customers/shippingController");
-const shippingController = require("../../controllers/customers/shippingController");
 // const passportJWT = require("../../middleware/passportJWT");
 
 /* GET home page. */
