@@ -1,134 +1,92 @@
 const axiosInstance = require("./axios");
 
 async function fetchOrderType(orderType) {
-  try {
-    const response = await axiosInstance.post("/master/orderType", {
-      orderType: orderType,
-    });
-    // 'series' now holds the response data
-    return response.data; // Access the data property
-  } catch (error) {
-    console.error("Error fetching order type:", error);
-    throw error; // Re-throw the error if needed
-  }
+  return makePostRequest("/master/orderType", { orderType });
 }
 
 async function fetchDocumentType(orderType) {
-  try {
-    const response = await axiosInstance.post("/master/documenttype/single", {
-      orderType: orderType,
-    });
-    // 'series' now holds the response data
-    return response.data; // Access the data property
-  } catch (error) {
-    console.error("Error fetching order type:", error);
-    throw error; // Re-throw the error if needed
-  }
+  return makePostRequest("/master/documenttype/single", { orderType });
 }
 
 async function fetchOrderNoRunning(OOSPIC) {
-  try {
-    const response = await axiosInstance.post("/master/runningNumber", {
-      coNo: 410,
-      series: OOSPIC,
-      seriesType: "07",
-    });
-    return response.data; // Access the data property
-  } catch (error) {
-    console.error("Error fetching order type:", error);
-    throw error; // Re-throw the error if needed
-  }
+  return makePostRequest("/master/runningNumber", {
+    coNo: 410,
+    series: OOSPIC,
+    seriesType: "07",
+  });
 }
 
 async function fetchRunningNumber(data) {
-  try {
-    const response = await axiosInstance.post("/master/runningNumber", {
-      coNo: data.coNo,
-      series: data.series,
-      seriesType: data.seriesType,
-    });
-    return response.data; // Access the data property
-  } catch (error) {
-    console.error("Error fetching order type:", error);
-    throw error; // Re-throw the error if needed
-  }
+  const { coNo, series, seriesType } = data;
+  return makePostRequest("/master/runningNumber", {
+    coNo: coNo,
+    series: series,
+    seriesType: seriesType,
+  });
 }
 
 async function updateRunningNumber(data) {
-  try {
-    await axiosInstance.post("/master/runningNumber/update", {
-      coNo: data.coNo,
-      series: data.series,
-      seriesType: data.seriesType,
-      lastNo: data.lastNo,
-    });
-  } catch (error) {
-    console.error("Error fetching order type:", error);
-    throw error; // Re-throw the error if needed
-  }
+  const { coNo, series, seriesType, lastNo } = data;
+  return makePostRequest("/master/runningNumber/update", {
+    coNo: coNo,
+    series: series,
+    seriesType: seriesType,
+    lastNo: lastNo,
+  });
 }
 
 async function calWeight(data) {
-  try {
-    const response = await axiosInstance.post("/master/calweight", {
-      itemCode: data.itemCode,
-      qty: data.qty,
-    });
-    return response.data; // Access the data property
-  } catch (error) {
-    console.error("Error fetching order type:", error);
-    throw error; // Re-throw the error if needed
-  }
+  const { itemCode, qty } = data;
+  return makePostRequest("/master/calweight", {
+    itemCode: itemCode,
+    qty: qty,
+  });
 }
 
 async function calCost(data) {
-  try {
-    const response = await axiosInstance.post("/master/calcost", {
-      itemCode: data.itemCode,
-      qty: data.qty,
-    });
-    return response.data; // Access the data property
-  } catch (error) {
-    console.error("Error fetching order type:", error);
-    throw error; // Re-throw the error if needed
-  }
+  const { itemCode, qty } = data;
+  return makePostRequest("/master/calcost", {
+    itemCode: itemCode,
+    qty: qty,
+  });
 }
 
 async function fetchfactor(data) {
-  try {
-    const response = await axiosInstance.post("/master/unit", {
-      itemCode: data.itemCode,
-      unit: data.unit,
-    });
-    return response.data; // Access the data property
-  } catch (error) {
-    console.error("Error fetching order type:", error);
-    throw error; // Re-throw the error if needed
-  }
+  const { itemCode, unit } = data;
+  return makePostRequest("/master/unit", {
+    itemCode: itemCode,
+    unit: unit,
+  });
 }
 
 async function fetchPolicy(orderType) {
-  try {
-    const response = await axiosInstance.post("/master/policy/single", {
-      orderType: orderType,
-    });
-    return response.data; // Access the data property
-  } catch (error) {
-    console.error("Error fetching order type:", error);
-    throw error; // Re-throw the error if needed
-  }
+  return makePostRequest("/master/policy/single", {
+    orderType: orderType,
+  });
 }
 
+async function fetchPolicy(orderType) {
+  return makePostRequest("/master/policy/distribution/single", {
+    orderType: orderType,
+  });
+}
+
+
 async function fetchStock(data) {
+  const { itemCode, warehouse } = data;
+  return makePostRequest("/master/stocksingle", {
+    warehouse: warehouse,
+    itemCode: itemCode,
+  });
+}
+
+async function makePostRequest(endpoint, data) {
   try {
-    const response = await axiosInstance.post("/master/stocksingle", {
-      warehouse: data.warehouse,
-      itemCode: data.itemCode,
-    });
-    return response.data[0]; // Access the data property
+    const response = await axiosInstance.post(endpoint, data);
+    return response.data;
   } catch (error) {
-    console.error("Error fetching order type:", error);
-    throw error; // Re-throw the error if needed
+    console.error(`Error making POST request to ${endpoint}:`, error);
+    throw error;
   }
 }
 

@@ -130,8 +130,8 @@ exports.insertHead = async (req, res, next) => {
       //OQPCKA
       //OQPLSX
 
-      OQNEWE: netWeight, // OOLINE SUM
-      OQGRWE: grossWeight, // OOLINE SUM
+      OQNEWE: netWeight, // OrderLine SUM
+      OQGRWE: grossWeight, // OrderLine SUM
       OQTIZO: OATIZO, // OOHEAD.OATIZO
       OQDTDT: formatDate(), // OOHEAD requestDate
       OQDTHM: route.departureTime, // departureTime
@@ -195,11 +195,11 @@ exports.insertLine = async (req, res, next) => {
         URRIDL: item.itemNo,
         URITNO: item.itemCode,
         URFACI: deliveryData[0].LINE.URFACI, // json
-        URTRQT: item.qtyPCS, // ooline qtyCTN (pcs)
+        URTRQT: item.qtyPCS, // OrderLine qtyCTN (pcs)
         URSTCD: deliveryData[0].LINE.URSTCD, // 1
-        grossWeight: item.grossWeightSingle, // OOLINE
-        netWeight: item.netWeightSingle, // OOLINE
-        // URALUN OOLINE
+        grossWeight: item.grossWeightSingle, // OrderLine
+        netWeight: item.netWeightSingle, // OrderLine
+        // URALUN OrderLine
         URALUN: item.unit,
         URRGDT: formatDate(),
         URRGTM: getCurrentTimeFormatted(),

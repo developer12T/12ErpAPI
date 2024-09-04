@@ -1,4 +1,4 @@
-const { OLINE, Order } = require("../../models/order");
+const { OrderLine, Order } = require("../../models/order");
 const Promotion = require("../../models/promotion");
 const axios = require("axios");
 const { HOST } = require("../../config/index");
@@ -51,12 +51,12 @@ exports.index = async (req, res, next) => {
       },
     });
 
-    // Object to hold OLINEarr for each orderNo
+    // Object to hold OrderLinearr for each orderNo
     const orderLineData = {};
     const promotionData = {};
 
     for (let i = 0; i < orderData.length; i++) {
-      const OLINEData = await OLINE.findAll({
+      const OrderLineData = await OrderLine.findAll({
         attributes: {
           exclude: ["id"],
         },
@@ -65,22 +65,22 @@ exports.index = async (req, res, next) => {
       // Initialize the array for current orderNo
       orderLineData[orderData[i].orderNo] = [];
 
-      for (let j = 0; j < OLINEData.length; j++) {
+      for (let j = 0; j < OrderLineData.length; j++) {
         orderLineData[orderData[i].orderNo].push({
-          productNumber: OLINEData[j].productNumber,
-          itemCode: OLINEData[j].itemCode,
-          itemName: OLINEData[j].itemName,
-          qtyCTN: OLINEData[j].qtyCTN,
-          unit: OLINEData[j].unit,
-          price: OLINEData[j].price,
-          discount: OLINEData[j].discount,
-          netPrice: OLINEData[j].netPrice,
-          total: OLINEData[j].total,
-          promotionCode: OLINEData[j].promotionCode,
+          productNumber: OrderLineData[j].productNumber,
+          itemCode: OrderLineData[j].itemCode,
+          itemName: OrderLineData[j].itemName,
+          qtyCTN: OrderLineData[j].qtyCTN,
+          unit: OrderLineData[j].unit,
+          price: OrderLineData[j].price,
+          discount: OrderLineData[j].discount,
+          netPrice: OrderLineData[j].netPrice,
+          total: OrderLineData[j].total,
+          promotionCode: OrderLineData[j].promotionCode,
         });
       }
 
-      const OLINEData2 = await OLINE.findAll({
+      const OrderLineData2 = await OrderLine.findAll({
         attributes: {
           exclude: ["id"],
         },
@@ -94,56 +94,56 @@ exports.index = async (req, res, next) => {
 
       promotionData[orderData[i].orderNo] = [];
 
-      for (let OLine2 of OLINEData2) {
+      for (let OrderLine2 of OrderLineData2) {
         const PromotionData = await Promotion.findAll({
           attributes: {
             exclude: ["id"],
           },
           where: {
-            promotionCode: OLine2.promotionCode,
+            promotionCode: OrderLine2.promotionCode,
             FZCONO: "410",
           },
         });
 
         if (PromotionData.length > 0) {
           promotionData[orderData[i].orderNo].push({
-            promotionCode: OLine2.promotionCode,
+            promotionCode: OrderLine2.promotionCode,
             promotionName: PromotionData[0].promotionName, // Assuming promotionName is a property of PromotionData
           });
         } else {
-          console.log(`No promotion data found for ${OLine2.promotionCode}`);
+          console.log(`No promotion data found for ${OrderLine2.promotionCode}`);
           promotionData[orderData[i].orderNo].push({
-            promotionCode: OLine2.promotionCode,
+            promotionCode: OrderLine2.promotionCode,
             promotionName: null, // Or handle as needed if no data is found
           });
         }
       }
     }
 
-    // If you want to keep all OLINE data in a single array as well
-    // OLINEarr = Object.values(orderLineData).flat();
+    // If you want to keep all OrderLine data in a single array as well
+    // OrderLinearr = Object.values(orderLineData).flat();
 
     const orders = orderData.map((order) => {
       const orderNo = order.orderNo.trim();
       const customerNo = order.customerNo.trim();
-      const OLINEarr = orderLineData[orderNo] || [];
-      const Oline = OLINEarr.map((OLINE) => {
+      const OrderLinearr = orderLineData[orderNo] || [];
+      const OrderLine = OrderLinearr.map((OrderLine) => {
         const promotion = promotionData[orderNo].find(
-          (promo) => promo.promotionCode === OLINE.promotionCode
+          (promo) => promo.promotionCode === OrderLine.promotionCode
         );
-        const itemName = OLINE.itemName.trim();
-        const itemCode = OLINE.itemCode.trim();
-        const promotionCode = OLINE.promotionCode.trim();
+        const itemName = OrderLine.itemName.trim();
+        const itemCode = OrderLine.itemCode.trim();
+        const promotionCode = OrderLine.promotionCode.trim();
         return {
-          productNumber: OLINE.productNumber,
+          productNumber: OrderLine.productNumber,
           itemCode: itemCode,
           itemName: itemName,
-          qtyCTN: OLINE.qtyCTN,
-          unit: OLINE.unit,
-          price: OLINE.price,
-          discount: OLINE.discount,
-          netPrice: OLINE.netPrice,
-          total: OLINE.total,
+          qtyCTN: OrderLine.qtyCTN,
+          unit: OrderLine.unit,
+          price: OrderLine.price,
+          discount: OrderLine.discount,
+          netPrice: OrderLine.netPrice,
+          total: OrderLine.total,
           promotionCode: promotionCode,
           promotionName: promotion ? promotion.promotionName : "",
         };
@@ -162,7 +162,7 @@ exports.index = async (req, res, next) => {
         totalVat: order.totalVat,
         totalNonVat: order.totalNonVat,
         totalDiscount: order.totalDiscount,
-        item: Oline,
+        item: OrderLine,
       };
     });
 
@@ -175,7 +175,7 @@ exports.index = async (req, res, next) => {
 exports.single = async (req, res, next) => {
   try {
     const { orderNo } = req.body;
-    let OLINEarr = [];
+    let OrderLinearr = [];
     let promotionArr = [];
     let shippingarr = [];
     const orderData = await Order.findAll({
@@ -188,25 +188,22 @@ exports.single = async (req, res, next) => {
     });
 
     for (let i = 0; i < orderData.length; i++) {
-      const OLINEData = await OLINE.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
+      const OrderLineData = await OrderLine.findAll({
         where: { orderNo: orderNo },
       });
 
-      for (let i = 0; i < OLINEData.length; i++) {
-        OLINEarr.push({
-          productNumber: OLINEData[i].productNumber,
-          itemCode: OLINEData[i].itemCode,
-          itemName: OLINEData[i].itemName,
-          qtyCTN: OLINEData[i].qtyCTN,
-          unit: OLINEData[i].unit,
-          price: OLINEData[i].price,
-          discount: OLINEData[i].discount,
-          netPrice: OLINEData[i].netPrice,
-          total: OLINEData[i].total,
-          promotionCode: OLINEData[i].promotionCode,
+      for (let i = 0; i < OrderLineData.length; i++) {
+        OrderLinearr.push({
+          productNumber: OrderLineData[i].productNumber,
+          itemCode: OrderLineData[i].itemCode,
+          itemName: OrderLineData[i].itemName,
+          qtyCTN: OrderLineData[i].qtyCTN,
+          unit: OrderLineData[i].unit,
+          price: OrderLineData[i].price,
+          discount: OrderLineData[i].discount,
+          netPrice: OrderLineData[i].netPrice,
+          total: OrderLineData[i].total,
+          promotionCode: OrderLineData[i].promotionCode,
         });
       }
 
@@ -228,12 +225,12 @@ exports.single = async (req, res, next) => {
           shippingAddress1: shipping.shippingAddress1,
           shippingAddress2: shipping.shippingAddress2,
           shippingAddress3: shipping.shippingAddress3,
-          shippingPoscode: shipping.shippingPoscode,
-          shippingPhone: shipping.shippingPhone,
+          shippingPoscode: shipping.shippingPoscode.trim(),
+          shippingPhone: shipping.shippingPhone.trim(),
         });
       }
     }
-    const OLINEData2 = await OLINE.findAll({
+    const OrderLineData2 = await OrderLine.findAll({
       attributes: {
         exclude: ["id"],
       },
@@ -246,26 +243,26 @@ exports.single = async (req, res, next) => {
       // group: ["promotionCode"],
     });
 
-    for (let OLine2 of OLINEData2) {
+    for (let OrderLine2 of OrderLineData2) {
       const PromotionData = await Promotion.findAll({
         attributes: {
           exclude: ["id"],
         },
         where: {
-          promotionCode: OLine2.promotionCode,
+          promotionCode: OrderLine2.promotionCode,
           FZCONO: "410",
         },
       });
 
       if (PromotionData.length > 0) {
         promotionArr.push({
-          promotionCode: OLine2.promotionCode,
+          promotionCode: OrderLine2.promotionCode,
           promotionName: PromotionData[0].promotionName, // Assuming promotionName is a property of PromotionData
         });
       } else {
-        console.log(`No promotion data found for ${OLine2.promotionCode}`);
+        console.log(`No promotion data found for ${OrderLine2.promotionCode}`);
         promotionArr.push({
-          promotionCode: OLine2.promotionCode,
+          promotionCode: OrderLine2.promotionCode,
           promotionName: null, // Or handle as needed if no data is found
         });
       }
@@ -273,34 +270,38 @@ exports.single = async (req, res, next) => {
 
     // res.json(promotionArr);
 
-    const Oline = OLINEarr.map((OLINE) => {
+    const OrderLineData = OrderLinearr.map((OrderLine) => {
       let promotionNameC = "";
       for (let i = 0; i < promotionArr.length; i++) {
-        if (OLINE.promotionCode == promotionArr[i].promotionCode) {
+        if (OrderLine.promotionCode == promotionArr[i].promotionCode) {
           promotionNameC = promotionArr[i].promotionName;
         }
       }
+      const itemCode = OrderLine.itemCode.trim();
+      const promotionCode = OrderLine.promotionCode.trim();
       return {
-        productNumber: OLINE.productNumber,
-        itemCode: OLINE.itemCode,
-        itemName: OLINE.itemName,
-        qtyCTN: OLINE.qtyCTN,
-        unit: OLINE.unit,
-        price: OLINE.price,
-        discount: OLINE.discount,
-        netPrice: OLINE.netPrice,
-        total: OLINE.total,
-        promotionCode: OLINE.promotionCode,
+        productNumber: OrderLine.productNumber,
+        itemCode: itemCode,
+        itemName: OrderLine.itemName,
+        qtyCTN: OrderLine.qtyCTN,
+        unit: OrderLine.unit,
+        price: OrderLine.price,
+        discount: OrderLine.discount,
+        netPrice: OrderLine.netPrice,
+        total: OrderLine.total,
+        promotionCode: promotionCode,
         promotionName: promotionNameC,
       };
     });
 
     const orders = orderData.map((order) => {
+      const customer = order.customerNo.trim();
+      const orderNo = order.customerNo.trim();
       return {
         orderDate: order.orderDate,
         requestDate: order.requestDate,
-        customerNo: order.customerNo,
-        orderNo: order.orderNo,
+        customerNo:customer,
+        orderNo: orderNo,
         orderType: order.orderType,
         warehouse: order.warehouse,
         orderStatus: order.orderStatus,
@@ -309,7 +310,7 @@ exports.single = async (req, res, next) => {
         totalVat: order.totalVat,
         totalNonVat: order.totalNonVat,
         totalDiscount: order.totalDiscount,
-        item: Oline,
+        item: OrderLineData,
         shipping: shippingarr,
       };
     });
@@ -357,7 +358,6 @@ exports.insert = async (req, res, next) => {
     if (orderNo == "") {
       orderNo = "";
       const orderNoRunning = await fetchOrderNoRunning(series.OOSPIC);
-      // console.log(orderNoRunning);
       orderNo = parseInt(orderNoRunning.lastNo) + 1;
       orderNo = orderNo.toString();
     }
@@ -556,7 +556,7 @@ exports.insert = async (req, res, next) => {
       return result;
     });
 
-    let itemNoData = await OLINE.findOne({
+    let itemNoData = await OrderLine.findOne({
       where: {
         orderNo: orderNo,
       },

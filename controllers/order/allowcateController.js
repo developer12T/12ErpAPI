@@ -16,7 +16,7 @@ exports.insert = async (req, res, next) => {
         MOTIHM: item.itemNo,
         MOSTAT: item.orderStatus,
         MOPRIO: item.MOPRIO,
-        MOORCA: allowcateJson.MOORCA,
+        MOORCA: 311,
         orderNo: item.orderNo,
         itemNo: item.itemNo,
         MORFTX: item.OKALCU + "    " + item.customerNo,

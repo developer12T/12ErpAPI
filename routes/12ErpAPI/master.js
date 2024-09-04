@@ -16,6 +16,7 @@ const {
   warehouse,
   singlepolicy,
   singleordertype,
+  distributionpolicy,
 } = require("../../controllers/master/masterContorller");
 
 const {
@@ -113,5 +114,8 @@ router.post("/documenttype/single", singledoc);
 
 //http://localhost:3000/master/calWeight
 router.post("/policy/single", singlepolicy);
+
+//http://localhost:3000/master/calWeight
+router.post("/policy/distribution/single", distributionpolicy);
 
 module.exports = router;

@@ -1,9 +1,11 @@
 const axios = require("axios");
 const { ERP_API_BASE_URL } = require("../config/index");
-
+const milliseconds = 5 * 1000;
+const seconds = 60 * 1000;
+const mintues = 60 * 60 * 1000;
 const axiosInstance = axios.create({
   baseURL: ERP_API_BASE_URL,
-  // timeout: 5000,
+  timeout: seconds,
   headers: {
     "Content-Type": "application/json",
   },

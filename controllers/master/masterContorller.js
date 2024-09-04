@@ -5,6 +5,7 @@ const {
   Warehouse,
   Policy,
   OOTYPE,
+  MGTYPE,
 } = require("../../models/master");
 const {
   NumberSeries,
@@ -257,6 +258,35 @@ exports.singlepolicy = async (req, res, next) => {
     let results = await Policy.findOne({
       where: {
         EDDPOL: policy.OODPOL,
+        coNo: 410,
+      },
+    });
+    results = {
+      coNo: results.coNo,
+      EDDPOL: results.EDDPOL,
+      EDTX40: results.EDTX40,
+      EDTX15: results.EDTX15.trim(),
+      EDTRLV: results.EDTRLV,
+    };
+
+    res.status(200).json(results);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.distributionpolicy = async (req, res, next) => {
+  try {
+    const { mgType } = req.body;
+    const policy = await MGTYPE.findOne({
+      where: {
+        YXNBID: mgType,
+      },
+    });
+    // res.status(200).json(policy.data);
+    let results = await Policy.findOne({
+      where: {
+        EDDNID: policy.YXNBID,
         coNo: 410,
       },
     });

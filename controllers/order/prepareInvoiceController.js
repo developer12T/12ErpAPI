@@ -75,14 +75,14 @@ exports.insertA = async (req, res, next) => {
         OUOSDT: item.orderDate, // OOHEAD.OAORDT
         OUOSPE: parseInt(item.orderDate.toString().slice(0, 6)), // OOHEAD.OAORDT 6 digit font
         customerNo: item.customerNo,
-        customerChannel: customerData.data[0].customerChannel, // OOLINE *ไม่มีใน OOLINE และ OOHEAD
+        customerChannel: customerData.data[0].customerChannel, // OrderLine *ไม่มีใน OrderLine และ OOHEAD
         OUCUST: item.customerNo, // customerNo
         orderType: item.orderType, //
         payer: item.payer,
         OUCUCD: item.OACUCD, // OOHEAD
         saleCode: customerData.data[0].saleCode, // OOHEAD
         // OUSDST
-        OUCSCD: item.OBORCO, // OOHEAD   **OOHEAD but OOLINE.OBORCO
+        OUCSCD: item.OBORCO, // OOHEAD   **OOHEAD but OrderLine.OBORCO
         OUFRE1: item.OAFRE1, // OOHEAD
         warehouse: item.warehouse,
         itemCode: item.itemCode,
@@ -90,31 +90,31 @@ exports.insertA = async (req, res, next) => {
         itemType: itemData.data[0].itemType,
         OUITCL: itemData.data[0].MMITCL,
         OUORST: item.orderStatus,
-        OUORQT: item.qtyPCS, // OOLINE QT = PCS
+        OUORQT: item.qtyPCS, // OrderLine QT = PCS
         OUORQA: item.qtyCTN,
         unit: item.unit,
-        OUCOFA: item.OBCOFA, // OOLINE
+        OUCOFA: item.OBCOFA, // OrderLine
         OUDMCF: prepareJson[0].HEAD.OUDMCF, // 1
         OUSPUN: itemUnitMaxData.data[0].unit, // Bigest
-        OUORQS: item.qtyCTN, // OOLINE CTN
+        OUORQS: item.qtyCTN, // OrderLine CTN
         OUSTUN: itemUnitMinData.data[0].unit, // ** smallest
-        grossWeight: item.grossWeight, // OOLINE
-        netWeight: item.netWeight, // OOLINE
+        grossWeight: item.grossWeight, // OrderLine
+        netWeight: item.netWeight, // OrderLine
         OUDCCD: prepareJson[0].HEAD.OUDCCD, // 2
-        OUSAPR: nonVat(item.price), //non vat OOLINE.OBSAPR
-        OUGRPR: nonVat(item.price * item.qtyCTN), //non vat OOLINE OBNEPR
-        OUSAAM: nonVat(item.netPrice * item.qtyCTN), //OOLINE OBLNAM
+        OUSAPR: nonVat(item.price), //non vat OrderLine.OBSAPR
+        OUGRPR: nonVat(item.price * item.qtyCTN), //non vat OrderLine OBNEPR
+        OUSAAM: nonVat(item.netPrice * item.qtyCTN), //OrderLine OBLNAM
         OUPRMO: prepareJson[0].HEAD.OUPRMO, // 8
         OUDISY: item.OUDISY, //OOHEAD
-        // add OOLINE OBDIC 1-6 use 2,5 other defult 1
-        // OUDIA2  OOLINE non vat OBDIA2 * OBORQA
-        // OUOFRA  OOLINE non vat OBDIA2 * OBORQA
-        // OOLINE non vat OBDIA2 * OBORQA
-        OUDIA2: nonVat(item.discount * item.qtyCTN), //OOLINE non vat OBDIA2 * OBORQA
+        // add OrderLine OBDIC 1-6 use 2,5 other defult 1
+        // OUDIA2  OrderLine non vat OBDIA2 * OBORQA
+        // OUOFRA  OrderLine non vat OBDIA2 * OBORQA
+        // OrderLine non vat OBDIA2 * OBORQA
+        OUDIA2: nonVat(item.discount * item.qtyCTN), //OrderLine non vat OBDIA2 * OBORQA
         OUOFRA: nonVat(item.discount * item.qtyCTN),
         OUDWDT: item.requesetDate, //OOHEAD OARLDT
         OUCODT: item.requesetDate, //OOHEAD OARLDT
-        OUUCOS: item.costPCS, //OOLINE OBUCOS * OBORQT
+        OUUCOS: item.costPCS, //OrderLine OBUCOS * OBORQT
         OUUCCD: prepareJson[0].HEAD.OUUCCD, // 1
         OUUNMS: itemUnitMinData.data[0].unit, // หน่วยเล็กสุดของ item
         OUORTK: prepareJson[0].HEAD.OUORTK, // 1
@@ -129,7 +129,7 @@ exports.insertA = async (req, res, next) => {
         OUCHID: prepareJson[0].HEAD.OUCHID,
         // OUCAWE
         OULMTS: Date.now(),
-        OUACOS: item.costPCS, //OOLINE OBUCOS * OBORQT
+        OUACOS: item.costPCS, //OrderLine OBUCOS * OBORQT
         OUTEPY: customerData.data[0].creditTerm, //OCUSMA
         OUDECU: item.customerNo, // customer
         OURQWH: item.warehouse, // warehouse

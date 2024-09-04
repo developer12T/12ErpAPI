@@ -5,21 +5,21 @@ const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../middleware/getDateTime");
-
-const axios = require("axios");
-const { HOST } = require("../../config/index");
-const fs = require("fs");
-const path = require("path");
-const { kMaxLength } = require("buffer");
 const {
   fetchRunningNumber,
   updateRunningNumber,
   fetchStock,
-  calWeight
+  calWeight,
 } = require("../../middleware/apiMaster");
 
 const { getJsonData } = require("../../middleware/getJsonData");
-const { insertDistributionLine } = require("../../middleware/apiOrder");
+const {
+  insertDistributionLine,
+  insertAllocate,
+  insertDeliveryHead,
+  insertDeliveryLine,
+  insertPrepareInovoice,
+} = require("../../middleware/apiOrder");
 const orderJson = getJsonData("distribution.json");
 
 // const jsonPathOrder = path.join(
@@ -63,9 +63,9 @@ exports.index = async (req, res, next) => {
           itemCode: orderLines[j].itemCode.trim(),
           itemName: orderLines[j].itemName,
           itemQty: orderLines[j].itemQty,
-          itemUnit: orderLines[j].itemUnit,
+          itemUnit: orderLines[j].itemUnit.trim(),
           itemLocation: orderLines[j].itemLocation.trim(),
-          itemLot: orderLines[j].itemLot,
+          itemLot: orderLines[j].itemLot.trim(),
           itemStatus: orderLines[j].itemStatus,
         });
       }
@@ -214,7 +214,7 @@ exports.insertHead = async (req, res, next) => {
         // });
 
         return {
-          coNo: orderJson[0].LINE.OBCONO,
+          coNo: 410,
           orderNo: orderNo, //OAORNO
           itemCode: item.itemCode, //OQDLIX
           itemName: item.itemName, //OAORTP
@@ -293,6 +293,11 @@ exports.insertHead = async (req, res, next) => {
       });
     }
     await insertDistributionLine(itemsData);
+    // res.status(201).json(itemsData);
+    // await insertAllocate(itemsData);
+    // await insertDeliveryHead(itemsData);
+    // await insertDeliveryLine(itemsData);
+    // await insertPrepareInovoice(itemsData);
     // await axios({
     //   method: "post",
     //   url: `${HOST}distribution/insertLine`,

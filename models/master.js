@@ -279,6 +279,12 @@ const Policy = sequelize.define(
       primaryKey: true,
       field: "EDDPOL",
     },
+    EDDNID: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      field: "EDDNID",
+    },
     EDTX40: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -349,6 +355,56 @@ const OOTYPE = sequelize.define(
   }
 );
 
+const MGTYPE = sequelize.define(
+  "MGTYPE",
+  {
+    YXCONO: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      field: "YXCONO",
+    },
+    YXTRTP: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      field: "YXTRTP",
+    },
+    YXTX40: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "YXTX40",
+    },
+    YXTTYP: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "YXTTYP",
+    },
+    YXTTID: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "YXTTID",
+    },
+    YXTTSI: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "YXTTSI",
+    },
+    YXNBID: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "YXNBID",
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+    primaryKey: false,
+  }
+);
+
 module.exports = {
   ItemFac,
   ItemMaster,
@@ -358,4 +414,5 @@ module.exports = {
   Balance,
   Policy,
   OOTYPE,
+  MGTYPE
 };

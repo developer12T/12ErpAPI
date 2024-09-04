@@ -140,7 +140,7 @@ const Order = sequelize.define(
   }
 );
 
-const OLINE = sequelize.define(
+const OrderLine = sequelize.define(
   "OOLINE",
   {
     coNo: {
@@ -351,8 +351,7 @@ const OLINE = sequelize.define(
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
   }
 );
 
-module.exports = { Order, OLINE };
+module.exports = { Order, OrderLine };

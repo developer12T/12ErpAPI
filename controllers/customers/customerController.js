@@ -8,7 +8,6 @@ const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../middleware/getDateTime");
-const { sequelize } = require("../../config/m3db");
 const fs = require("fs");
 const path = require("path");
 const { filterStringParentTH } = require("../../middleware/filterString");
@@ -225,7 +224,7 @@ exports.single = async (req, res, next) => {
         customerNo: customerNo,
         customerChannel: customer.customerChannel,
         customerName:
-          customer.customerChannel == "103" || "107"
+          customer.customerChannel == "102" || "103"
             ? customer.customerName + customer.customerAddress4
             : customer.customerName,
         customerAddress1: customer.customerAddress1,
@@ -527,7 +526,7 @@ exports.insert = (io) => {
           shippingAddress2: shipping.shippingAddress2,
           shippingAddress3: shipping.shippingAddress3,
           shippingAddress4:
-            customerChannel == 105 || customerChannel == 103
+            customerChannel == 102 || customerChannel == 103
               ? customerAddress4 || shipping.shippingAddress4
               : shipping.shippingAddress4,
           shippingPoscode: shipping.shippingPoscode,
@@ -588,7 +587,7 @@ exports.onlycus = (io) => {
           customerStatus: customer.customerStatus,
           customerChannel: customer.customerChannel,
           customerName:
-            customer.customerChannel == "103" || "107"
+            customer.customerChannel == "102" || "103"
               ? customer.customerName + customer.customerAddress4
               : customer.customerName,
           OKALCU: OKALCU,
