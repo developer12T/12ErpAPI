@@ -1,4 +1,4 @@
-const { MGHEAD, MGLINE } = require("../../models/distribution");
+const { MGHEAD, MGLINE, MGDADR } = require("../../models/distribution");
 // Get the current year and month
 const {
   getCurrentYearMonth,
@@ -19,6 +19,7 @@ const {
   insertDeliveryHead,
   insertDeliveryLine,
   insertPrepareInovoice,
+  insertDistributionMGDADR,
 } = require("../../middleware/apiOrder");
 const orderJson = getJsonData("distribution.json");
 
@@ -116,13 +117,26 @@ exports.insertHead = async (req, res, next) => {
     let { orderNo } = req.body;
     const calWeights = [];
 
+    const running = await fetchRunningNumber({
+      coNo: 410,
+      series: "B",
+      seriesType: "14",
+    });
+    const runningNumberH = parseInt(running.lastNo) + 1;
+    updateRunningNumber({
+      coNo: 410,
+      series: "B",
+      seriesType: "14",
+      lastNo: runningNumberH,
+    });
+
     if (orderNo == "") {
       orderNo = "";
-      const orderNoRunning = await fetchRunningNumber({
-        coNo: 410,
-        series: "B",
-        seriesType: "14",
-      });
+      // const orderNoRunning = await fetchRunningNumber({
+      //   coNo: 410,
+      //   series: "B",
+      //   seriesType: "14",
+      // });
       // const orderNoRunning = await axios({
       //   method: "post",
       //   url: `${HOST}master/runningNumber/`,
@@ -133,7 +147,8 @@ exports.insertHead = async (req, res, next) => {
       //   },
       // });
 
-      orderNo = parseInt(orderNoRunning.lastNo) + 1;
+      // orderNo = parseInt(running.lastNo) + 1;
+
       // await axios({
       //   method: "post",
       //   url: `${HOST}master/runningNumber/update`,
@@ -144,13 +159,13 @@ exports.insertHead = async (req, res, next) => {
       //     lastNo: orderNo,
       //   },
       // });
-      updateRunningNumber({
-        coNo: 410,
-        series: "B",
-        seriesType: "14",
-        lastNo: orderNo,
-      });
-      orderNo = orderNo.toString();
+      // updateRunningNumber({
+      //   coNo: 410,
+      //   series: "B",
+      //   seriesType: "14",
+      //   lastNo: orderNo,
+      // });
+      orderNo = runningNumberH.toString();
       orderNo = orderNo.padStart(10, "0");
     }
 
@@ -215,6 +230,7 @@ exports.insertHead = async (req, res, next) => {
 
         return {
           coNo: 410,
+          runningNumberH: runningNumberH,
           orderNo: orderNo, //OAORNO
           itemCode: item.itemCode, //OQDLIX
           itemName: item.itemName, //OAORTP
@@ -260,7 +276,7 @@ exports.insertHead = async (req, res, next) => {
         return result;
       });
     }
-    // res.json(itemNoData);
+    // res.json(itemsData);
     // console.log(getCurrentTimeFormatted());
 
     if (Hcase == 1) {
@@ -292,11 +308,21 @@ exports.insertHead = async (req, res, next) => {
         MGLMTS: Date.now(),
       });
     }
-    await insertDistributionLine(itemsData);
+
     // res.status(201).json(itemsData);
-    // await insertAllocate(itemsData);
-    // await insertDeliveryHead(itemsData);
-    // await insertDeliveryLine(itemsData);
+    await insertAllocate(itemsData);
+    await insertDeliveryHead({
+      warehouse: warehouse,
+      coNo: 410,
+      runningNumberH: runningNumberH,
+      orderNo: orderNo,
+      orderType: orderType,
+      grossWeight: totalgrossWeight,
+      // netWeight: totalnetWeight,
+    });
+    await insertDeliveryLine(itemsData);
+    await insertDistributionLine(itemsData);
+    await insertDistributionMGDADR(orderNo);
     // await insertPrepareInovoice(itemsData);
     // await axios({
     //   method: "post",
@@ -312,14 +338,11 @@ exports.insertHead = async (req, res, next) => {
     next(error);
   }
 };
-
 // insert Line
-
 exports.insertLine = async (req, res, next) => {
   try {
     const items = req.body.items;
     // const orderNo = req.body.orderNo;
-
     for (let item of items) {
       await MGLINE.create({
         coNo: item.coNo,
@@ -356,6 +379,42 @@ exports.insertLine = async (req, res, next) => {
         MRPRIO: 5,
       });
     }
+    res.status(201).json({
+      message: "Created",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.insertMGDADR = async (req, res, next) => {
+  try {
+    const { orderNo } = req.body;
+    await MGDADR.create({
+      coNo: 410,
+      orderNo: orderNo,
+      MAADK1: "",
+      MASUNO: "",
+      MAADID: "",
+      MACONM: "",
+      MAADR1: "",
+      MAADR2: "",
+      MAADR3: "",
+      MAADR4: "",
+      MAPONO: "",
+      MACSCD: "",
+      MAADVI: "",
+      MAOREF: "",
+      MAYREF: "",
+      MATXID: 0,
+      MATOWN: "",
+      MAECAR: "",
+      MARGDT: formatDate(),
+      MARGTM: getCurrentTimeFormatted(),
+      MALMDT: formatDate(),
+      MACHNO: 0,
+      MACHID: "",
+    });
     res.status(201).json({
       message: "Created",
     });

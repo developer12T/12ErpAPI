@@ -154,79 +154,79 @@ router.post(
 // http://localhost:3000/customer/insert
 router.post(
   "/insertHead",
-  [
-    body("coNo")
-      .not()
-      .isEmpty()
-      .withMessage("Missing coNo")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("coNo must be exactly 3 characters long"),
-    body("warehouse")
-      .not()
-      .isEmpty()
-      .withMessage("Missing warehouse")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("warehouse must be exactly 1 characters long"),
-    body("runningNumberH")
-      .not()
-      .isEmpty()
-      .withMessage("Missing Hcase")
-      .isNumeric()
-      .withMessage("Data is Numeric")
-      .isLength({ min: 0, max: 11 })
-      .withMessage("runningNumberH must be exactly 11 characters long"),
-    body("orderType")
-      .not()
-      .isEmpty()
-      .withMessage("Missing orderType")
-      .isLength({ min: 3, max: 3 })
-      .withMessage("Hcase must be exactly 3 characters long"),
-    body("addressID")
-      .not()
-      .isEmpty()
-      .withMessage("Missing addressID")
-      .isString()
-      .withMessage("addressID must be String"),
-    body("customerNo")
-      .not()
-      .isEmpty()
-      .withMessage("Missing customerNo")
-      .isLength({ min: 0, max: 10 })
-      .withMessage("customerNo must be exactly 10 characters long"),
-    body("orderDate")
-      .not()
-      .isEmpty()
-      .withMessage("Missing orderDate")
-      .isLength({ min: 8, max: 8 })
-      .withMessage("orderDate must be exactly 8 characters long"),
-    body("requestDate")
-      .not()
-      .isEmpty()
-      .withMessage("Missing requestDate")
-      .isLength({ min: 8, max: 8 })
-      .withMessage("requestDate must be exactly 8 characters long"),
-    body("OARGTM")
-      .not()
-      .isEmpty()
-      .withMessage("Missing OARGTM")
-      .isNumeric()
-      .withMessage("Data is Numeric")
-      .isLength({ min: 1, max: 6 })
-      .withMessage("OARGTM must be exactly 6 characters long"),
-    body("OATIZO").not().isEmpty().withMessage("Missing OATIZO"),
-    body("grossWeight")
-      .not()
-      .isEmpty()
-      .withMessage("Missing grossWeight")
-      .isNumeric()
-      .withMessage("Data is Numeric"),
-    body("netWeight")
-      .not()
-      .isEmpty()
-      .withMessage("Missing netWeight")
-      .isNumeric()
-      .withMessage("Data is Numeric"),
-  ],
+  // [
+  //   body("coNo")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing coNo")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("coNo must be exactly 3 characters long"),
+  //   body("warehouse")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing warehouse")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("warehouse must be exactly 1 characters long"),
+  //   body("runningNumberH")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing Hcase")
+  //     .isNumeric()
+  //     .withMessage("Data is Numeric")
+  //     .isLength({ min: 0, max: 11 })
+  //     .withMessage("runningNumberH must be exactly 11 characters long"),
+  //   body("orderType")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing orderType")
+  //     .isLength({ min: 3, max: 3 })
+  //     .withMessage("Hcase must be exactly 3 characters long"),
+  //   body("addressID")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing addressID")
+  //     .isString()
+  //     .withMessage("addressID must be String"),
+  //   body("customerNo")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing customerNo")
+  //     .isLength({ min: 0, max: 10 })
+  //     .withMessage("customerNo must be exactly 10 characters long"),
+  //   body("orderDate")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing orderDate")
+  //     .isLength({ min: 8, max: 8 })
+  //     .withMessage("orderDate must be exactly 8 characters long"),
+  //   body("requestDate")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing requestDate")
+  //     .isLength({ min: 8, max: 8 })
+  //     .withMessage("requestDate must be exactly 8 characters long"),
+  //   body("OARGTM")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing OARGTM")
+  //     .isNumeric()
+  //     .withMessage("Data is Numeric")
+  //     .isLength({ min: 1, max: 6 })
+  //     .withMessage("OARGTM must be exactly 6 characters long"),
+  //   body("OATIZO").not().isEmpty().withMessage("Missing OATIZO"),
+  //   body("grossWeight")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing grossWeight")
+  //     .isNumeric()
+  //     .withMessage("Data is Numeric"),
+  //   body("netWeight")
+  //     .not()
+  //     .isEmpty()
+  //     .withMessage("Missing netWeight")
+  //     .isNumeric()
+  //     .withMessage("Data is Numeric"),
+  // ],
   insertHead
 );
 

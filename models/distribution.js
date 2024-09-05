@@ -132,7 +132,6 @@ const MGHEAD = sequelize.define(
     updatedAt: false,
   }
 );
-
 const MGLINE = sequelize.define(
   "MGLINE",
   {
@@ -307,8 +306,140 @@ const MGLINE = sequelize.define(
     updatedAt: false,
   }
 );
+const MGDADR = sequelize.define(
+  "MGDADR",
+  {
+    coNo: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MACONO",
+    },
+    orderNo: {
+      type: DataTypes.NUMBER,
+      primaryKey: true,
+      allowNull: true,
+      field: "MATRNR",
+    },
+    MAADK1: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      primaryKey: true,
+      field: "MAADK1",
+    },
+
+    MASUNO: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MASUNO",
+    },
+    MAADID: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MAADID",
+    },
+    MACONM: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MACONM",
+    },
+    MAADR1: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MAADR1",
+    },
+    MAADR2: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MAADR2",
+    },
+    MAADR3: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MAADR3",
+    },
+    MAADR4: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MAADR4",
+    },
+    MAPONO: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MAPONO",
+    },
+    MACSCD: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MACSCD",
+    },
+    MAADVI: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MAADVI",
+    },
+    MAOREF: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MAOREF",
+    },
+    MAYREF: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MAYREF",
+    },
+    MATXID: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MATXID",
+    },
+    MATOWN: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MATOWN",
+    },
+    MAECAR: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MAECAR",
+    },
+    MARGDT: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MARGDT",
+    },
+    MARGTM: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MARGTM",
+    },
+    MALMDT: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MALMDT",
+    },
+    MACHNO: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MACHNO",
+    },
+    MACHID: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      field: "MACHID",
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+    primaryKey: false,
+  }
+);
+
 
 module.exports = {
   MGHEAD,
   MGLINE,
+  MGDADR
 };

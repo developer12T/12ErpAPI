@@ -65,9 +65,9 @@ async function fetchPolicy(orderType) {
   });
 }
 
-async function fetchPolicy(orderType) {
+async function fetchPolicyDistribution(orderType) {
   return makePostRequest("/master/policy/distribution/single", {
-    orderType: orderType,
+    mgType: orderType,
   });
 }
 
@@ -101,4 +101,5 @@ module.exports = {
   fetchPolicy,
   fetchDocumentType,
   fetchStock,
+  fetchPolicyDistribution
 };

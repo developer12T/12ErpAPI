@@ -9,7 +9,10 @@ const {
   fetchShipping,
   fetchCustomer,
 } = require("../../middleware/apiCustomer");
-const { fetchPolicy } = require("../../middleware/apiMaster");
+const {
+  fetchPolicyDistribution,
+  fetchPolicy,
+} = require("../../middleware/apiMaster");
 const { fetchRoutes } = require("../../middleware/apiRoutes");
 const deliveryData = getJsonData("delivery.json");
 
@@ -25,7 +28,6 @@ exports.insertHead = async (req, res, next) => {
       orderType,
       customerNo,
       addressID,
-      OARGTM,
       OATIZO,
       grossWeight,
       netWeight,
@@ -34,13 +36,14 @@ exports.insertHead = async (req, res, next) => {
     } = req.body;
 
     //validation
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      const error = new Error("Data is Incorrect");
-      error.statusCode = 422;
-      error.validation = errors.array();
-      throw error;
-    }
+    // const errors = validationResult(req);
+
+    // if (!errors.isEmpty()) {
+    //   const error = new Error("Data is Incorrect");
+    //   error.statusCode = 422;
+    //   error.validation = errors.array();
+    //   throw error;
+    // }
 
     // const jsonPath = path.join(__dirname, "../../", "Jsons", "delivery.json");
     // let deliveryData = [];
@@ -50,47 +53,23 @@ exports.insertHead = async (req, res, next) => {
     // }
 
     // res.json(deliveryData[0].HEAD);
-    const policy = await fetchPolicy(orderType);
+    let policy;
+    let route = null;
+    let customer = null;
+    let shinpping = null;
+    // let policy;
 
-    // const policy = await axios({
-    //   method: "post",
-    //   url: `${HOST}master/policy/single`,
-    //   data: { orderType: orderType },
-    // });
-
-    const shinpping = await fetchShipping({
-      customerNo: customerNo,
-      addressID: addressID,
-    });
-    // const shinpping = await axios({
-    //   method: "post",
-    //   url: `${HOST}shinpping/single`,
-    //   data: {
-    //     customerNo: customerNo,
-    //     addressID: addressID,
-    //   },
-    // });
-
-    const route = await fetchRoutes(shinpping.shippingRoute);
-    // res.status(201).json(route);
-
-    // const route = await axios({
-    //   method: "post",
-    //   url: `${HOST}route/single`,
-    //   data: {
-    //     shippingRoute: shinpping.data[0].shippingRoute,
-    //   },
-    // });
-
-    const customer = await fetchCustomer(customerNo);
-
-    // const customer = await axios({
-    //   method: "post",
-    //   url: `${HOST}customer/single`,
-    //   data: {
-    //     customerNo: customerNo,
-    //   },
-    // });
+    if (/^[a-zA-Z]/.test(orderType)) {
+      policy = await fetchPolicyDistribution(orderType);
+    } else {
+      policy = await fetchPolicy(orderType);
+      shinpping = await fetchShipping({
+        customerNo: customerNo,
+        addressID: addressID,
+      });
+      route = await fetchRoutes(shinpping.shippingRoute);
+      customer = await fetchCustomer(customerNo);
+    }
 
     await DeliveryHead.create({
       coNo: coNo,
@@ -102,25 +81,23 @@ exports.insertHead = async (req, res, next) => {
       // OQCOAA
       // OQCOAF
       // OQCONB
-      OQSDES: route.place, // ROUTE PLACE
+      OQSDES: route == !null ? route.place : 0, // ROUTE PLACE
       OQDSDT: requestDate, //OOHEAD OARLDT requestDate
-      OQDSHM: route.departureTime, // departureTime
+      OQDSHM: route == !null ? route.departureTime : 0, // departureTime
       OQTRDT: orderDate, //OOHEAD OAORDT
-      OQTRTM: OARGTM, //OOHEAD
-      OQSROT: route.routeCode, // ROUTE
-      OQROUT: route.routeCode, // ROUTE
+      OQTRTM: getCurrentTimeFormatted(), //OOHEAD
+      OQSROT: route == !null ? route.routeCode : '', // ROUTE
+      OQROUT: route == !null ? route.routeCode : '', // ROUTE
       // OQRODN
       // OQMODL
       // OQMODF
       // OQTEDL
       // OQTEDF
-
       OQRORC: deliveryData[0].HEAD.OQRORC, // 3
       // OQTTYP
       OQTTYP: deliveryData[0].HEAD.OQTTYP,
       OQRIDN: orderNo,
-      OQEDES: route.place, // ROUTE PLACE
-
+      // OQEDES: route.place == !null ? route.place : "", // ROUTE PLACE
       //OQPUTP
       //OQPUSN
       //OQBLOP
@@ -129,25 +106,24 @@ exports.insertHead = async (req, res, next) => {
       //OQPGRS
       //OQPCKA
       //OQPLSX
-
       OQNEWE: netWeight, // OrderLine SUM
       OQGRWE: grossWeight, // OrderLine SUM
       OQTIZO: OATIZO, // OOHEAD.OATIZO
       OQDTDT: formatDate(), // OOHEAD requestDate
-      OQDTHM: route.departureTime, // departureTime
+      OQDTHM: route == !null ? route.departureTime : 0 , // departureTime
       OQDOCR: deliveryData[0].HEAD.OQDOCR, // 1
       OQDOCE: deliveryData[0].HEAD.OQDOCE, // 1 ** 1 digit in Database TST
       OQDEWD: deliveryData[0].HEAD.OQDEWD, // 0
       OQSEEQ: deliveryData[0].HEAD.OQSEEQ, // 50
       OQIVSS: deliveryData[0].HEAD.OQIVSS, // 2
       OQPRIO: deliveryData[0].HEAD.OQPRIO, // 5
-      OQCUCL: route.customerChannel, // OCUSMA
-      OQCSCD: customer.OKCSCD, // OCUSMA
-      OQECAR: customer.OKECAR, // OCUSMA
-      OQPONO: shinpping.shippingPoscode, // OCUSAD
-      OQULZO: route.shippingRoute, // OCUSAD
-      OQFWNS: route.forwarding, // Route forwarding
-      OQFWNO: route.forwarding, // Route forwarding
+      OQCUCL: route == !null ?  route.customerChannel : '', // OCUSMA
+      OQCSCD: customer == !null ? customer.OKCSCD : '', // OCUSMA
+      OQECAR: customer == !null ? customer.OKECAR : '', // OCUSMA
+      OQPONO: shinpping == !null ? shinpping.shippingPoscode : '', // OCUSAD
+      OQULZO: route == !null ? route.shippingRoute : '', // OCUSAD
+      OQFWNS: route == !null ? route.forwarding : '', // Route forwarding
+      OQFWNO: route == !null ? route.forwarding : '', // Route forwarding
       OQAGKY: deliveryData[0].HEAD.OQAGKY, // emthy
       OQRGDT: formatDate(),
       OQRGTM: getCurrentTimeFormatted(),
@@ -157,6 +133,7 @@ exports.insertHead = async (req, res, next) => {
       OQSCES: deliveryData[0].HEAD.OQSCES, //90
       OQLMTS: Date.now(),
     });
+
     // console.log(test);
 
     res.status(201).json("Created");

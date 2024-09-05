@@ -280,16 +280,19 @@ exports.distributionpolicy = async (req, res, next) => {
     const { mgType } = req.body;
     const policy = await MGTYPE.findOne({
       where: {
-        YXNBID: mgType,
+        YXTRTP: mgType,
+        YXCONO: 410,
       },
     });
-    // res.status(200).json(policy.data);
+    // res.status(200).json(policy);
+
     let results = await Policy.findOne({
       where: {
         EDDNID: policy.YXNBID,
         coNo: 410,
       },
     });
+    // res.status(200).json(results);
     results = {
       coNo: results.coNo,
       EDDPOL: results.EDDPOL,
