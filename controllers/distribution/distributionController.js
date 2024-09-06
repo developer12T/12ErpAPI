@@ -18,22 +18,9 @@ const {
   insertAllocate,
   insertDeliveryHead,
   insertDeliveryLine,
-  insertPrepareInovoice,
   insertDistributionMGDADR,
 } = require("../../middleware/apiOrder");
 const orderJson = getJsonData("distribution.json");
-
-// const jsonPathOrder = path.join(
-//   __dirname,
-//   "../../",
-//   "Jsons",
-//   "distribution.json"
-// );
-// let orderJson = [];
-// if (fs.existsSync(jsonPathOrder)) {
-//   const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
-//   orderJson = JSON.parse(jsonDataOrder);
-// }
 
 exports.index = async (req, res, next) => {
   try {

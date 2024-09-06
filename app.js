@@ -46,7 +46,7 @@ const corsOptions = {
   maxAge: 3600,
 };
 // const limiter = rateLimit({
-// 	windowMs: 15*60 * 1000, // 1 minutes
+// 	windowMs: 15 * 60 * 1000, // 1 minutes
 // 	limit: 500, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
 // 	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
 // 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.

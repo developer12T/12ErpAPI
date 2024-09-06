@@ -1,6 +1,5 @@
-const { sequelize, DataTypes } = require("../config/m3db");
-const { filterStringParentTH } = require("../middleware/filterString");
 
+const { sequelize, DataTypes } = require("../config/m3db");
 const Sale = sequelize.define(
   "CSYTAB",
   {

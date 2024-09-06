@@ -97,7 +97,7 @@ exports.insertHead = async (req, res, next) => {
       // OQTTYP
       OQTTYP: deliveryData[0].HEAD.OQTTYP,
       OQRIDN: orderNo,
-      // OQEDES: route.place == !null ? route.place : "", // ROUTE PLACE
+      OQEDES: route == !null ? route.place : "", // ROUTE PLACE
       //OQPUTP
       //OQPUSN
       //OQBLOP
