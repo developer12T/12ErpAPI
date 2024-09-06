@@ -24,7 +24,7 @@ exports.fac = async (req, res, next) => {
         itemCode: itemCode,
         M9FACI: item.M9FACI,
         cost: item.cost,
-    };
+      };
     });
     res.json(items);
   } catch (error) {
@@ -71,10 +71,6 @@ exports.unitmin = async (req, res, next) => {
     const { itemCode } = req.body;
 
     const min = await ItemUnit.min("factor", {
-      //   limit: 10,
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         coNo: 410,
         itemCode: itemCode,
@@ -82,8 +78,7 @@ exports.unitmin = async (req, res, next) => {
       },
     });
 
-    const itemData = await ItemUnit.findAll({
-      //   limit: 10,
+    const itemData = await ItemUnit.findOne({
       attributes: {
         exclude: ["id"],
       },
@@ -94,16 +89,13 @@ exports.unitmin = async (req, res, next) => {
         factor: min,
       },
     });
-    const items = itemData.map((item) => {
-      const itemCode = item.itemCode.trim();
-      const unit = item.unit.trim();
-      return {
-        itemCode: itemCode,
-        facType: item.facType,
-        factor: item.factor,
-        unit: unit,
+    const items = {
+        itemCode:  itemData.itemCode.trim(),
+        facType: itemData.facType,
+        factor: itemData.factor,
+        unit: itemData.unit.trim(),
       };
-    });
+
     res.json(items);
   } catch (error) {
     next(error);
@@ -126,11 +118,7 @@ exports.unitmax = async (req, res, next) => {
       },
     });
 
-    const itemData = await ItemUnit.findAll({
-      //   limit: 10,
-      attributes: {
-        exclude: ["id"],
-      },
+    const itemData = await ItemUnit.findOne({
       where: {
         coNo: 410,
         itemCode: itemCode,
@@ -138,16 +126,13 @@ exports.unitmax = async (req, res, next) => {
         factor: max,
       },
     });
-    const items = itemData.map((item) => {
-      const itemCode = item.itemCode.trim();
-      const unit = item.unit.trim();
-      return {
-        itemCode: itemCode,
-        facType: item.facType,
-        factor: item.factor,
-        unit: unit,
-      };
-    });
+    const items = {
+      itemCode: itemData.itemCode.trim(),
+      facType: itemData.facType,
+      factor: itemData.factor,
+      unit: itemData.unit.trim(),
+    };
+
     res.json(items);
   } catch (error) {
     next(error);

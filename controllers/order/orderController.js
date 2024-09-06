@@ -17,7 +17,14 @@ const {
   calCost,
   calWeight,
   fetchfactor,
+  fetchItemUnitMax,
+  fetchItemUnitMin,
+  fetchItemDetail,
 } = require("../../middleware/apiMaster");
+const {
+  fetchCustomer,
+  fetchShipping,
+} = require("../../middleware/apiCustomer");
 const {
   insertAllocate,
   insertOrderLine,
@@ -26,6 +33,7 @@ const {
   insertPrepareInovoice,
   insertDocument,
 } = require("../../middleware/apiOrder");
+const { fetchRoutes } = require("../../middleware/apiRoutes");
 const { getJsonData } = require("../../middleware/getJsonData");
 // Get the current year and month
 const { getCurrentYearMonth } = require("../../middleware/getDateTime");
@@ -111,7 +119,9 @@ exports.index = async (req, res, next) => {
             promotionName: PromotionData[0].promotionName, // Assuming promotionName is a property of PromotionData
           });
         } else {
-          console.log(`No promotion data found for ${OrderLine2.promotionCode}`);
+          console.log(
+            `No promotion data found for ${OrderLine2.promotionCode}`
+          );
           promotionData[orderData[i].orderNo].push({
             promotionCode: OrderLine2.promotionCode,
             promotionName: null, // Or handle as needed if no data is found
@@ -300,7 +310,7 @@ exports.single = async (req, res, next) => {
       return {
         orderDate: order.orderDate,
         requestDate: order.requestDate,
-        customerNo:customer,
+        customerNo: customer,
         orderNo: orderNo,
         orderType: order.orderType,
         warehouse: order.warehouse,
@@ -335,7 +345,6 @@ exports.insert = async (req, res, next) => {
       totalNet,
       addressID,
       payer,
-      OKALCU,
       OAFRE1,
     } = req.body;
 
@@ -351,30 +360,42 @@ exports.insert = async (req, res, next) => {
     }
     const series = await fetchOrderType(orderType);
 
+    const items = req.body.item;
+
+    // console.log(orderStatus);
+    const orderJson = getJsonData("order.json");
+    const RunningJson = getJsonData("runnigNumber.json");
+
     // const series = await axiosInstance.post("/master/orderType", {
     //   orderType: orderType,
     // });
 
     if (orderNo == "") {
       orderNo = "";
-      const orderNoRunning = await fetchOrderNoRunning(series.OOSPIC);
+      const orderNoRunning = await fetchRunningNumber({
+        coNo: RunningJson[0].CO.coNo,
+        series: series.OOOT05,
+        seriesType: RunningJson[0].CO.seriesType,
+      });
+
       orderNo = parseInt(orderNoRunning.lastNo) + 1;
+      await updateRunningNumber({
+        coNo: RunningJson[0].CO.coNo,
+        series: series.OOOT05,
+        seriesType: RunningJson[0].CO.seriesType,
+        lastNo: orderNo,
+      });
       orderNo = orderNo.toString();
     }
     // res.json(orderNo);
 
-    const items = req.body.item;
-
-    // console.log(orderStatus);
-    const orderJson = getJsonData("order.json");
-    const RunningJson = getJsonData("runnigNumber.json");
     // res.json(orderJson);
     // console.log(orderJson);
 
     const running = await fetchRunningNumber({
-      coNo: RunningJson[0].NUMBER.coNo,
+      coNo: RunningJson[0].DELIVERY.coNo,
       series: series.OOSPIC,
-      seriesType: RunningJson[0].NUMBER.seriesType,
+      seriesType: RunningJson[0].DELIVERY.seriesType,
     });
     // const running = await axios({
     //   method: "post",
@@ -386,11 +407,10 @@ exports.insert = async (req, res, next) => {
     //   },
     // });
     const runningNumberH = parseInt(running.lastNo) + 1;
-
     await updateRunningNumber({
-      coNo: RunningJson[0].NUMBER.coNo,
+      coNo: RunningJson[0].DELIVERY.coNo,
       series: series.OOSPIC,
-      seriesType: RunningJson[0].NUMBER.seriesType,
+      seriesType: RunningJson[0].DELIVERY.seriesType,
       lastNo: runningNumberH,
     });
     // res.status(200).json(runningNumberH);
@@ -413,14 +433,6 @@ exports.insert = async (req, res, next) => {
         itemCode: item.itemCode,
         qty: item.qtyPCS,
       });
-      // const { data } = await axios({
-      //   method: "post",
-      //   url: `${HOST}master/calWeight`,
-      //   data: {
-      //     itemCode: item.itemCode,
-      //     qty: item.qtyPCS,
-      //   },
-      // });
       calWeights.push(Weight);
     }
     const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
@@ -435,6 +447,15 @@ exports.insert = async (req, res, next) => {
 
     let itemsData = await Promise.all(
       items.map(async (item) => {
+        const itemUnitMinData = await fetchItemUnitMin(item.itemCode);
+        const itemUnitMaxData = await fetchItemUnitMax(item.itemCode);
+        const itemDetail = await fetchItemDetail(item.itemCode);
+        const shinpping = await fetchShipping({
+          customerNo: customerNo,
+          addressID: addressID,
+        });
+        const route = await fetchRoutes(shinpping.shippingRoute);
+        const customer = await fetchCustomer(customerNo);
         const WeightAll = await calWeight({
           itemCode: item.itemCode,
           qty: item.qtyPCS,
@@ -443,71 +464,25 @@ exports.insert = async (req, res, next) => {
           itemCode: item.itemCode,
           qty: 1,
         });
-        // const calWeight = await axios({
-        //   method: "post",
-        //   url: `${HOST}master/calWeight`,
-        //   data: {
-        //     itemCode: item.itemCode,
-        //     qty: item.qtyPCS,
-        //   },
-        // });
-
-        // const calWeight2 = await axios({
-        //   method: "post",
-        //   url: `${HOST}master/calWeight`,
-        //   data: {
-        //     itemCode: item.itemCode,
-        //     qty: 1,
-        //   },
-        // });
-
         const factor = await fetchfactor({
           itemCode: item.itemCode,
           unit: item.unit,
         });
-
-        // const factor = await axios({
-        //   method: "post",
-        //   url: `${HOST}master/unit`,
-        //   data: {
-        //     itemCode: item.itemCode,
-        //     unit: item.unit,
-        //   },
-        // });
         const Cost = await calCost({
           itemCode: item.itemCode,
           qty: 1,
         });
-
         const CostAll = await calCost({
           itemCode: item.itemCode,
           qty: item.qtyPCS,
         });
-
-        // const calcost = await axios({
-        //   method: "post",
-        //   url: `${HOST}master/calcost`,
-        //   data: {
-        //     itemCode: item.itemCode,
-        //     qty: 1,
-        //   },
-        // });
-
-        // const calcost2 = await axios({
-        //   method: "post",
-        //   url: `${HOST}master/calcost`,
-        //   data: {
-        //     itemCode: item.itemCode,
-        //     qty: item.qtyPCS,
-        //   },
-        // });
         return {
           coNo: orderJson[0].LINE.OBCONO,
           OACUCD: orderJson[0].HEAD.OACUCD,
           OBDIVI: orderJson[0].LINE.OBDIVI,
           OBORCO: orderJson[0].LINE.OBORCO,
           orderNo: orderNo, //OAORNO
-          OKALCU: OKALCU,
+          OKALCU: customer.OKALCU,
           runningNumberH: runningNumberH, //OQDLIX
           orderType: orderType, //OAORTP
           orderStatus: orderStatus, //OAORSL
@@ -517,7 +492,8 @@ exports.insert = async (req, res, next) => {
           payer: payer,
           itemCode: item.itemCode,
           itemNo: item.itemNo,
-          itemName: item.itemName,
+          itemName: itemDetail[0].itemName,
+          OBITDS: itemDetail[0].OBITDS,
           qtyPCS: item.qtyPCS,
           qtyCTN: item.qtyCTN,
           unit: item.unit,
@@ -538,9 +514,51 @@ exports.insert = async (req, res, next) => {
           OBCOFA: factor.factor,
           OBUCOS: Cost.cost,
           costPCS: CostAll.cost,
-          OBLNAM: item.netPrice,
+          OBLNAM: item.total,
           grossWeightSingle: Weight.grossWeight,
           netWeightSingle: Weight.netWeight,
+          OBSPUN: itemUnitMaxData.unit,
+          OBPRMO: orderJson[0].LINE.OBPRMO,
+          OBDIC1: orderJson[0].LINE.OBDIC1,
+          OBDIC2: item.discount !== 0 ? 8 : 0,
+          OBDIC3: orderJson[0].LINE.OBDIC3,
+          OBDIC4: orderJson[0].LINE.OBDIC4,
+          OBDIC5: item.promotionCode === "" ? 1 : 6,
+          OBDIC6: orderJson[0].LINE.OBDIC6,
+          OBCMP5: item.promotionCode,
+          OBDIBE: item.promotionCode !== "" ? 4 : "",
+          OBDIRE: item.promotionCode !== "" ? 0 : "",
+          OBDDSU: item.promotionCode !== "" ? 1 : 0,
+          OBACRF: item.promotionCode !== "" ? 0 : "",
+          OBDWDT: requestDate,
+          OBCODT: requestDate,
+          OBCOHM: parseInt(requestDate.toString().slice(0, 4)),
+          OBDWDZ: requestDate,
+          OBCODZ: requestDate,
+          OBTIZO: orderJson[0].LINE.OBTIZO, // Check Data ?
+          OBSTCD: orderJson[0].LINE.OBSTCD,
+          OBCOCD: itemUnitMaxData.factor,
+          OBUCCD: orderJson[0].LINE.OBUCCD,
+          OBVTCD: orderJson[0].LINE.OBVTCD,
+          OBSMCD: customer.saleCode, // SaleCode
+          OBCUNO: customerNo, // Customer Code
+          OBADID: addressID, // Address ID
+          OBROUT: route.routeCode, // Route
+          OBRODN: route.routeDeparture,
+          OBDSDT: 1, // Check Data ?
+          OBDSHM: route.departureTime,
+          OBFDED: 1, // Check Data ?
+          OBLDED: 1, // Check Data ?
+          OBCINA: 1, // Check Data ?
+          OBDECU: customerNo,
+          OBTEPY: customer.creditTerm,
+          OBPMOR: 1, // Check Data ?
+          OBUPAV: 1, // Check Data ?
+          customerChannel: customer.customerChannel,
+          OUSTUN: itemUnitMinData.unit,
+          OUITGR: itemDetail[0].MMITGR,
+          itemType: itemDetail[0].itemType,
+          OUITCL: itemDetail[0].MMITCL,
         };
       })
     );
@@ -639,8 +657,6 @@ exports.insert = async (req, res, next) => {
         orderNo: orderNo,
       });
     }
-  
-
     // res.json(itemsData);
     await insertAllocate(itemsData);
     await insertOrderLine(itemsData);
@@ -661,70 +677,9 @@ exports.insert = async (req, res, next) => {
       grossWeight: totalgrossWeight,
       netWeight: totalnetWeight,
     });
-
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}allowcate/insert`,
-    //   data: { items: itemsData },
-    // });
-
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}order/insertorderitem`,
-    //   data: { items: itemsData },
-    // });
-
-    // // res.json(itemsData);
-    // // // Insert Delivery Head
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}delivery/insertHead`,
-    //   data: {
-    //     warehouse: warehouse,
-    //     coNo: 410,
-    //     runningNumberH: runningNumberH,
-    //     orderNo: orderNo,
-    //     orderType: orderType,
-    //     addressID: addressID,
-    //     customerNo: customerNo,
-    //     orderDate: orderDate,
-    //     requestDate: requestDate,
-    //     OARGTM: getCurrentTimeFormatted(),
-    //     OATIZO: orderJson[0].HEAD.OATIZO,
-    //     grossWeight: totalgrossWeight,
-    //     netWeight: totalnetWeight,
-    //   },
-    // });
-
-    // // Insert Delivery Line
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}delivery/insertLine`,
-    //   data: {
-    //     items: itemsData,
-    //   },
-    // });
-
-    // // // Insert Prepare Invoice A
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}prepare/insertA`,
-    //   data: {
-    //     items: itemsData,
-    //   },
-    // });
-
-    // Insert Prepare Invoice B
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}prepare/insertB`,
-    //   data: {
-    //     items: itemsData,
-    //   },
-    // });
-
     res.status(201).json({
       message: "Created",
+      orderNo: orderNo,
     });
   } catch (error) {
     next(error);

@@ -13,7 +13,6 @@
       "OACUCD": "THB",
       "OADISY": "VAN 18",
       "OACHID": "MVXSECOFR"
-      
     },
     "LINE": {
       "OBCONO": 410,
@@ -42,7 +41,10 @@
       "OBCHNO": 3,
       "OBCHID": "MVXSECOFR ",
       "OBTEPY": 30,
-      "OBPRIO": 5
+      "OBPRIO": 5,
+      "OBSTCD": 1,
+      "OBUCCD": 1,
+      "OBVTCD": 11
     }
   }
 ]

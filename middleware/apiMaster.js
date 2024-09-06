@@ -71,11 +71,26 @@ async function fetchPolicyDistribution(orderType) {
   });
 }
 
-
 async function fetchStock(data) {
   const { itemCode, warehouse } = data;
   return makePostRequest("/master/stocksingle", {
     warehouse: warehouse,
+    itemCode: itemCode,
+  });
+}
+async function fetchItemDetail(itemCode) {
+  return makePostRequest("/master/itemdetails", {
+    itemCode: itemCode,
+  });
+}
+
+async function fetchItemUnitMin(itemCode) {
+  return makePostRequest("/master/unitmin", {
+    itemCode: itemCode,
+  });
+}
+async function fetchItemUnitMax(itemCode) {
+  return makePostRequest("/master/unitmax", {
     itemCode: itemCode,
   });
 }
@@ -101,5 +116,8 @@ module.exports = {
   fetchPolicy,
   fetchDocumentType,
   fetchStock,
-  fetchPolicyDistribution
+  fetchPolicyDistribution,
+  fetchItemDetail,
+  fetchItemUnitMin,
+  fetchItemUnitMax,
 };

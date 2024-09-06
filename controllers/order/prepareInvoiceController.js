@@ -10,61 +10,21 @@ const currentYear = now.getFullYear();
 const fs = require("fs");
 const path = require("path");
 const { totalNonVat, nonVat } = require("../../middleware/calVat");
+const { getJsonData } = require("../../middleware/getJsonData");
+const {
+  fetchItemDetail,
+  fetchItemUnitMax,
+  fetchItemUnitMin,
+} = require("../../middleware/apiMaster");
+const { fetchCustomer } = require("../../middleware/apiCustomer");
 
 exports.index = async (req, res, next) => {};
 
 exports.insertA = async (req, res, next) => {
   try {
     const items = req.body.items;
-
-    const jsonPathOrder = path.join(
-      __dirname,
-      "../../",
-      "Jsons",
-      "prepareinvoice.json"
-    );
-    let prepareJson = [];
-
-    if (fs.existsSync(jsonPathOrder)) {
-      const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
-      prepareJson = JSON.parse(jsonDataOrder);
-    }
+    let prepareJson = getJsonData("prepareinvoice.json");
     for (let item of items) {
-      let itemData = await axios({
-        method: "post",
-        url: `${HOST}master/itemdetails`,
-        data: {
-          itemCode: item.itemCode,
-        },
-      });
-
-      let itemUnitMinData = await axios({
-        method: "post",
-        url: `${HOST}master/unitmin`,
-        data: {
-          itemCode: item.itemCode,
-        },
-      });
-
-      let itemUnitMaxData = await axios({
-        method: "post",
-        url: `${HOST}master/unitmax`,
-        data: {
-          itemCode: item.itemCode,
-        },
-      });
-      
-
-      let customerData = await axios({
-        method: "post",
-        url: `${HOST}customer/single`,
-        data: {
-          customerNo: item.customerNo,
-        },
-      });
-
-      // console.log(nonVat(item.OBUCOS * item.qtyCTN));
-
       await PrepareInvoA.create({
         coNo: item.coNo,
         OUDIVI: item.OBDIVI,
@@ -75,29 +35,29 @@ exports.insertA = async (req, res, next) => {
         OUOSDT: item.orderDate, // OOHEAD.OAORDT
         OUOSPE: parseInt(item.orderDate.toString().slice(0, 6)), // OOHEAD.OAORDT 6 digit font
         customerNo: item.customerNo,
-        customerChannel: customerData.data[0].customerChannel, // OrderLine *ไม่มีใน OrderLine และ OOHEAD
+        customerChannel: item.customerChannel, // OrderLine *ไม่มีใน OrderLine และ OOHEAD
         OUCUST: item.customerNo, // customerNo
         orderType: item.orderType, //
         payer: item.payer,
         OUCUCD: item.OACUCD, // OOHEAD
-        saleCode: customerData.data[0].saleCode, // OOHEAD
+        saleCode: item.OBSMCD, // OOHEAD
         // OUSDST
         OUCSCD: item.OBORCO, // OOHEAD   **OOHEAD but OrderLine.OBORCO
         OUFRE1: item.OAFRE1, // OOHEAD
         warehouse: item.warehouse,
         itemCode: item.itemCode,
-        OUITGR: itemData.data[0].MMITGR,
-        itemType: itemData.data[0].itemType,
-        OUITCL: itemData.data[0].MMITCL,
+        OUITGR: item.OUITGR,
+        itemType: item.itemType,
+        OUITCL: item.OUITCL,
         OUORST: item.orderStatus,
         OUORQT: item.qtyPCS, // OrderLine QT = PCS
         OUORQA: item.qtyCTN,
         unit: item.unit,
         OUCOFA: item.OBCOFA, // OrderLine
         OUDMCF: prepareJson[0].HEAD.OUDMCF, // 1
-        OUSPUN: itemUnitMaxData.data[0].unit, // Bigest
+        OUSPUN: item.OBSPUN, // Bigest
         OUORQS: item.qtyCTN, // OrderLine CTN
-        OUSTUN: itemUnitMinData.data[0].unit, // ** smallest
+        OUSTUN: item.OUSTUN, // ** smallest
         grossWeight: item.grossWeight, // OrderLine
         netWeight: item.netWeight, // OrderLine
         OUDCCD: prepareJson[0].HEAD.OUDCCD, // 2
@@ -116,7 +76,7 @@ exports.insertA = async (req, res, next) => {
         OUCODT: item.requesetDate, //OOHEAD OARLDT
         OUUCOS: item.costPCS, //OrderLine OBUCOS * OBORQT
         OUUCCD: prepareJson[0].HEAD.OUUCCD, // 1
-        OUUNMS: itemUnitMinData.data[0].unit, // หน่วยเล็กสุดของ item
+        OUUNMS: item.OUSTUN, // หน่วยเล็กสุดของ item
         OUORTK: prepareJson[0].HEAD.OUORTK, // 1
         addressID: item.addressID,
         OUSDEP: "",
@@ -130,7 +90,7 @@ exports.insertA = async (req, res, next) => {
         // OUCAWE
         OULMTS: Date.now(),
         OUACOS: item.costPCS, //OrderLine OBUCOS * OBORQT
-        OUTEPY: customerData.data[0].creditTerm, //OCUSMA
+        OUTEPY: item.OBTEPY, //OCUSMA
         OUDECU: item.customerNo, // customer
         OURQWH: item.warehouse, // warehouse
       });

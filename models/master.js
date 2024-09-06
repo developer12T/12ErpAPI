@@ -54,6 +54,11 @@ const ItemMaster = sequelize.define(
       primaryKey: true,
       field: "MMITNO",
     },
+    MMITDS: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MMITDS",
+    },
     itemName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -106,6 +111,7 @@ const ItemUnit = sequelize.define(
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       field: "MUCONO",
     },
     facType: {

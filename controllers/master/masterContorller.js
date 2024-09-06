@@ -67,6 +67,7 @@ exports.itemdetails = async (req, res, next) => {
     const items = itemData.map((item) => {
       const itemCode = item.itemCode.trim();
       const itemName = item.itemName.trim();
+      const MMITDS = item.MMITDS.trim();
       const itemType = item.itemType.trim();
       const MMITGR = item.MMITGR.trim();
       const MMITCL = item.MMITCL.trim();
@@ -77,6 +78,7 @@ exports.itemdetails = async (req, res, next) => {
         itemCode: itemCode,
         status: item.status,
         itemName: itemName,
+        MMITDS: MMITDS,
         MMITGR: MMITGR,
         MMITCL: MMITCL,
         itemType: itemType,

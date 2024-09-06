@@ -1,6 +1,6 @@
 [
   {
-    "NUMBER": {
+    "DELIVERY": {
       "coNo": 410,
       "series": "B",
       "seriesType": "07"
@@ -9,6 +9,10 @@
       "coNo": 410,
       "series": "#",
       "year": "07"
+    },
+    "CO": {
+      "coNo": 410,
+      "seriesType": "01"
     }
   }
 ]

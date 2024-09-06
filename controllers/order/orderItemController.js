@@ -31,7 +31,7 @@ exports.insertItem = async (req, res, next) => {
         OBFACI: orderJson[0].LINE.OBFACI,
         warehouse: item.warehouse,
         itemCode: item.itemCode,
-        OBITDS: orderJson[0].LINE.OBITDS,
+        OBITDS: item.OBITDS,
         itemName: item.itemName,
         qtyPCS: item.qtyPCS,
         qtyCTN: item.qtyCTN,
@@ -41,7 +41,8 @@ exports.insertItem = async (req, res, next) => {
         // OBDCCA
         // OBOCFA
         // OBDMCF
-        // OBSPUN
+        OBSPUN: item.OBSPUN,
+        OBPRMO: item.OBPRMO,
         // OBPCOF
         // OBDCCS
         // OBCOFS
@@ -50,31 +51,42 @@ exports.insertItem = async (req, res, next) => {
         netPrice: item.netPrice,
         discount: item.discount,
         OBLNAM: item.price, // recheck
-        // OBDIC1
-        // OBDIC2
-        // OBDIC3
-        // OBDIC4
-        // OBDIC5
-        // OBDIC6
-        // OBDIA1
-        // OBDIA2
-        // OBDIA3
-        // OBDIA4
-        // OBDIA5
-        // OBDIA6
-        // OBDWDT
-        // OBCODT
-        // OBCOHM
-        // OBDWDZ
-        // OBCODZ
-        // OBCOHZ
-        // OBTIZO
-        // OBSTCD
-        // OBUCOS
-        // OBCOCD
-        // OBUCCD
-        // OBVTCD
-        // OBSMCD
+        OBDIC1:item.OBDIC1,
+        OBDIC2:item.OBDIC2,
+        OBDIC3:item.OBDIC3,
+        OBDIC4:item.OBDIC4,
+        OBDIC5:item.OBDIC5,
+        OBDIC6:item.OBDIC6,
+        OBCMP5:item.OBCMP5,
+        OBDIBE:item.OBDIBE,
+        OBDIRE:item.OBDIRE,
+        OBDDSU:item.OBDDSU,
+        OBACRF:item.OBACRF,
+        OBDWDT:item.OBDWDT,
+        OBCODT:item.OBCODT,
+        OBCOHM:item.OBCOHM,
+        OBDWDZ:item.OBDWDZ,
+        OBCODZ:item.OBCODZ,
+        OBCOHZ:item.OBCOHZ,
+        OBTIZO:item.OBTIZO,
+        OBSTCD:item.OBSTCD,
+        OBCOCD:item.OBCOCD,
+        OBUCCD:item.OBUCCD,
+        OBVTCD:item.OBVTCD,
+        OBSMCD:item.OBSMCD,
+        OBCUNO:item.OBCUNO,
+        OBADID:item.OBADID,
+        OBROUT:item.OBROUT,
+        OBRODN:item.OBRODN,
+        OBDSDT:item.OBDSDT,
+        OBDSHM:item.OBDSHM,
+        OBFDED:item.OBFDED,
+        OBLDED:item.OBLDED,
+        OBCINA:item.OBCINA,
+        OBDECU:item.OBDECU,
+        OBTEPY:item.OBTEPY,
+        OBPMOR:item.OBPMOR,
+        OBUPAV:item.OBUPAV,
         OBDIA5: 0,
         total: item.total,
         promotionCode: item.promotionCode,
@@ -93,8 +105,6 @@ exports.insertItem = async (req, res, next) => {
         OBUCOS: item.OBUCOS,
         OBCOFA: item.OBCOFA,
         OBORCO: item.OBORCO,
-        creditTerm: orderJson[0].LINE.OBTEPY,
-        //OBDECU
         //OBPRIO
       });
     }

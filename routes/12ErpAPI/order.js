@@ -66,7 +66,6 @@ router.post(
       .withMessage("Missing customerNo")
       .isLength({ min: 8, max: 8 })
       .withMessage("customerNo must be exactly 8 characters long"),
-    body("OKALCU").not().isEmpty().withMessage("Missing OKALCU"),
     body("payer")
       .not()
       .isEmpty()

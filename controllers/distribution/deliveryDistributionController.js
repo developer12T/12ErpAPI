@@ -34,13 +34,44 @@ exports.insertHead = async (req, res, next) => {
       orderDate,
       requestDate,
     } = req.body;
-    const policy = await fetchPolicy(orderType);
-    const customer = await fetchCustomer(customerNo);
-    const shinpping = await fetchShipping({
-      customerNo: customerNo,
-      addressID: addressID,
-    });
-    const route = await fetchRoutes(shinpping.shippingRoute);
+
+    //validation
+    // const errors = validationResult(req);
+
+    // if (!errors.isEmpty()) {
+    //   const error = new Error("Data is Incorrect");
+    //   error.statusCode = 422;
+    //   error.validation = errors.array();
+    //   throw error;
+    // }
+
+    // const jsonPath = path.join(__dirname, "../../", "Jsons", "delivery.json");
+    // let deliveryData = [];
+    // if (fs.existsSync(jsonPath)) {
+    //   const jsonData = fs.readFileSync(jsonPath, "utf-8");
+    //   deliveryData = JSON.parse(jsonData);
+    // }
+
+    // res.json(deliveryData[0].HEAD);
+    
+    const policy = await fetchPolicyDistribution(orderType);
+    let route = null;
+    let customer = null;
+    let shinpping = null;
+    // let policy;
+
+    // if (/^[a-zA-Z]/.test(orderType)) {
+    //   policy = await fetchPolicyDistribution(orderType);
+    // } else {
+    //   policy = await fetchPolicy(orderType);
+    //   shinpping = await fetchShipping({
+    //     customerNo: customerNo,
+    //     addressID: addressID,
+    //   });
+    //   route = await fetchRoutes(shinpping.shippingRoute);
+    //   customer = await fetchCustomer(customerNo);
+    // }
+
     await DeliveryHead.create({
       coNo: coNo,
       OQDLIX: runningNumberH,
@@ -51,13 +82,13 @@ exports.insertHead = async (req, res, next) => {
       // OQCOAA
       // OQCOAF
       // OQCONB
-      OQSDES: route.place, // ROUTE PLACE
+      OQSDES: route == !null ? route.place : 0, // ROUTE PLACE
       OQDSDT: requestDate, //OOHEAD OARLDT requestDate
-      OQDSHM: route.departureTime, // departureTime
+      OQDSHM: route == !null ? route.departureTime : 0, // departureTime
       OQTRDT: orderDate, //OOHEAD OAORDT
       OQTRTM: getCurrentTimeFormatted(), //OOHEAD
-      OQSROT: route.routeCode, // ROUTE
-      OQROUT: route.routeCode, // ROUTE
+      OQSROT: route == !null ? route.routeCode : '', // ROUTE
+      OQROUT: route == !null ? route.routeCode : '', // ROUTE
       // OQRODN
       // OQMODL
       // OQMODF
@@ -67,7 +98,7 @@ exports.insertHead = async (req, res, next) => {
       // OQTTYP
       OQTTYP: deliveryData[0].HEAD.OQTTYP,
       OQRIDN: orderNo,
-      OQEDES: route.place, // ROUTE PLACE
+      OQEDES: route == !null ? route.place : "", // ROUTE PLACE
       //OQPUTP
       //OQPUSN
       //OQBLOP
@@ -80,20 +111,20 @@ exports.insertHead = async (req, res, next) => {
       OQGRWE: grossWeight, // OrderLine SUM
       OQTIZO: OATIZO, // OOHEAD.OATIZO
       OQDTDT: formatDate(), // OOHEAD requestDate
-      OQDTHM: route.departureTime, // departureTime
+      OQDTHM: route == !null ? route.departureTime : 0 , // departureTime
       OQDOCR: deliveryData[0].HEAD.OQDOCR, // 1
       OQDOCE: deliveryData[0].HEAD.OQDOCE, // 1 ** 1 digit in Database TST
       OQDEWD: deliveryData[0].HEAD.OQDEWD, // 0
       OQSEEQ: deliveryData[0].HEAD.OQSEEQ, // 50
       OQIVSS: deliveryData[0].HEAD.OQIVSS, // 2
       OQPRIO: deliveryData[0].HEAD.OQPRIO, // 5
-      OQCUCL: route.customerChannel, // OCUSMA
-      OQCSCD: customer.OKCSCD, // OCUSMA
-      OQECAR: customer.OKECAR, // OCUSMA
-      OQPONO: shinpping.shippingPoscode, // OCUSAD
-      OQULZO: route.shippingRoute, // OCUSAD
-      OQFWNS: route.forwarding, // Route forwarding
-      OQFWNO: route.forwarding, // Route forwarding
+      OQCUCL: route == !null ?  route.customerChannel : '', // OCUSMA
+      OQCSCD: customer == !null ? customer.OKCSCD : '', // OCUSMA
+      OQECAR: customer == !null ? customer.OKECAR : '', // OCUSMA
+      OQPONO: shinpping == !null ? shinpping.shippingPoscode : '', // OCUSAD
+      OQULZO: route == !null ? route.shippingRoute : '', // OCUSAD
+      OQFWNS: route == !null ? route.forwarding : '', // Route forwarding
+      OQFWNO: route == !null ? route.forwarding : '', // Route forwarding
       OQAGKY: deliveryData[0].HEAD.OQAGKY, // emthy
       OQRGDT: formatDate(),
       OQRGTM: getCurrentTimeFormatted(),
@@ -143,7 +174,7 @@ exports.insertLine = async (req, res, next) => {
         URITNO: item.itemCode,
         URFACI: deliveryData[0].LINE.URFACI, // json
         URTRQT: item.qtyPCS, // OrderLine qtyCTN (pcs)
-        URSTCD: item.OBSTCD, // 1
+        URSTCD: deliveryData[0].LINE.URSTCD, // 1
         grossWeight: item.grossWeightSingle, // OrderLine
         netWeight: item.netWeightSingle, // OrderLine
         // URALUN OrderLine
