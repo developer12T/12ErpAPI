@@ -520,7 +520,7 @@ exports.insert = async (req, res, next) => {
           OBSPUN: itemUnitMaxData.unit,
           OBPRMO: orderJson[0].LINE.OBPRMO,
           OBDIC1: orderJson[0].LINE.OBDIC1,
-          OBDIC2: item.discount !== 0 ? 8 : 0,
+          OBDIC2: item.discount !== 0 ? 8 : 1,
           OBDIC3: orderJson[0].LINE.OBDIC3,
           OBDIC4: orderJson[0].LINE.OBDIC4,
           OBDIC5: item.promotionCode === "" ? 1 : 6,
@@ -532,7 +532,7 @@ exports.insert = async (req, res, next) => {
           OBACRF: item.promotionCode !== "" ? 0 : "",
           OBDWDT: requestDate,
           OBCODT: requestDate,
-          OBCOHM: parseInt(requestDate.toString().slice(0, 4)),
+          OBCOHM: route.departureTime,
           OBDWDZ: requestDate,
           OBCODZ: requestDate,
           OBTIZO: orderJson[0].LINE.OBTIZO, // Check Data ?

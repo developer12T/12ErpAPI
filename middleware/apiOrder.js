@@ -1,31 +1,12 @@
 const axiosInstance = require("./axios");
 
-// async function insertAllocate(itemsData) {
-//   try {
-//     await axiosInstance.post("/allowcate/insert", {
-//       items: itemsData,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching order type:", error);
-//     throw error; // Re-throw the error if needed
-//   }
-// }
+
 async function insertAllocate(itemsData) {
   return makePostRequest("/allowcate/insert", {
     items: itemsData,
   });
 }
 
-// async function insertOrderLine(itemsData) {
-//   try {
-//     await axiosInstance.post("/order/insertorderitem", {
-//       items: itemsData,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching order type:", error);
-//     throw error; // Re-throw the error if needed
-//   }
-// }
 
 async function insertOrderLine(itemsData) {
   return makePostRequest("/order/insertorderitem", {
@@ -33,28 +14,6 @@ async function insertOrderLine(itemsData) {
   });
 }
 
-// async function insertDeliveryHead(data) {
-//   try {
-//     await axiosInstance.post("/delivery/insertHead", {
-//       warehouse: data.warehouse,
-//       coNo: 410,
-//       runningNumberH: data.runningNumberH,
-//       orderNo: data.orderNo,
-//       orderType: data.orderType,
-//       addressID: data.addressID,
-//       customerNo: data.customerNo,
-//       orderDate: data.orderDate,
-//       requestDate: data.requestDate,
-//       OARGTM: data.OARGTM,
-//       OATIZO: data.OATIZO,
-//       grossWeight: data.grossWeight,
-//       netWeight: data.netWeight,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching order type:", error);
-//     throw error; // Re-throw the error if needed
-//   }
-// }
 
 async function insertDeliveryHead(data) {
   const {
@@ -88,6 +47,8 @@ async function insertDeliveryHead(data) {
   });
 }
 
+
+
 async function insertDeliveryLine(itemsData) {
   try {
     await axiosInstance.post("/delivery/insertLine", {
@@ -110,18 +71,7 @@ async function insertPrepareInovoice(itemsData) {
   }
 }
 
-// async function insertDocument(data) {
-//   try {
-//     await axiosInstance.post("/document/insert", {
-//       orderType: data.orderType,
-//       orderNo: data.orderNo,
-//       coNo: 410,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching order type:", error);
-//     throw error; // Re-throw the error if needed
-//   }
-// }
+
 async function insertDocument(data) {
   const { orderType, orderNo } = data;
   return makePostRequest("/document/insert", {
@@ -131,38 +81,51 @@ async function insertDocument(data) {
   });
 }
 
-// async function insertDistributionLine(itemsData) {
-//   try {
-//     await axiosInstance.post("/distribution/insertLine", {
-//       items: itemsData,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching order type:", error);
-//     throw error; // Re-throw the error if needed
-//   }
-// }
+
 async function insertDistributionLine(itemsData) {
   return makePostRequest("/distribution/insertLine", {
     items: itemsData,
   });
 }
 
-// async function insertDistributionMGDADR(orderNo) {
-//   try {
-//     await axiosInstance.post("/distribution/insertMGDADR", {
-//       orderNo: orderNo,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching order type:", error);
-//     throw error; // Re-throw the error if needed
-//   }
-// }
 
 async function insertDistributionMGDADR(orderNo) {
   return makePostRequest("/distribution/insertMGDADR", {
     orderNo: orderNo,
   });
 }
+
+
+async function insertDistributionDeliveryHead(data) {
+  const {
+    warehouse,
+    runningNumberH,
+    orderNo,
+    orderType,
+    grossWeight,
+  } = data;
+  return makePostRequest("/distribution/insertDeliveryHead", {
+    warehouse: warehouse,
+    coNo: 410,
+    runningNumberH: runningNumberH,
+    orderNo: orderNo,
+    orderType: orderType,
+    grossWeight: grossWeight,
+  });
+}
+async function insertDistributionDeliveryLine(itemsData) {
+  return makePostRequest("/distribution/insertDeliveryLine", {
+    items: itemsData,
+  });
+}
+
+
+async function insertDistributionAllocate(itemsData) {
+  return makePostRequest("/distribution/insertAllocate", {
+    items: itemsData,
+  });
+}
+
 
 async function makePostRequest(endpoint, data) {
   try {
@@ -183,4 +146,7 @@ module.exports = {
   insertDocument,
   insertDistributionLine,
   insertDistributionMGDADR,
+  insertDistributionDeliveryHead,
+  insertDistributionDeliveryLine,
+  insertDistributionAllocate,
 };

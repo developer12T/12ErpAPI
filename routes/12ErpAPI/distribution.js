@@ -4,9 +4,16 @@ const {
   index,
   insertHead,
   insertLine,
-  insertMGDADR
+  insertMGDADR,
 } = require("../../controllers/distribution/distributionController");
 
+const {
+  insertAllocate,
+} = require("../../controllers/distribution/allocateDistributionController");
+const {
+  insertDeliveryHead,
+  insertDeliveryLine,
+} = require("../../controllers/distribution/deliveryDistributionController");
 
 router.post("/", index);
 
@@ -16,5 +23,10 @@ router.post("/insertLine", insertLine);
 
 router.post("/insertMGDADR", insertMGDADR);
 
-module.exports = router;
+router.post("/insertAllocate", insertAllocate);
 
+router.post("/insertDeliveryHead", insertDeliveryHead);
+
+router.post("/insertDeliveryLine", insertDeliveryLine);
+
+module.exports = router;

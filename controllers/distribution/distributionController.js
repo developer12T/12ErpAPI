@@ -15,11 +15,12 @@ const {
 const { getJsonData } = require("../../middleware/getJsonData");
 const {
   insertDistributionLine,
-  insertAllocate,
-  insertDeliveryHead,
-  insertDeliveryLine,
   insertDistributionMGDADR,
+  insertDistributionAllocate,
+  insertDistributionDeliveryHead,
+  insertDistributionDeliveryLine,
 } = require("../../middleware/apiOrder");
+const { insert } = require("./allocateDistributionController");
 const orderJson = getJsonData("distribution.json");
 
 exports.index = async (req, res, next) => {
@@ -295,10 +296,8 @@ exports.insertHead = async (req, res, next) => {
         MGLMTS: Date.now(),
       });
     }
-
-    // res.status(201).json(itemsData);
-    await insertAllocate(itemsData);
-    await insertDeliveryHead({
+    await insertDistributionAllocate(itemsData);
+    await insertDistributionDeliveryHead({
       warehouse: warehouse,
       coNo: 410,
       runningNumberH: runningNumberH,
@@ -307,17 +306,12 @@ exports.insertHead = async (req, res, next) => {
       grossWeight: totalgrossWeight,
       // netWeight: totalnetWeight,
     });
-    await insertDeliveryLine(itemsData);
+    await insertDistributionDeliveryLine(itemsData);
     await insertDistributionLine(itemsData);
     await insertDistributionMGDADR(orderNo);
-    // await insertPrepareInovoice(itemsData);
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}distribution/insertLine`,
-    //   data: { items: itemsData },
-    // });
 
     res.status(201).json({
+      orderNo: orderNo,
       message: "Created",
     });
     // res.json(data);

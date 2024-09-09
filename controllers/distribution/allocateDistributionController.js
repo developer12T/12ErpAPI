@@ -3,7 +3,7 @@ const { getJsonData } = require("../../middleware/getJsonData");
 
 exports.index = async (req, res, next) => {};
 
-exports.insert = async (req, res, next) => {
+exports.insertAllocate = async (req, res, next) => {
   try {
     const items = req.body.items;
     const allowcateJson = getJsonData("allowcate.json");
@@ -17,17 +17,13 @@ exports.insert = async (req, res, next) => {
         MOPLDT: item.MOPLDT,
         MOTIHM: item.itemNo,
         MOSTAT: item.orderStatus,
-        MOPRIO: item.MOPRIO !== undefined ? item.MOPRIO : 0,
+        MOPRIO: 0,
         MOORCA: 311,
         orderNo: item.orderNo,
         itemNo: item.itemNo,
-        MORFTX:
-          item.OKALCU !== undefined
-            ? item.OKALCU + "    " + item.customerNo
-            : "",
+        MORFTX: "",
         MORPRT: allowcateJson.MORPRT,
-        MOTRQT:
-          item.qtyPCS !== undefined ? item.qtyPCS * -1 : item.itemQty * -1,
+        MOTRQT: item.itemQty * -1,
         MOALMT: allowcateJson.MOALMT,
         MOCALI: allowcateJson.MOCALI,
         MOLMTS: Date.now(),
