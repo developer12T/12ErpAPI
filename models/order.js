@@ -157,12 +157,12 @@ const Order = sequelize.define(
     OAPYNO: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OAVRCD",
+      field: "OAPYNO",
     },
     OAINRC: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OAVRCD",
+      field: "OAINRC",
     },
     OATINC: {
       type: DataTypes.STRING,
