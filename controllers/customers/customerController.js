@@ -217,6 +217,10 @@ exports.single = async (req, res, next) => {
       const salePayer = customer.salePayer.trim();
       const taxno = customer.taxno.trim();
       const saleCode = customer.saleCode.trim();
+      const OKFACI = customer.OKFACI.trim();
+      const OKINRC = customer.OKINRC.trim();
+      const OKCUCD = customer.OKCUCD.trim();
+      // const OKPYCD = customer.OKPYCD.trim();
       // const taxno = customer.taxno.trim();
       return {
         coNo: customer.coNo,
@@ -246,6 +250,12 @@ exports.single = async (req, res, next) => {
         taxno: taxno,
         OKCSCD: OKCSCD,
         OKECAR: customer.OKECAR,
+        OKFACI: OKFACI,
+        OKINRC: OKINRC,
+        OKCUCD: OKCUCD,
+        OKPYCD: customer.OKPYCD,
+        OKMODL: customer.OKMODL,
+        OKTEDL: customer.OKTEDL,
         shippings: shippings,
         sale: salearr,
       };

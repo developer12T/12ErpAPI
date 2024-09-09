@@ -84,6 +84,187 @@ const Order = sequelize.define(
       allowNull: false,
       field: "OADISY",
     },
+    OARLDZ: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OARLDZ",
+    },
+    OATIZO: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OATIZO",
+    },
+    OAOPRI: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAOPRI",
+    },
+    OAAICD: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAAICD",
+    },
+    OAOT38: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAOT38",
+    },
+    OALNCD: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OALNCD",
+    },
+    OATEPY: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OATEPY",
+    },
+    OAPYCD: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAPYCD",
+    },
+    OAMODL: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAMODL",
+    },
+    OATEDL: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OATEDL",
+    },
+    OASMCD: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OASMCD",
+    },
+    OAOREF: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAOREF",
+    },
+    OAYREF: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAYREF",
+    },
+    OAVRCD: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAVRCD",
+    },
+    OAPYNO: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAVRCD",
+    },
+    OAINRC: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAVRCD",
+    },
+    OATINC: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OATINC",
+    },
+    OALOCD: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OALOCD",
+    },
+    OACUCD: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OACUCD",
+    },
+    OADCCD: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OADCCD",
+    },
+    OACRTP: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OACRTP",
+    },
+    OADMCU: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OADMCU",
+    },
+    OAFDED: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAFDED",
+    },
+    OALDED: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OALDED",
+    },
+    OARESP: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OARESP",
+    },
+    OABLRO: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OABLRO",
+    },
+    OACOAM: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OACOAM",
+    },
+    OABRAM: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OABRAM",
+    },
+    OATXAP: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OATXAP",
+    },
+    OACHNO: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OACHNO",
+    },
+    OADECU: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OADECU",
+    },
+    OARGDT: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OARGDT",
+    },
+    OARGTM: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OARGTM",
+    },
+    OALMDT: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OALMDT",
+    },
+    OACHID: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OACHID",
+    },
+    OALMTS: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OALMTS",
+    },
+
     totalVat: {
       type: DataTypes.VIRTUAL,
       get() {

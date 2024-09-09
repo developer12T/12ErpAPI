@@ -93,14 +93,6 @@ router.post(
       .withMessage("Missing itemCode")
       .isInt()
       .withMessage("ItemCode must be numeric"),
-    body("item.*.itemName")
-      .not()
-      .isEmpty()
-      .withMessage("Missing itemName")
-      .isString()
-      .withMessage("Itemname must be String")
-      .isLength({ min: 1, max: 60 })
-      .withMessage("Itemname must be exactly 60 characters long"),
     body("item.*.qtyPCS").not().isEmpty().withMessage("Missing qtyPCS"),
     body("item.*.qtyCTN").not().isEmpty().withMessage("Missing qtyCTN"),
     body("item.*.price").not().isEmpty().withMessage("Missing qtyCTN"),

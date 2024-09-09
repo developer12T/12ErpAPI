@@ -35,6 +35,7 @@ const {
 } = require("../../middleware/apiOrder");
 const { fetchRoutes } = require("../../middleware/apiRoutes");
 const { getJsonData } = require("../../middleware/getJsonData");
+const { nonVat } = require("../../middleware/calVat");
 // Get the current year and month
 const { getCurrentYearMonth } = require("../../middleware/getDateTime");
 
@@ -346,9 +347,18 @@ exports.insert = async (req, res, next) => {
       addressID,
       payer,
       OAFRE1,
+      ref,
+      note,
     } = req.body;
-
     let { orderNo } = req.body;
+
+    if (Hcase === 0) {
+      if (orderNo === "") {
+        const error = new Error("Order No is required");
+        error.statusCode = 422;
+        throw error;
+      }
+    }
 
     //validation
     const errors = validationResult(req);
@@ -397,15 +407,7 @@ exports.insert = async (req, res, next) => {
       series: series.OOSPIC,
       seriesType: RunningJson[0].DELIVERY.seriesType,
     });
-    // const running = await axios({
-    //   method: "post",
-    //   url: `${HOST}master/runningNumber/`,
-    //   data: {
-    //     coNo: RunningJson[0].NUMBER.coNo,
-    //     series: series.OOSPIC,
-    //     seriesType: RunningJson[0].NUMBER.seriesType,
-    //   },
-    // });
+
     const runningNumberH = parseInt(running.lastNo) + 1;
     await updateRunningNumber({
       coNo: RunningJson[0].DELIVERY.coNo,
@@ -415,26 +417,26 @@ exports.insert = async (req, res, next) => {
     });
     // res.status(200).json(runningNumberH);
 
-    // await axios({
-    //   method: "post",
-    //   url: `${HOST}master/runningNumber/update`,
-    //   data: {
-    //     coNo: RunningJson[0].NUMBER.coNo,
-    //     series: series.OOSPIC,
-    //     seriesType: RunningJson[0].NUMBER.seriesType,
-    //     lastNo: runningNumberH,
-    //   },
-    // });
-
     const calWeights = [];
+    const calCosts = [];
 
     for (let item of items) {
       const Weight = await calWeight({
         itemCode: item.itemCode,
         qty: item.qtyPCS,
       });
+      const Cost = await calCost({
+        itemCode: item.itemCode,
+        qty: item.qtyPCS,
+      });
       calWeights.push(Weight);
+      calCosts.push(Cost);
     }
+    const totalCost = calCosts.reduce((accumulator, calCost) => {
+      return accumulator + calCost.cost;
+    }, 0);
+
+
     const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
       return accumulator + calWeight.grossWeight;
     }, 0);
@@ -443,7 +445,7 @@ exports.insert = async (req, res, next) => {
       return accumulator + calWeight.netWeight;
     }, 0);
 
-    // res.json(totalgrossWeight + " " + totalnetWeight);
+    // res.json(totalCost);
 
     let itemsData = await Promise.all(
       items.map(async (item) => {
@@ -478,7 +480,7 @@ exports.insert = async (req, res, next) => {
         });
         return {
           coNo: orderJson[0].LINE.OBCONO,
-          OACUCD: orderJson[0].HEAD.OACUCD,
+          OACUCD: customer.OKCUCD,
           OBDIVI: orderJson[0].LINE.OBDIVI,
           OBORCO: orderJson[0].LINE.OBORCO,
           orderNo: orderNo, //OAORNO
@@ -595,12 +597,13 @@ exports.insert = async (req, res, next) => {
     // res.status(201).json(itemsData);
 
     if (Hcase === 1) {
+      const customer = await fetchCustomer(customerNo);
       await Order.create({
         coNo: orderJson[0].HEAD.OACONO, // OACONO,
         OADIVI: orderJson[0].HEAD.OADIVI, // OADIVI
         orderNo: orderNo, // OAORNO
         orderType: orderType, // OAORTP
-        OAFACI: orderJson[0].HEAD.OAFACI, // OAFACI
+        OAFACI: customer.OKFACI, // OAFACI
         warehouse: warehouse, // OAWHLO
         orderStatus: orderStatus, // OAORST
         OAORSL: orderStatus, // OAORSL
@@ -608,48 +611,51 @@ exports.insert = async (req, res, next) => {
         orderDate: orderDate, // OAORDT
         OACUDT: formatDate(), // OACUDT
         requestDate: requestDate, // OARLDT
-        // OARLDZ
+        OARLDZ: requestDate,
         OATIZO: orderJson[0].HEAD.OATIZO, // OATIZO
-        // OAOPRI
-        // OAAICD
-        // OAOT38
-        // OALNCD
-        OATEPY: orderJson[0].HEAD.OATEPY, // OATEPY
-        OAMODL: orderJson[0].HEAD.OAMODL, // OAMODL
-        OATEDL: orderJson[0].HEAD.OATEDL, // OATEDL
+        OAOPRI: orderJson[0].HEAD.OAOPRI, // OAOPRI
+        OAAICD: orderJson[0].HEAD.OAAICD,
+        OAOT38: orderJson[0].HEAD.OAOT38,
+        OALNCD: orderJson[0].HEAD.OALNCD,
+        OATEPY: customer.creditTerm, // OATEPY
+        OAMODL: customer.OKMODL, // OAMODL
+        OATEDL: customer.OKTEDL, // OATEDL
         addressID: addressID, // OAADID
-        // OASMCD
-        // OAOREF
-        // OAVRCD
+        OASMCD: customer.saleCode,
+        OAOREF: ref,
+        OAYREF: note,
+        OAVRCD: orderJson[0].HEAD.OAVRCD,
         OAFRE1: OAFRE1,
-        // OAPYNO
-        // OAINRC
-        OADISY: orderJson[0].HEAD.OADISY,
-        // OATINC
-        OALOCD: orderJson[0].HEAD.OALOCD, // OALOCD
-        OACUCD: orderJson[0].HEAD.OACUCD, // OACUCD
-        // OADCCD
-        // OACRTP
-        // OADMCU
+        OAPYNO: customer.salePayer,
+        OAINRC: customer.OKINRC,
+        OAPYCD: customer.OKPYCD,
+        OADISY: orderJson[0].HEAD.OADISY, // *** Conditional
+        OATINC: orderJson[0].HEAD.OATINC,
+        OALOCD: customer.OKCUCD, 
+        OACUCD: customer.OKCUCD, // OACUCD
+        OADCCD: orderJson[0].HEAD.OADCCD, // OADCCD
+        OACRTP: 1, // *** Conditional
+        OADMCU: orderJson[0].HEAD.OADMCU,
         grossWeight: totalgrossWeight,
         netWeight: totalnetWeight,
-        // OACOAM
+        OACOAM: totalCost,
         total: total, // OABRLA
-        // OANTAM
+        OANTAM: totalNet,
         totalNet: totalNet, // OANTLA
-        // OAFDED
-        // OALDED
-        // OARESP
-        // OABLRO
-        // OATXAP
+        OABRAM: total, // OANTLA
+        OAFDED: requestDate,
+        OALDED: requestDate,
+        OARESP: orderJson[0].HEAD.OACHID,
+        OABLRO: nonVat(totalNet),
+        OATXAP: orderJson[0].HEAD.OATXAP,
         OARLDZ: formatDate(), // OARLDZ
-
         OARGDT: formatDate(), // OARGDT
         OARGTM: getCurrentTimeFormatted(), // OARGTM
         OALMDT: formatDate(), // OALMDT
         OACHID: orderJson[0].HEAD.OACHID, // OACHID
+        OACHNO: orderJson[0].HEAD.OACHNO, // OACHID
         OALMTS: Date.now(), // OALMTS
-        //OADECU CUSTOMER NO
+        OADECU: customerNo,
       });
 
       await insertDocument({
