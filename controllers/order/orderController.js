@@ -167,7 +167,7 @@ exports.index = async (req, res, next) => {
         orderNo: orderNo,
         orderType: order.orderType,
         warehouse: order.warehouse,
-        orderStatus: order.orderStatus,
+        orderStatusLow: order.orderStatusLow,
         total: order.total,
         totalNet: order.totalNet,
         totalVat: order.totalVat,
@@ -315,7 +315,7 @@ exports.single = async (req, res, next) => {
         orderNo: orderNo,
         orderType: order.orderType,
         warehouse: order.warehouse,
-        orderStatus: order.orderStatus,
+        orderStatusLow: order.orderStatusLow,
         total: order.total,
         totalNet: order.totalNet,
         totalVat: order.totalVat,
@@ -341,7 +341,8 @@ exports.insert = async (req, res, next) => {
       customerNo,
       orderType,
       warehouse,
-      orderStatus,
+      orderStatusLow,
+      orderStatusHigh,
       total,
       totalNet,
       addressID,
@@ -372,7 +373,7 @@ exports.insert = async (req, res, next) => {
 
     const items = req.body.item;
 
-    // console.log(orderStatus);
+    // console.log(orderStatusLow);
     const orderJson = getJsonData("order.json");
     const RunningJson = getJsonData("runnigNumber.json");
 
@@ -487,7 +488,7 @@ exports.insert = async (req, res, next) => {
           OKALCU: customer.OKALCU,
           runningNumberH: runningNumberH, //OQDLIX
           orderType: orderType, //OAORTP
-          orderStatus: orderStatus, //OAORSL
+          orderStatusLow: orderStatusLow, //OAORSL
           orderDate: orderDate, //OAORDT
           requestDate: requestDate, //OARLDT
           OAFRE1: OAFRE1,
@@ -605,8 +606,9 @@ exports.insert = async (req, res, next) => {
         orderType: orderType, // OAORTP
         OAFACI: customer.OKFACI, // OAFACI
         warehouse: warehouse, // OAWHLO
-        orderStatus: orderStatus, // OAORST
-        OAORSL: orderStatus, // OAORSL
+        orderStatusLow: orderStatusLow, // OAORSL
+        orderStatusHigh: orderStatusHigh, // OAORST
+        // OAORSL: orderStatusLow, // OAORSL
         customerNo: customerNo, // OACUNO
         orderDate: orderDate, // OAORDT
         OACUDT: formatDate(), // OACUDT

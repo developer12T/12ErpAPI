@@ -57,11 +57,12 @@ exports.insertHead = async (req, res, next) => {
       OQTRDT: orderDate, //OOHEAD OAORDT
       OQTRTM: getCurrentTimeFormatted(), //OOHEAD
       OQSROT: route.routeCode, // ROUTE
+      // OQSROD
       OQROUT: route.routeCode, // ROUTE
       // OQRODN
-      // OQMODL
-      // OQMODF
-      // OQTEDL
+      // OQMODL //OCUSMA
+      // OQMODF 
+      // OQTEDL  //OCUSMA
       // OQTEDF
       OQRORC: deliveryData[0].HEAD.OQRORC, // 3
       // OQTTYP
@@ -79,7 +80,7 @@ exports.insertHead = async (req, res, next) => {
       OQNEWE: netWeight, // OrderLine SUM
       OQGRWE: grossWeight, // OrderLine SUM
       OQTIZO: OATIZO, // OOHEAD.OATIZO
-      OQDTDT: formatDate(), // OOHEAD requestDate
+      OQDTDT: requestDate, // OOHEAD requestDate
       OQDTHM: route.departureTime, // departureTime
       OQDOCR: deliveryData[0].HEAD.OQDOCR, // 1
       OQDOCE: deliveryData[0].HEAD.OQDOCE, // 1 ** 1 digit in Database TST
@@ -87,7 +88,7 @@ exports.insertHead = async (req, res, next) => {
       OQSEEQ: deliveryData[0].HEAD.OQSEEQ, // 50
       OQIVSS: deliveryData[0].HEAD.OQIVSS, // 2
       OQPRIO: deliveryData[0].HEAD.OQPRIO, // 5
-      OQCUCL: route.customerChannel, // OCUSMA
+      OQCUCL: customer.customerChannel, // OCUSMA
       OQCSCD: customer.OKCSCD, // OCUSMA
       OQECAR: customer.OKECAR, // OCUSMA
       OQPONO: shinpping.shippingPoscode, // OCUSAD

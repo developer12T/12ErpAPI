@@ -49,16 +49,16 @@ const Order = sequelize.define(
       allowNull: false,
       field: "OAORDT",
     },
-    orderStatus: {
+    orderStatusLow: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OAORSL",
     },
-    // orderStatus: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    //   field: "OAORSH",
-    // },
+    orderStatusHigh: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OAORST",
+    },
     addressID: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -348,7 +348,7 @@ const OrderLine = sequelize.define(
       primaryKey: true,
       field: "OBPONR",
     },
-    orderStatus: {
+    orderStatusLow: {
       type: DataTypes.STRING,
       allowNull: true,
       field: "OBORST",
@@ -710,6 +710,16 @@ const OrderLine = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "OBDDSU",
+    },
+    OBRNQT: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OBRNQT",
+    },
+    OBRNQA: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OBRNQA",
     },
   },
   {

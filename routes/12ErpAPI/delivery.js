@@ -57,12 +57,12 @@ router.post(
   //     .withMessage("Missing orderType")
   //     .isLength({ min: 3, max: 3 })
   //     .withMessage("orderType must be exactly 3 characters long"),
-  //   body("items.*.orderStatus")
+  //   body("items.*.orderStatusLow")
   //     .not()
   //     .isEmpty()
-  //     .withMessage("Missing orderStatus")
+  //     .withMessage("Missing orderStatusLow")
   //     .isLength({ min: 2, max: 2 })
-  //     .withMessage("orderStatus must be exactly 3 characters long"),
+  //     .withMessage("orderStatusLow must be exactly 3 characters long"),
   //   body("items.*.orderDate")
   //     .not()
   //     .isEmpty()

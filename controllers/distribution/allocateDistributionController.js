@@ -16,7 +16,7 @@ exports.insertAllocate = async (req, res, next) => {
         itemCode: item.itemCode,
         MOPLDT: item.MOPLDT,
         MOTIHM: item.itemNo,
-        MOSTAT: item.orderStatus,
+        MOSTAT: item.orderStatusLow,
         MOPRIO: 0,
         MOORCA: 311,
         orderNo: item.orderNo,

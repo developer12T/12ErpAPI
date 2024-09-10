@@ -49,7 +49,7 @@ exports.insertA = async (req, res, next) => {
         OUITGR: item.OUITGR,
         itemType: item.itemType,
         OUITCL: item.OUITCL,
-        OUORST: item.orderStatus,
+        OUORST: item.orderStatusLow,
         OUORQT: item.qtyPCS, // OrderLine QT = PCS
         OUORQA: item.qtyCTN,
         unit: item.unit,

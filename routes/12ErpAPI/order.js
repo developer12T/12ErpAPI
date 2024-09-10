@@ -40,14 +40,14 @@ router.post(
       .withMessage("Missing orderType")
       .isLength({ min: 3, max: 3 })
       .withMessage("orderType must be exactly 3 characters long"),
-    body("orderStatus")
+    body("orderStatusLow")
       .not()
       .isEmpty()
-      .withMessage("Missing orderStatus")
+      .withMessage("Missing orderStatusLow")
       .isNumeric()
-      .withMessage("orderStatus is Numeric")
+      .withMessage("orderStatusLow is Numeric")
       .isLength({ min: 2, max: 2 })
-      .withMessage("orderStatus must be exactly 2 characters long"),
+      .withMessage("orderStatusLow must be exactly 2 characters long"),
     body("orderDate")
       .not()
       .isEmpty()
