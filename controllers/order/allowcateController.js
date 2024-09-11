@@ -7,7 +7,7 @@ exports.insert = async (req, res, next) => {
   try {
     const items = req.body.items;
     const allowcateJson = getJsonData("allowcate.json");
-    console.log(items.qtyPCS);
+    // console.log(items.qtyPCS);
 
     for (let item of items) {
       await Allowcate.create({
@@ -17,17 +17,13 @@ exports.insert = async (req, res, next) => {
         MOPLDT: item.MOPLDT,
         MOTIHM: item.itemNo,
         MOSTAT: item.orderStatusLow,
-        MOPRIO: item.MOPRIO !== undefined ? item.MOPRIO : 0,
-        MOORCA: 311,
+        MOPRIO: item.MOPRIO,
+        MOORCA: allowcateJson.MOORCA,
         orderNo: item.orderNo,
         itemNo: item.itemNo,
-        MORFTX:
-          item.OKALCU !== undefined
-            ? item.OKALCU + "    " + item.customerNo
-            : "",
+        MORFTX: item.OKALCU + "    " + item.customerNo,
         MORPRT: allowcateJson.MORPRT,
-        MOTRQT:
-          item.qtyPCS !== undefined ? item.qtyPCS * -1 : item.itemQty * -1,
+        MOTRQT: item.qtyPCS * -1,
         MOALMT: allowcateJson.MOALMT,
         MOCALI: allowcateJson.MOCALI,
         MOLMTS: Date.now(),

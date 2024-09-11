@@ -374,6 +374,11 @@ const OrderLine = sequelize.define(
       allowNull: true,
       field: "OBTEDS",
     },
+    OBITDS: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OBITDS",
+    },
     qtyCTN: {
       type: DataTypes.INTEGER,
       allowNull: true,

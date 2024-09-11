@@ -41,29 +41,32 @@ exports.insertHead = async (req, res, next) => {
       addressID: addressID,
     });
     const route = await fetchRoutes(shinpping.shippingRoute);
+    res.status(201).json({
+      test:route
+    })
     await DeliveryHead.create({
       coNo: coNo,
       OQDLIX: runningNumberH,
       OQDPOL: policy.EDDPOL, // POLICY
       OQWHLO: warehouse,
       OQINOU: deliveryData[0].HEAD.OQINOU,
-      OQCONA: warehouse, //OOHEAD.OAWHLO
-      // OQCOAA
-      // OQCOAF
-      // OQCONB
+      OQCONA: customerNo, //OOHEAD.OAWHLO
+      OQCOAA: addressID,
+      OQCOAF: addressID,
+      OQCONB: warehouse, //OOHEAD.OAWHLO
       OQSDES: route.place, // ROUTE PLACE
       OQDSDT: requestDate, //OOHEAD OARLDT requestDate
       OQDSHM: route.departureTime, // departureTime
       OQTRDT: orderDate, //OOHEAD OAORDT
       OQTRTM: getCurrentTimeFormatted(), //OOHEAD
       OQSROT: route.routeCode, // ROUTE
-      // OQSROD
+      OQSROD: route.routeDeparture, // ROUTE routeDeparture
       OQROUT: route.routeCode, // ROUTE
-      // OQRODN
-      // OQMODL //OCUSMA
-      // OQMODF 
-      // OQTEDL  //OCUSMA
-      // OQTEDF
+      OQRODN: route.routeDeparture, // ROUTE routeDeparture
+      OQMODL: customer.OKMODL,
+      OQMODF: customer.OKMODL,
+      OQTEDL: customer.OKTEDL,
+      OQTEDF: customer.OKTEDL,
       OQRORC: deliveryData[0].HEAD.OQRORC, // 3
       // OQTTYP
       OQTTYP: deliveryData[0].HEAD.OQTTYP,
@@ -74,7 +77,14 @@ exports.insertHead = async (req, res, next) => {
       //OQBLOP
       //OQRLFA
       //OQRLTD
-      //OQPGRS
+      OQPGRS:deliveryData[0].HEAD.OQPGRS,
+      OQPIST:deliveryData[0].HEAD.OQPIST,
+      OQECAR:customer.OKECAR,
+      OQPONO:shinpping.shippingPoscode,
+      OQULZO:shinpping.shippingRoute,
+      OQFWNS:route.forwarding,
+      OQFWNO:route.forwarding,
+      OQIRST:deliveryData[0].HEAD.OQIRST,
       //OQPCKA
       //OQPLSX
       OQNEWE: netWeight, // OrderLine SUM
@@ -86,7 +96,7 @@ exports.insertHead = async (req, res, next) => {
       OQDOCE: deliveryData[0].HEAD.OQDOCE, // 1 ** 1 digit in Database TST
       OQDEWD: deliveryData[0].HEAD.OQDEWD, // 0
       OQSEEQ: deliveryData[0].HEAD.OQSEEQ, // 50
-      OQIVSS: deliveryData[0].HEAD.OQIVSS, // 2
+      // OQIVSS: deliveryData[0].HEAD.OQIVSS, // 0
       OQPRIO: deliveryData[0].HEAD.OQPRIO, // 5
       OQCUCL: customer.customerChannel, // OCUSMA
       OQCSCD: customer.OKCSCD, // OCUSMA

@@ -220,6 +220,7 @@ exports.single = async (req, res, next) => {
       const OKFACI = customer.OKFACI.trim();
       const OKINRC = customer.OKINRC.trim();
       const OKCUCD = customer.OKCUCD.trim();
+      const OKALCU = customer.OKALCU.trim();
       // const OKPYCD = customer.OKPYCD.trim();
       // const taxno = customer.taxno.trim();
       return {
@@ -253,6 +254,7 @@ exports.single = async (req, res, next) => {
         OKFACI: OKFACI,
         OKINRC: OKINRC,
         OKCUCD: OKCUCD,
+        OKALCU: OKALCU,
         OKPYCD: customer.OKPYCD,
         OKMODL: customer.OKMODL,
         OKTEDL: customer.OKTEDL,

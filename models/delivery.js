@@ -123,6 +123,21 @@ const DeliveryHead = sequelize.define(
       allowNull: true,
       field: "OQDPOL",
     },
+    OQCOAA: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OQCOAA",
+    },
+    OQCOAF: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OQCOAF",
+    },
+    OQCONB: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OQCONB",
+    },
     OQWHLO: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -284,10 +299,80 @@ const DeliveryHead = sequelize.define(
       allowNull: true,
       field: "OQDSHM",
     },
-    OQDTHM: {
+    OQSROD: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OQDTHM",
+      field: "OQSROD",
+    },
+    OQRODN: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQRODN",
+    },
+    OQMODL: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQMODL",
+    },
+    OQMODF: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQMODF",
+    },
+    OQTEDL: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQTEDL",
+    },
+    OQTEDF: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQTEDF",
+    },
+    OQPGRS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQPGRS",
+    },
+    OQPIST: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQPIST",
+    },
+    OQECAR: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQECAR",
+    },
+    OQPONO: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQPONO",
+    },
+    OQULZO: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQULZO",
+    },
+    OQFWNS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQFWNS",
+    },
+    OQFWNO: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQFWNO",
+    },
+    OQIRST: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQIRST",
+    },
+    OQSROT: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQSROT",
     },
   },
   {
