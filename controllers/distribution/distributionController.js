@@ -229,7 +229,7 @@ exports.insertHead = async (req, res, next) => {
           itemStatus: item.itemStatus,
           MRWHLO: item.MRWHLO,
           MRGRWE: weight.grossWeight,
-          MRSTAS: stock.allowcateMethod,
+          MRSTAS: stock.allocateMethod,
           MRWHSL: item.MRWHSL,
           MRTWSL: item.MRTWSL,
         };

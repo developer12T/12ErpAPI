@@ -3,6 +3,7 @@ const Promotion = require("../../models/promotion");
 const axios = require("axios");
 const { HOST } = require("../../config/index");
 const { Op } = require("sequelize");
+const { handleApiError } = require("../../middleware/errorHandlerApi");
 const {
   formatDate,
   getCurrentTimeFormatted,
@@ -361,6 +362,11 @@ exports.insert = async (req, res, next) => {
         note,
       } = order;
       let { orderNo } = order;
+      const items = order.item;
+      const calWeights = [];
+      const calCosts = [];
+      const orderJson = getJsonData("order.json");
+      const RunningJson = getJsonData("runnigNumber.json");
 
       if (Hcase === 0) {
         if (orderNo === "") {
@@ -369,13 +375,13 @@ exports.insert = async (req, res, next) => {
           throw error;
         }
       }
+      
       const series = await fetchOrderType(orderType);
-
-      const items = order.item;
-
-      // console.log(orderStatusLow);
-      const orderJson = getJsonData("order.json");
-      const RunningJson = getJsonData("runnigNumber.json");
+      if (series == null) {
+        const error = new Error("Order Type is incorrect or not found");
+        error.statusCode = 422;
+        throw error;
+      }
 
       if (orderNo == "") {
         orderNo = "";
@@ -394,10 +400,6 @@ exports.insert = async (req, res, next) => {
         });
         orderNo = orderNo.toString();
       }
-      // res.json(orderNo);
-
-      // res.json(orderJson);
-      // console.log(orderJson);
 
       const running = await fetchRunningNumber({
         coNo: RunningJson[0].DELIVERY.coNo,
@@ -412,16 +414,13 @@ exports.insert = async (req, res, next) => {
         seriesType: RunningJson[0].DELIVERY.seriesType,
         lastNo: runningNumberH,
       });
-      // res.status(200).json(runningNumberH);
-
-      const calWeights = [];
-      const calCosts = [];
 
       for (let item of items) {
         const Weight = await calWeight({
           itemCode: item.itemCode,
           qty: item.qtyPCS,
         });
+
         const Cost = await calCost({
           itemCode: item.itemCode,
           qty: item.qtyPCS,
@@ -633,8 +632,8 @@ exports.insert = async (req, res, next) => {
           OADCCD: orderJson[0].HEAD.OADCCD, // OADCCD
           OACRTP: 1, // *** Conditional
           OADMCU: orderJson[0].HEAD.OADMCU,
-          grossWeight: totalgrossWeight,
-          netWeight: totalnetWeight,
+          grossWeight: totalgrossWeight.toFixed(4),
+          netWeight: totalnetWeight.toFixed(4),
           OACOAM: totalCost,
           total: total, // OABRLA
           OANTAM: totalNet,

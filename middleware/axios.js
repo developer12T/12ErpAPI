@@ -1,8 +1,10 @@
 const axios = require("axios");
 const { ERP_API_BASE_URL } = require("../config/index");
+
 const milliseconds = 5 * 1000;
 const seconds = 60 * 1000;
-const mintues = 60 * 60 * 1000;
+const minutes = 60 * 60 * 1000;
+
 const axiosInstance = axios.create({
   baseURL: ERP_API_BASE_URL,
   // timeout: seconds,
@@ -11,9 +13,10 @@ const axiosInstance = axios.create({
   },
 });
 
+// Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = "YOUR_ACCESS_TOKEN";
+    const token = "YOUR_ACCESS_TOKEN"; // Replace with actual token retrieval logic
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -32,6 +35,7 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+// Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
     console.log("Response received at:", new Date().toLocaleString());
@@ -43,22 +47,37 @@ axiosInstance.interceptors.response.use(
     });
     return response;
   },
-
   (error) => {
     if (error.response) {
-      switch (error.response.status) {
+      const statusCode = error.response.status;
+      let customError;
+
+      // Handle the error based on status codes
+      switch (statusCode) {
         case 401:
-          console.error("Unauthorized, redirecting to login...");
+          customError = new Error("Unauthorized, redirecting to login...");
+          customError.statusCode = 401;
           break;
         case 403:
-          console.error("Forbidden");
+          customError = new Error("Forbidden");
+          customError.statusCode = 403;
           break;
         case 404:
-          console.error("Not Found");
+          customError = new Error("Not Found");
+          customError.statusCode = 404;
           break;
         default:
-          console.error("Error:", error.response.status, error.response.data);
+          const errorData =
+            typeof error.response.data === "object"
+              ? JSON.stringify(error.response.data)
+              : error.response.data;
+
+          customError = new Error(`Error: ${statusCode}, ${errorData}`);
+          customError.statusCode = statusCode;
       }
+
+      console.error(customError.message);
+      throw customError;
     } else {
       console.error("Network Error:", error.message);
     }

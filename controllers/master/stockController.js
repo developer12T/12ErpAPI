@@ -94,7 +94,7 @@ exports.stock = async (req, res, next) => {
           location: location,
           lot: locate.data[0].lot,
           itemOnHand: locate.data[0].itemOnHand,
-          itemAllowcated: locate.data[0].itemAllowcated, // Assuming promotionName is a property of PromotionData
+          itemallocated: locate.data[0].itemallocated, // Assuming promotionName is a property of PromotionData
         });
       } else {
         console.log(`No promotion data found for`);
@@ -106,7 +106,7 @@ exports.stock = async (req, res, next) => {
       //     location: location,
       //     lot: locate.data[i].lot,
       //     itemOnHand: locate.data[i].itemOnHand,
-      //     itemAllowcated: locate.data[i].itemAllowcated,
+      //     itemallocated: locate.data[i].itemallocated,
       //   });
       // }
 
@@ -125,7 +125,7 @@ exports.stock = async (req, res, next) => {
       //     location: LocateData[j].location,
       //     lot: LocateData[j].lot,
       //     itemOnHand: LocateData[j].itemOnHand,
-      //     itemAllowcated: LocateData[j].itemAllowcated,
+      //     itemallocated: LocateData[j].itemallocated,
       //   });
       // }
     }
@@ -138,8 +138,8 @@ exports.stock = async (req, res, next) => {
         warehouse: stock.warehouse,
         itemCode: itemCode,
         itemPcs: stock.itemPcs,
-        allowcateMethod: stock.allowcateMethod,
-        itemAllowcated: stock.itemAllowcated,
+        allocateMethod: stock.allocateMethod,
+        itemallocated: stock.itemallocated,
         itemAllowcatable: stock.itemAllowcatable,
         lot: locate,
       };
@@ -177,7 +177,7 @@ exports.stocksingle = async (req, res, next) => {
         location: location,
         lot: locate.data[i].lot,
         itemOnHand: locate.data[i].itemOnHand,
-        itemAllowcated: locate.data[i].itemAllowcated,
+        itemallocated: locate.data[i].itemallocated,
       });
     }
     const stocks = BalanceData.map((stock) => {
@@ -187,8 +187,8 @@ exports.stocksingle = async (req, res, next) => {
         warehouse: stock.warehouse,
         itemCode: itemCode,
         itemPcs: stock.itemPcs,
-        allowcateMethod: stock.allowcateMethod,
-        itemAllowcated: stock.itemAllowcated,
+        allocateMethod: stock.allocateMethod,
+        itemallocated: stock.itemallocated,
         itemAllowcatable: stock.itemAllowcatable,
         lot: locatearr,
       };

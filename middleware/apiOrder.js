@@ -2,7 +2,7 @@ const axiosInstance = require("./axios");
 
 
 async function insertAllocate(itemsData) {
-  return makePostRequest("/allowcate/insert", {
+  return makePostRequest("/allocate/insert", {
     items: itemsData,
   });
 }

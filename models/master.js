@@ -207,7 +207,7 @@ const Locate = sequelize.define(
       allowNull: false,
       field: "MLSTQT",
     },
-    itemAllowcated: {
+    itemallocated: {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "MLALQT",
@@ -245,12 +245,12 @@ const Balance = sequelize.define(
       allowNull: false,
       field: "MBSTQT",
     },
-    allowcateMethod: {
+    allocateMethod: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "MBALMT",
     },
-    itemAllowcated: {
+    itemallocated: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "MBALQT",

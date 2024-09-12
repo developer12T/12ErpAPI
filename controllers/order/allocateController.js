@@ -1,4 +1,4 @@
-const Allowcate = require("../../models/allowcate");
+const allocate = require("../../models/allocate");
 const { getJsonData } = require("../../middleware/getJsonData");
 
 exports.index = async (req, res, next) => {};
@@ -6,26 +6,26 @@ exports.index = async (req, res, next) => {};
 exports.insert = async (req, res, next) => {
   try {
     const items = req.body.items;
-    const allowcateJson = getJsonData("allowcate.json");
+    const allocateJson = getJsonData("allocate.json");
     // console.log(items.qtyPCS);
 
     for (let item of items) {
-      await Allowcate.create({
+      await allocate.create({
         coNo: item.coNo,
         warehouse: item.warehouse,
         itemCode: item.itemCode,
         MOPLDT: item.MOPLDT,
-        MOTIHM: item.itemNo,
+        MOTIHM: item.OBDSHM,
         MOSTAT: item.orderStatusLow,
         MOPRIO: item.MOPRIO,
-        MOORCA: allowcateJson.MOORCA,
+        MOORCA: allocateJson.MOORCA,
         orderNo: item.orderNo,
         itemNo: item.itemNo,
         MORFTX: item.OKALCU + "    " + item.customerNo,
-        MORPRT: allowcateJson.MORPRT,
+        MORPRT: allocateJson.MORPRT,
         MOTRQT: item.qtyPCS * -1,
-        MOALMT: allowcateJson.MOALMT,
-        MOCALI: allowcateJson.MOCALI,
+        MOALMT: allocateJson.MOALMT,
+        MOCALI: allocateJson.MOCALI,
         MOLMTS: Date.now(),
       });
     }

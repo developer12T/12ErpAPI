@@ -4,7 +4,7 @@ const Document = sequelize.define(
   "OODOCU",
   {
     coNo: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.NUMBER(3),
       allowNull: false,
       field: "OFCONO",
     },
@@ -20,7 +20,6 @@ const Document = sequelize.define(
       primaryKey: true,
       field: "OFDONR",
     },
-
     OFDOTP: {
       type: DataTypes.NUMBER,
       allowNull: false,

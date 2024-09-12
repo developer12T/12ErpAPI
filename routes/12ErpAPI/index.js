@@ -9,7 +9,7 @@ const orderRouter = require("./order");
 const promotionRouter = require("./promotion");
 const masterRouter = require("./master");
 const deliveryRouter = require("./delivery");
-const allowcateRouter = require("./allowcate");
+const allocateRouter = require("./allocate");
 const prepareInvoiceRouter = require("./prepareInvoice");
 const documentRouter = require("./document");
 const routeRouter = require("./route");
@@ -23,7 +23,7 @@ router.use("/promotion", promotionRouter);
 router.use("/master", masterRouter);
 router.use("/prepare", prepareInvoiceRouter);
 router.use("/delivery", deliveryRouter);
-router.use("/allowcate", allowcateRouter);
+router.use("/allocate", allocateRouter);
 router.use("/document", documentRouter);
 router.use("/route", routeRouter);
 

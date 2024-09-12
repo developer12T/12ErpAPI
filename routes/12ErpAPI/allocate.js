@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { index, insert } = require("../../controllers/order/allowcateController");
+const { index, insert } = require("../../controllers/order/allocateController");
 
 /* GET home page. */
 //http://localhost:3000/sale/

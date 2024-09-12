@@ -32,7 +32,6 @@ exports.insert = async (req, res, next) => {
         OFCHID: documentJson.OFCHID,
       });
     }
-
     res.status(201).json({
       message: "Created",
     });

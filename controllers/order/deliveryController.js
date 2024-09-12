@@ -41,9 +41,9 @@ exports.insertHead = async (req, res, next) => {
       addressID: addressID,
     });
     const route = await fetchRoutes(shinpping.shippingRoute);
-    res.status(201).json({
-      test:route
-    })
+    // res.status(201).json({
+    //   test:route
+    // })
     await DeliveryHead.create({
       coNo: coNo,
       OQDLIX: runningNumberH,
@@ -100,11 +100,6 @@ exports.insertHead = async (req, res, next) => {
       OQPRIO: deliveryData[0].HEAD.OQPRIO, // 5
       OQCUCL: customer.customerChannel, // OCUSMA
       OQCSCD: customer.OKCSCD, // OCUSMA
-      OQECAR: customer.OKECAR, // OCUSMA
-      OQPONO: shinpping.shippingPoscode, // OCUSAD
-      OQULZO: route.shippingRoute, // OCUSAD
-      OQFWNS: route.forwarding, // Route forwarding
-      OQFWNO: route.forwarding, // Route forwarding
       OQAGKY: deliveryData[0].HEAD.OQAGKY, // emthy
       OQRGDT: formatDate(),
       OQRGTM: getCurrentTimeFormatted(),
