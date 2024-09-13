@@ -67,7 +67,7 @@ exports.itemdetails = async (req, res, next) => {
     const items = itemData.map((item) => {
       const itemCode = item.itemCode.trim();
       const itemName = item.itemName.trim();
-      const MMITDS = item.MMITDS.trim();
+      const itemDescription = item.itemDescription.trim();
       const itemType = item.itemType.trim();
       const MMITGR = item.MMITGR.trim();
       const MMITCL = item.MMITCL.trim();
@@ -78,7 +78,7 @@ exports.itemdetails = async (req, res, next) => {
         itemCode: itemCode,
         status: item.status,
         itemName: itemName,
-        MMITDS: MMITDS,
+        itemDescription: itemDescription,
         MMITGR: MMITGR,
         MMITCL: MMITCL,
         itemType: itemType,
@@ -106,8 +106,8 @@ exports.calWeight = async (req, res, next) => {
     itemData = {
       itemCode: itemData.itemCode.trim(),
       status: itemData.status,
-      netWeight: Math.round(itemData.netWeight * qty * 100000) / 100000,
-      grossWeight: Math.round(itemData.grossWeight * qty * 100000) / 100000,
+      netWeight: Number(Number(itemData.netWeight * qty).toFixed(3)),
+      grossWeight: Number(Number(itemData.grossWeight * qty).toFixed(3)),
     };
     res.json(itemData);
   } catch (error) {
@@ -126,7 +126,7 @@ exports.calCost = async (req, res, next) => {
     });
     itemData = {
       itemCode: itemData.itemCode.trim(),
-      cost: Number(itemData.cost * qty),
+      cost: Number(Number(itemData.cost * qty).toFixed(6)),
     };
     res.json(itemData);
   } catch (error) {

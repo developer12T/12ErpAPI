@@ -51,7 +51,7 @@ axiosInstance.interceptors.response.use(
     if (error.response) {
       const statusCode = error.response.status;
       let customError;
-
+      const url = error.response.config.url;
       // Handle the error based on status codes
       switch (statusCode) {
         case 401:
@@ -67,13 +67,16 @@ axiosInstance.interceptors.response.use(
           customError.statusCode = 404;
           break;
         default:
-          const errorData =
-            typeof error.response.data === "object"
-              ? JSON.stringify(error.response.data)
-              : error.response.data;
-
-          customError = new Error(`Error: ${statusCode}, ${errorData}`);
-          customError.statusCode = statusCode;
+          if( typeof error.response.data === "object"){
+            customError = new Error(`Error:Request Failed : ${url}`);
+            const errorData = error.response.data.message
+            const resultArray = errorData.split(',\n').map(str => str.replace('Validation error: ', '').trim());
+            customError.statusCode = statusCode;
+            customError.validation = resultArray
+          }else{
+            customError = new Error(`Error: ${statusCode}, ${error.response.data}`);
+            customError.statusCode = statusCode;
+          }
       }
 
       console.error(customError.message);

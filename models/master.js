@@ -54,7 +54,7 @@ const ItemMaster = sequelize.define(
       primaryKey: true,
       field: "MMITNO",
     },
-    MMITDS: {
+    itemDescription: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "MMITDS",
@@ -75,7 +75,7 @@ const ItemMaster = sequelize.define(
       allowNull: false,
       field: "MMITGR",
     },
-    MMITCL: {
+    itemClass: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "MMITCL",

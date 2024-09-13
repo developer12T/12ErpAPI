@@ -77,14 +77,14 @@ exports.insertHead = async (req, res, next) => {
       //OQBLOP
       //OQRLFA
       //OQRLTD
-      OQPGRS:deliveryData[0].HEAD.OQPGRS,
-      OQPIST:deliveryData[0].HEAD.OQPIST,
-      OQECAR:customer.OKECAR,
-      OQPONO:shinpping.shippingPoscode,
-      OQULZO:shinpping.shippingRoute,
-      OQFWNS:route.forwarding,
-      OQFWNO:route.forwarding,
-      OQIRST:deliveryData[0].HEAD.OQIRST,
+      OQPGRS: deliveryData[0].HEAD.OQPGRS,
+      OQPIST: deliveryData[0].HEAD.OQPIST,
+      OQECAR: customer.OKECAR,
+      OQPONO: shinpping.shippingPoscode,
+      OQULZO: shinpping.shippingRoute,
+      OQFWNS: route.forwarding,
+      OQFWNO: route.forwarding,
+      OQIRST: deliveryData[0].HEAD.OQIRST,
       //OQPCKA
       //OQPLSX
       OQNEWE: netWeight, // OrderLine SUM
@@ -112,7 +112,7 @@ exports.insertHead = async (req, res, next) => {
 
     // console.log(test);
 
-    res.status(201).json("Created");
+    res.status(201).json({ message: "Created" });
   } catch (error) {
     next(error);
   }
@@ -163,7 +163,7 @@ exports.insertLine = async (req, res, next) => {
         URSCES: deliveryData[0].HEAD.OQSCES, // MHDISH
       });
     }
-    res.status(201).json("Created");
+    res.status(201).json({ message: "Created" });
   } catch (error) {
     next(error);
   }

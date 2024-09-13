@@ -490,7 +490,7 @@ exports.insert = async (req, res, next) => {
           itemCode: item.itemCode,
           itemNo: item.itemNo,
           itemName: itemDetail[0].itemName,
-          OBITDS: itemDetail[0].MMITDS,
+          OBITDS: itemDetail[0].itemDescription,
           qtyPCS: item.qtyPCS,
           qtyCTN: item.qtyCTN,
           unit: item.unit,
@@ -553,7 +553,7 @@ exports.insert = async (req, res, next) => {
           OBUPAV: 1, // Check Data ?
           customerChannel: customer.customerChannel,
           OUSTUN: itemUnitMinData.unit,
-          OUITGR: itemDetail[0].MMITGR,
+          OUITGR: itemDetail[0].itemGroup,
           itemType: itemDetail[0].itemType,
           OUITCL: itemDetail[0].MMITCL,
         };

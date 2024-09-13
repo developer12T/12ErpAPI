@@ -375,7 +375,7 @@ exports.insert = async (req, res, next) => {
           throw error;
         }
       }
-      
+
       const series = await fetchOrderType(orderType);
       if (series == null) {
         const error = new Error("Order Type is incorrect or not found");
@@ -490,7 +490,7 @@ exports.insert = async (req, res, next) => {
             itemCode: item.itemCode,
             itemNo: item.itemNo,
             itemName: itemDetail[0].itemName,
-            OBITDS: itemDetail[0].MMITDS,
+            OBITDS: itemDetail[0].itemDescription,
             qtyPCS: item.qtyPCS,
             qtyCTN: item.qtyCTN,
             unit: item.unit,
@@ -553,7 +553,7 @@ exports.insert = async (req, res, next) => {
             OBUPAV: 1, // Check Data ?
             customerChannel: customer.customerChannel,
             OUSTUN: itemUnitMinData.unit,
-            OUITGR: itemDetail[0].MMITGR,
+            OUITGR: itemDetail[0].itemGroup,
             itemType: itemDetail[0].itemType,
             OUITCL: itemDetail[0].MMITCL,
           };
@@ -632,8 +632,8 @@ exports.insert = async (req, res, next) => {
           OADCCD: orderJson[0].HEAD.OADCCD, // OADCCD
           OACRTP: 1, // *** Conditional
           OADMCU: orderJson[0].HEAD.OADMCU,
-          grossWeight: totalgrossWeight.toFixed(4),
-          netWeight: totalnetWeight.toFixed(4),
+          grossWeight: totalgrossWeight.toFixed(3),
+          netWeight: totalnetWeight.toFixed(3),
           OACOAM: totalCost,
           total: total, // OABRLA
           OANTAM: totalNet,
@@ -659,12 +659,7 @@ exports.insert = async (req, res, next) => {
           orderNo: orderNo,
         });
       }
-      // res.json(itemsData);
-      await insertAllocate(itemsData);
-      await insertOrderLine(itemsData);
-      await insertDeliveryLine(itemsData);
-      await insertPrepareInovoice(itemsData);
-      await insertDeliveryHead({
+      const deliveryObj = {
         warehouse: warehouse,
         coNo: 410,
         runningNumberH: runningNumberH,
@@ -676,9 +671,17 @@ exports.insert = async (req, res, next) => {
         requestDate: requestDate,
         OARGTM: getCurrentTimeFormatted(),
         OATIZO: orderJson[0].HEAD.OATIZO,
-        grossWeight: totalgrossWeight,
-        netWeight: totalnetWeight,
-      });
+        grossWeight: totalgrossWeight.toFixed(3),
+        netWeight: totalnetWeight.toFixed(3),
+      };
+      //
+      // res.json(deliveryObj);
+      // res.json(itemsData);
+      await insertAllocate(itemsData);
+      await insertOrderLine(itemsData);
+      await insertDeliveryLine(itemsData);
+      await insertPrepareInovoice(itemsData);
+      await insertDeliveryHead(deliveryObj);
       res.status(201).json({
         message: "Created",
         orderNo: orderNo,

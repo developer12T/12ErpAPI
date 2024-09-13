@@ -25,6 +25,8 @@ exports.insertA = async (req, res, next) => {
     const items = req.body.items;
     let prepareJson = getJsonData("prepareinvoice.json");
     for (let item of items) {
+      console.log(item.costPCS);
+
       await PrepareInvoA.create({
         coNo: item.coNo,
         OUDIVI: item.OBDIVI,
@@ -72,9 +74,9 @@ exports.insertA = async (req, res, next) => {
         // OrderLine non vat OBDIA2 * OBORQA
         OUDIA2: nonVat(item.discount * item.qtyCTN), //OrderLine non vat OBDIA2 * OBORQA
         OUOFRA: nonVat(item.discount * item.qtyCTN),
-        OUDWDT: item.requesetDate, //OOHEAD OARLDT
-        OUCODT: item.requesetDate, //OOHEAD OARLDT
-        OUUCOS: item.costPCS, //OrderLine OBUCOS * OBORQT
+        OUDWDT: item.requestDate, //OOHEAD OARLDT
+        OUCODT: item.requestDate, //OOHEAD OARLDT
+        OUUCOS: item.costPCS.toFixed(2), //OrderLine OBUCOS * OBORQT
         OUUCCD: prepareJson[0].HEAD.OUUCCD, // 1
         OUUNMS: item.OUSTUN, // หน่วยเล็กสุดของ item
         OUORTK: prepareJson[0].HEAD.OUORTK, // 1
@@ -175,7 +177,7 @@ exports.insertA = async (req, res, next) => {
 //         UCFRE1: "YSEND",
 //         warehouse: item.warehouse,
 //         itemCode: item.itemCode,
-//         UCITGR: itemData.data[0].MMITGR,
+//         UCITGR: itemData.data[0].itemGroup,
 //         itemType: itemData.data[0].itemType,
 //         UCITCL: itemData.data[0].MMITCL,
 //         UCSTUN: item.unit,
