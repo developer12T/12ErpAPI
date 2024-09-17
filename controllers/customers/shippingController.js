@@ -10,6 +10,7 @@ const {
 const {
   filterStringEN,
   filterStringNumber,
+  formatPhoneNumber,
 } = require("../../middleware/filterString");
 
 exports.index = async (req, res, next) => {
@@ -75,7 +76,7 @@ exports.update = async (req, res, next) => {
         shippingAddress2: shipping.shippingAddress2,
         shippingAddress3: shipping.shippingAddress3,
         shippingPoscode: shippingPoscode,
-        shippingPhone: shippingPhone,
+        shippingPhone: formatPhoneNumber(shippingPhone),
       };
     });
     if (shippings[0].customerNo !== customerNo) {
@@ -224,19 +225,14 @@ exports.insert = async (req, res, next) => {
 
 exports.deleted = async (req, res, next) => {
   try {
-    const {
-      customerNumber: customerNumber,
-      addressID: addressID,
-      companyNumber: companyNumber,
-    } = req.body;
+    const { customerNo, addressID, coNo } = req.body;
 
     const deleted = await Shipping.update(
-      { companyNumber: companyNumber * -1 },
+      { coNo: `${coNo * -1}` },
       {
-        attributes: { exclude: ["id"] },
         where: {
-          companyNumber,
-          customerNumber,
+          coNo,
+          customerNo,
           addressID,
         },
       }
@@ -273,7 +269,7 @@ exports.single = (io) => async (req, res, next) => {
       shippingAddress2: shippingData.shippingAddress2,
       shippingAddress3: shippingData.shippingAddress3,
       shippingPoscode: shippingData.shippingPoscode.trim(),
-      shippingPhone: shippingData.shippingPhone.trim(),
+      shippingPhone: formatPhoneNumber(shippingData.shippingPhone),
     };
 
     io.emit("shippingData", shippingData);

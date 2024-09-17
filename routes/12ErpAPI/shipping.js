@@ -16,6 +16,7 @@ module.exports = (io) => {
   router.post("/", index);
   router.post("/update", update);
   router.post("/insert", insert);
+  router.post("/deleted", deleted);
   router.post("/single", single(io)); // Pass io to the controller
 
   return router;

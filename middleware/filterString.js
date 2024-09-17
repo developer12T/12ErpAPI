@@ -66,3 +66,28 @@ module.exports.changeStringToHelloAllWorld = (str) => {
   return `Hello all ${str}`;
 };
 
+module.exports.formatPhoneNumberMap = (phoneNumbers) => {
+  return phoneNumbers.map((number) => {
+    // Remove all non-numeric characters except dashes
+    let cleanedNumber = number.replace(/[^\d-]/g, '');
+    // Add hyphen after the area code (assumes the first 2 or 3 digits are the area code)
+    if (cleanedNumber.length === 10) { // e.g., "028921873"
+      return cleanedNumber.replace(/(\d{2})(\d+)/, '$1-$2');
+    } else if (cleanedNumber.length === 11) { // e.g., "0819251393"
+      return cleanedNumber.replace(/(\d{3})(\d+)/, '$1-$2');
+    } else {
+      return cleanedNumber; // Return the number as-is if it doesn't match expected length
+    }
+  });
+};
+
+module.exports.formatPhoneNumber = (number) => {
+  let cleanedNumber = number.replace(/[^\d-]/g, '');
+  if (cleanedNumber.length === 10) { // e.g., "028921873"
+    return cleanedNumber.replace(/(\d{2})(\d+)/, '$1-$2');
+  } else if (cleanedNumber.length === 11) { // e.g., "0819251393"
+    return cleanedNumber.replace(/(\d{3})(\d+)/, '$1-$2');
+  } else {
+    return cleanedNumber; // Return the number as-is if it doesn't match expected length
+  }
+};

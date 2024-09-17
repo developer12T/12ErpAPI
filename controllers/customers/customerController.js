@@ -280,11 +280,11 @@ exports.update = async (req, res, next) => {
       customerNo,
       customerStatus,
       customerChannel,
-      customerName,
+      // customerName,
       customerAddress1,
       customerAddress2,
       customerAddress3,
-      customerAddress4,
+      // customerAddress4,
       customerPoscode,
       customerPhone,
       creditTerm,
@@ -297,13 +297,11 @@ exports.update = async (req, res, next) => {
       saleTeam,
       saleCode,
     } = req.body;
+    let { customerAddress4, customerName } = req.body;
 
     const updateFields = {};
 
     const customersData = await Customer.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         customerNo: customerNo,
         coNo: 410,
@@ -312,37 +310,37 @@ exports.update = async (req, res, next) => {
 
     // console.log(customersData);
     const customers = customersData.map((customer) => {
-      const customerChannel = customer.customerChannel.trim();
-      const customerPoscode = customer.customerPoscode.trim();
-      const customerPhone = customer.customerPhone.trim();
-      const creditTerm = customer.creditTerm.trim();
-      const orderType = customer.orderType.trim();
-      const warehouse = customer.warehouse.trim();
-      const OKSDST = customer.OKSDST.trim();
-      const saleTeam = customer.saleTeam.trim();
-      const OKCFC1 = customer.OKCFC1.trim();
-      const OKCFC3 = customer.OKCFC3.trim();
-      const OKCFC6 = customer.OKCFC6.trim();
-      const saleCode = customer.saleCode.trim();
+      // const customerChannel = customer.customerChannel.trim();
+      // const customerPoscode = customer.customerPoscode.trim();
+      // const customerPhone = customer.customerPhone.trim();
+      // const creditTerm = customer.creditTerm.trim();
+      // const orderType = customer.orderType.trim();
+      // const warehouse = customer.warehouse.trim();
+      // const OKSDST = customer.OKSDST.trim();
+      // const saleTeam = customer.saleTeam.trim();
+      // const OKCFC1 = customer.OKCFC1.trim();
+      // const OKCFC3 = customer.OKCFC3.trim();
+      // const OKCFC6 = customer.OKCFC6.trim();
+      // const saleCode = customer.saleCode.trim();
       return {
         customerName: customer.customerName,
         customerStatus: customer.customerStatus,
-        customerChannel: customerChannel,
-        customerAddress1: customerAddress1,
-        customerAddress2: customerAddress2,
-        customerAddress3: customerAddress3,
-        customerAddress4: customerAddress4,
-        customerPoscode: customerPoscode,
-        customerPhone: customerPhone,
-        creditTerm: creditTerm,
-        orderType: orderType,
-        warehouse: warehouse,
-        OKSDST: OKSDST,
-        saleTeam: saleTeam,
-        OKCFC1: OKCFC1,
-        OKCFC3: OKCFC3,
-        OKCFC6: OKCFC6,
-        saleCode: saleCode,
+        customerChannel: customer.customerChannel,
+        customerAddress1: customer.customerAddress1,
+        customerAddress2: customer.customerAddress2,
+        customerAddress3: customer.customerAddress3,
+        customerAddress4: customer.customerAddress4,
+        customerPoscode: customer.customerPoscode,
+        customerPhone: customer.customerPhone,
+        creditTerm: customer.creditTerm,
+        orderType: customer.orderType,
+        warehouse: customer.warehouse,
+        OKSDST: customer.OKSDST,
+        saleTeam: customer.saleTeam,
+        OKCFC1: customer.OKCFC1,
+        OKCFC3: customer.OKCFC3,
+        OKCFC6: customer.OKCFC6,
+        saleCode: customer.saleCode,
       };
     });
     if (customers[0].customerName !== customerName) {
@@ -400,8 +398,14 @@ exports.update = async (req, res, next) => {
       updateFields.saleCode = saleCode;
     }
 
+
+
+    if ((customerName.trim().length > 36 && customerChannel == !105) || 103) {
+      updateFields.customerAddress4 = customerName.trim().slice(35);
+      updateFields.customerName = customerName.trim().slice(0, 35);
+    }
+
     const update = await Customer.update(updateFields, {
-      attributes: { exclude: ["id"] },
       where: {
         customerNo: customerNo,
         // customerStatus: "20",
@@ -446,6 +450,7 @@ exports.insert = (io) => {
         saleCode,
         saleZone,
       } = req.body;
+
       let { customerAddress4, customerName } = req.body;
       const shippings = req.body.shippings;
 
@@ -567,7 +572,7 @@ exports.insert = (io) => {
   };
 };
 
-exports.onlycus = (io) => {
+exports.saleZone = (io) => {
   return async (req, res, next) => {
     try {
       const { saleZone } = req.body;
@@ -639,11 +644,11 @@ exports.deleted = async (req, res, next) => {
     const { customerNo, coNo } = req.body;
     // res.status(204);
     const deleted = await Customer.update(
-      { coNo: coNo },
+      { coNo: `${coNo * -1}` },
       {
-        attributes: { exclude: ["id"] },
+   
         where: {
-          coNo: `${coNo * -1}`,
+          coNo: coNo,
           customerNo: customerNo,
         },
       }

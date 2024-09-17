@@ -5,7 +5,7 @@ const {
   insert,
   deleted,
   single,
-  onlycus,
+  saleZone,
 } = require("../../controllers/customers/customerController");
 const passportJWT = require("../../middleware/passportJWT");
 
@@ -25,7 +25,7 @@ module.exports = (io) => {
   router.post("/insert", insert(io));
 
   //http://localhost:3000/customer/insert
-  router.post("/onlycus", onlycus(io));
+  router.post("/saleZone", saleZone(io));
 
   //http://localhost:3000/customer/delete
   router.post("/delete", deleted);
