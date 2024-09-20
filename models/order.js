@@ -332,7 +332,7 @@ const Order = sequelize.define(
       field: 'OAOREF',
       validate: {
         len: {
-          args: [0, 10],
+          args: [0, 30],
           msg: 'Reference must be 0-30 digits long'
         }
       }

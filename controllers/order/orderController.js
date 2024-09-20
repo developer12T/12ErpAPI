@@ -1,15 +1,15 @@
-const { OrderLine, Order } = require("../../models/order");
-const Promotion = require("../../models/promotion");
-const axios = require("axios");
-const { HOST } = require("../../config/index");
-const { Op } = require("sequelize");
-const { handleApiError } = require("../../middleware/errorHandlerApi");
+const { OrderLine, Order } = require('../../models/order')
+const Promotion = require('../../models/promotion')
+const axios = require('axios')
+const { HOST } = require('../../config/index')
+const { Op } = require('sequelize')
+const { handleApiError } = require('../../middleware/errorHandlerApi')
 const {
   formatDate,
-  getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
-const Shipping = require("../../models/shipping");
-const { validationResult } = require("express-validator");
+  getCurrentTimeFormatted
+} = require('../../middleware/getDateTime')
+const Shipping = require('../../models/shipping')
+const { validationResult } = require('express-validator')
 const {
   fetchOrderType,
   fetchOrderNoRunning,
@@ -20,60 +20,57 @@ const {
   fetchfactor,
   fetchItemUnitMax,
   fetchItemUnitMin,
-  fetchItemDetail,
-} = require("../../middleware/apiMaster");
-const {
-  fetchCustomer,
-  fetchShipping,
-} = require("../../middleware/apiCustomer");
+  fetchItemDetail
+} = require('../../middleware/apiMaster')
+const { fetchCustomer, fetchShipping } = require('../../middleware/apiCustomer')
 const {
   insertAllocate,
   insertOrderLine,
   insertDeliveryHead,
   insertDeliveryLine,
   insertPrepareInovoice,
-  insertDocument,
-} = require("../../middleware/apiOrder");
-const { fetchRoutes } = require("../../middleware/apiRoutes");
-const { getJsonData } = require("../../middleware/getJsonData");
-const { nonVat } = require("../../middleware/calVat");
+  insertDocument
+} = require('../../middleware/apiOrder')
+const { fetchRoutes } = require('../../middleware/apiRoutes')
+const { getJsonData } = require('../../middleware/getJsonData')
+const { nonVat } = require('../../middleware/calVat')
 // Get the current year and month
-const { getCurrentYearMonth } = require("../../middleware/getDateTime");
+const { getCurrentYearMonth } = require('../../middleware/getDateTime')
 
 exports.index = async (req, res, next) => {
   try {
-    const { orderType } = req.body;
-    let { orderDate } = req.body;
+    const { orderType } = req.body
+    let { orderDate } = req.body
 
-    if (orderDate == "") {
-      orderDate = `${getCurrentYearMonth()}`;
+    if (orderDate == '') {
+      orderDate = `${getCurrentYearMonth()}`
     }
     const orderData = await Order.findAll({
       attributes: {
-        exclude: ["id"],
+        exclude: ['id']
       },
       where: {
         orderType: orderType,
         orderDate: {
-          [Op.like]: `${orderDate}%`,
-        },
+          [Op.like]: `${orderDate}%`
+        }
         // orderNo:orderNo
-      },
-    });
+      }
+    })
 
     // Object to hold OrderLinearr for each orderNo
-    const orderLineData = {};
-    const promotionData = {};
+    const orderLineData = {}
+    const promotionData = {}
 
     for (let i = 0; i < orderData.length; i++) {
       const OrderLineData = await OrderLine.findAll({
         attributes: {
-          exclude: ["id"],
+          exclude: ['id']
         },
-        where: { orderNo: orderData[i].orderNo },
-      });
+        where: { orderNo: orderData[i].orderNo }
+      })
       // Initialize the array for current orderNo
-      orderLineData[orderData[i].orderNo] = [];
+      orderLineData[orderData[i].orderNo] = []
 
       for (let j = 0; j < OrderLineData.length; j++) {
         orderLineData[orderData[i].orderNo].push({
@@ -86,48 +83,46 @@ exports.index = async (req, res, next) => {
           discount: OrderLineData[j].discount,
           netPrice: OrderLineData[j].netPrice,
           total: OrderLineData[j].total,
-          promotionCode: OrderLineData[j].promotionCode,
-        });
+          promotionCode: OrderLineData[j].promotionCode
+        })
       }
 
       const OrderLineData2 = await OrderLine.findAll({
         attributes: {
-          exclude: ["id"],
+          exclude: ['id']
         },
         where: {
           orderNo: orderData[i].orderNo,
           promotionCode: {
-            [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: "" }],
-          },
-        },
-      });
+            [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: '' }]
+          }
+        }
+      })
 
-      promotionData[orderData[i].orderNo] = [];
+      promotionData[orderData[i].orderNo] = []
 
       for (let OrderLine2 of OrderLineData2) {
         const PromotionData = await Promotion.findAll({
           attributes: {
-            exclude: ["id"],
+            exclude: ['id']
           },
           where: {
             promotionCode: OrderLine2.promotionCode,
-            FZCONO: "410",
-          },
-        });
+            FZCONO: '410'
+          }
+        })
 
         if (PromotionData.length > 0) {
           promotionData[orderData[i].orderNo].push({
             promotionCode: OrderLine2.promotionCode,
-            promotionName: PromotionData[0].promotionName, // Assuming promotionName is a property of PromotionData
-          });
+            promotionName: PromotionData[0].promotionName // Assuming promotionName is a property of PromotionData
+          })
         } else {
-          console.log(
-            `No promotion data found for ${OrderLine2.promotionCode}`
-          );
+          console.log(`No promotion data found for ${OrderLine2.promotionCode}`)
           promotionData[orderData[i].orderNo].push({
             promotionCode: OrderLine2.promotionCode,
-            promotionName: null, // Or handle as needed if no data is found
-          });
+            promotionName: null // Or handle as needed if no data is found
+          })
         }
       }
     }
@@ -135,17 +130,17 @@ exports.index = async (req, res, next) => {
     // If you want to keep all OrderLine data in a single array as well
     // OrderLinearr = Object.values(orderLineData).flat();
 
-    const orders = orderData.map((order) => {
-      const orderNo = order.orderNo.trim();
-      const customerNo = order.customerNo.trim();
-      const OrderLinearr = orderLineData[orderNo] || [];
-      const OrderLine = OrderLinearr.map((OrderLine) => {
+    const orders = orderData.map(order => {
+      const orderNo = order.orderNo.trim()
+      const customerNo = order.customerNo.trim()
+      const OrderLinearr = orderLineData[orderNo] || []
+      const OrderLine = OrderLinearr.map(OrderLine => {
         const promotion = promotionData[orderNo].find(
-          (promo) => promo.promotionCode === OrderLine.promotionCode
-        );
-        const itemName = OrderLine.itemName.trim();
-        const itemCode = OrderLine.itemCode.trim();
-        const promotionCode = OrderLine.promotionCode.trim();
+          promo => promo.promotionCode === OrderLine.promotionCode
+        )
+        const itemName = OrderLine.itemName.trim()
+        const itemCode = OrderLine.itemCode.trim()
+        const promotionCode = OrderLine.promotionCode.trim()
         return {
           productNumber: OrderLine.productNumber,
           itemCode: itemCode,
@@ -157,9 +152,9 @@ exports.index = async (req, res, next) => {
           netPrice: OrderLine.netPrice,
           total: OrderLine.total,
           promotionCode: promotionCode,
-          promotionName: promotion ? promotion.promotionName : "",
-        };
-      });
+          promotionName: promotion ? promotion.promotionName : ''
+        }
+      })
 
       return {
         orderDate: order.orderDate,
@@ -174,35 +169,35 @@ exports.index = async (req, res, next) => {
         totalVat: order.totalVat,
         totalNonVat: order.totalNonVat,
         totalDiscount: order.totalDiscount,
-        item: OrderLine,
-      };
-    });
+        item: OrderLine
+      }
+    })
 
-    res.json(orders);
+    res.json(orders)
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 exports.single = async (req, res, next) => {
   try {
-    const { orderNo } = req.body;
-    let OrderLinearr = [];
-    let promotionArr = [];
-    let shippingarr = [];
+    const { orderNo } = req.body
+    let OrderLinearr = []
+    let promotionArr = []
+    let shippingarr = []
     const orderData = await Order.findAll({
       attributes: {
-        exclude: ["id"],
+        exclude: ['id']
       },
       where: {
-        orderNo: orderNo,
-      },
-    });
+        orderNo: orderNo
+      }
+    })
 
     for (let i = 0; i < orderData.length; i++) {
       const OrderLineData = await OrderLine.findAll({
-        where: { orderNo: orderNo },
-      });
+        where: { orderNo: orderNo }
+      })
 
       for (let i = 0; i < OrderLineData.length; i++) {
         OrderLinearr.push({
@@ -215,20 +210,20 @@ exports.single = async (req, res, next) => {
           discount: OrderLineData[i].discount,
           netPrice: OrderLineData[i].netPrice,
           total: OrderLineData[i].total,
-          promotionCode: OrderLineData[i].promotionCode,
-        });
+          promotionCode: OrderLineData[i].promotionCode
+        })
       }
 
       const ShippingData = await Shipping.findAll({
         attributes: {
-          exclude: ["id"],
+          exclude: ['id']
         },
         where: {
           // addressID: orderData[i].addressID,
           customerNo: orderData[i].customerNo,
-          coNo: "410",
-        },
-      });
+          coNo: '410'
+        }
+      })
 
       for (let shipping of ShippingData) {
         shippingarr.push({
@@ -238,59 +233,59 @@ exports.single = async (req, res, next) => {
           shippingAddress2: shipping.shippingAddress2,
           shippingAddress3: shipping.shippingAddress3,
           shippingPoscode: shipping.shippingPoscode.trim(),
-          shippingPhone: shipping.shippingPhone.trim(),
-        });
+          shippingPhone: shipping.shippingPhone.trim()
+        })
       }
     }
     const OrderLineData2 = await OrderLine.findAll({
       attributes: {
-        exclude: ["id"],
+        exclude: ['id']
       },
       where: {
         orderNo: orderNo,
         promotionCode: {
-          [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: "" }],
-        },
-      },
+          [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: '' }]
+        }
+      }
       // group: ["promotionCode"],
-    });
+    })
 
     for (let OrderLine2 of OrderLineData2) {
       const PromotionData = await Promotion.findAll({
         attributes: {
-          exclude: ["id"],
+          exclude: ['id']
         },
         where: {
           promotionCode: OrderLine2.promotionCode,
-          FZCONO: "410",
-        },
-      });
+          FZCONO: '410'
+        }
+      })
 
       if (PromotionData.length > 0) {
         promotionArr.push({
           promotionCode: OrderLine2.promotionCode,
-          promotionName: PromotionData[0].promotionName, // Assuming promotionName is a property of PromotionData
-        });
+          promotionName: PromotionData[0].promotionName // Assuming promotionName is a property of PromotionData
+        })
       } else {
-        console.log(`No promotion data found for ${OrderLine2.promotionCode}`);
+        console.log(`No promotion data found for ${OrderLine2.promotionCode}`)
         promotionArr.push({
           promotionCode: OrderLine2.promotionCode,
-          promotionName: null, // Or handle as needed if no data is found
-        });
+          promotionName: null // Or handle as needed if no data is found
+        })
       }
     }
 
     // res.json(promotionArr);
 
-    const OrderLineData = OrderLinearr.map((OrderLine) => {
-      let promotionNameC = "";
+    const OrderLineData = OrderLinearr.map(OrderLine => {
+      let promotionNameC = ''
       for (let i = 0; i < promotionArr.length; i++) {
         if (OrderLine.promotionCode == promotionArr[i].promotionCode) {
-          promotionNameC = promotionArr[i].promotionName;
+          promotionNameC = promotionArr[i].promotionName
         }
       }
-      const itemCode = OrderLine.itemCode.trim();
-      const promotionCode = OrderLine.promotionCode.trim();
+      const itemCode = OrderLine.itemCode.trim()
+      const promotionCode = OrderLine.promotionCode.trim()
       return {
         productNumber: OrderLine.productNumber,
         itemCode: itemCode,
@@ -302,13 +297,13 @@ exports.single = async (req, res, next) => {
         netPrice: OrderLine.netPrice,
         total: OrderLine.total,
         promotionCode: promotionCode,
-        promotionName: promotionNameC,
-      };
-    });
+        promotionName: promotionNameC
+      }
+    })
 
-    const orders = orderData.map((order) => {
-      const customer = order.customerNo.trim();
-      const orderNo = order.customerNo.trim();
+    const orders = orderData.map(order => {
+      const customer = order.customerNo.trim()
+      const orderNo = order.customerNo.trim()
       return {
         orderDate: order.orderDate,
         requestDate: order.requestDate,
@@ -323,19 +318,19 @@ exports.single = async (req, res, next) => {
         totalNonVat: order.totalNonVat,
         totalDiscount: order.totalDiscount,
         item: OrderLineData,
-        shipping: shippingarr,
-      };
-    });
-    res.json(orders);
+        shipping: shippingarr
+      }
+    })
+    res.json(orders)
     // res.json(PromotionData);
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 exports.insert = async (req, res, next) => {
   try {
-    const orders = req.body.orders;
+    const orders = req.body.orders
     // const errors = validationResult(req);
     // if (!errors.isEmpty()) {
     //   const error = new Error("Data is Incorrect");
@@ -359,121 +354,113 @@ exports.insert = async (req, res, next) => {
         payer,
         OAFRE1,
         ref,
-        note,
-      } = order;
-      let { orderNo } = order;
-      const items = order.item;
-      const calWeights = [];
-      const calCosts = [];
-      const orderJson = getJsonData("order.json");
-      const RunningJson = getJsonData("runnigNumber.json");
+        note
+      } = order
+      let { orderNo } = order
+      const items = order.item
+      const calWeights = []
+      const calCosts = []
+      const orderJson = getJsonData('order.json')
+      const RunningJson = getJsonData('runnigNumber.json')
 
       if (Hcase === 0) {
-        if (orderNo === "") {
-          const error = new Error("Order No is required");
-          error.statusCode = 422;
-          throw error;
+        if (orderNo === '') {
+          const error = new Error('Order No is required')
+          error.statusCode = 422
+          throw error
         }
       }
 
-      const series = await fetchOrderType(orderType);
+      const series = await fetchOrderType(orderType)
       if (series == null) {
-        const error = new Error("Order Type is incorrect or not found");
-        error.statusCode = 422;
-        throw error;
+        const error = new Error('Order Type is incorrect or not found')
+        error.statusCode = 422
+        throw error
       }
 
-      if (orderNo == "") {
-        orderNo = "";
+      if (orderNo == '') {
+        orderNo = ''
         const orderNoRunning = await fetchRunningNumber({
           coNo: RunningJson[0].CO.coNo,
           series: series.OOOT05,
-          seriesType: RunningJson[0].CO.seriesType,
-        });
-
-        orderNo = parseInt(orderNoRunning.lastNo) + 1;
-        await updateRunningNumber({
-          coNo: RunningJson[0].CO.coNo,
-          series: series.OOOT05,
-          seriesType: RunningJson[0].CO.seriesType,
-          lastNo: orderNo,
-        });
-        orderNo = orderNo.toString();
-        
+          seriesType: RunningJson[0].CO.seriesType
+        })
+        orderNo = parseInt(orderNoRunning.lastNo) + 1
+        orderNo = orderNo.toString()
       }
 
       const running = await fetchRunningNumber({
         coNo: RunningJson[0].DELIVERY.coNo,
         series: series.OOSPIC,
-        seriesType: RunningJson[0].DELIVERY.seriesType,
-      });
+        seriesType: RunningJson[0].DELIVERY.seriesType
+      })
 
-      const runningNumberH = parseInt(running.lastNo) + 1;
+      const runningNumberH = parseInt(running.lastNo) + 1
       await updateRunningNumber({
         coNo: RunningJson[0].DELIVERY.coNo,
         series: series.OOSPIC,
         seriesType: RunningJson[0].DELIVERY.seriesType,
-        lastNo: runningNumberH,
-      });
+        lastNo: runningNumberH
+      })
 
       for (let item of items) {
         const Weight = await calWeight({
           itemCode: item.itemCode,
-          qty: item.qtyPCS,
-        });
+          qty: item.qtyPCS
+        })
 
         const Cost = await calCost({
           itemCode: item.itemCode,
-          qty: item.qtyPCS,
-        });
-        calWeights.push(Weight);
-        calCosts.push(Cost);
+          qty: item.qtyPCS
+        })
+        calWeights.push(Weight)
+        calCosts.push(Cost)
       }
       const totalCost = calCosts.reduce((accumulator, calCost) => {
-        return accumulator + calCost.cost;
-      }, 0);
+        return accumulator + calCost.cost
+      }, 0)
 
       const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
-        return accumulator + calWeight.grossWeight;
-      }, 0);
+        return accumulator + calWeight.grossWeight
+      }, 0)
 
       const totalnetWeight = calWeights.reduce((accumulator, calWeight) => {
-        return accumulator + calWeight.netWeight;
-      }, 0);
+        return accumulator + calWeight.netWeight
+      }, 0)
 
       // res.json(totalCost);
 
       let itemsData = await Promise.all(
-        items.map(async (item) => {
-          const itemUnitMinData = await fetchItemUnitMin(item.itemCode);
-          const itemUnitMaxData = await fetchItemUnitMax(item.itemCode);
-          const itemDetail = await fetchItemDetail(item.itemCode);
+        items.map(async item => {
+          const itemUnitMinData = await fetchItemUnitMin(item.itemCode)
+          const itemUnitMaxData = await fetchItemUnitMax(item.itemCode)
+          const itemDetail = await fetchItemDetail(item.itemCode)
           const shinpping = await fetchShipping({
             customerNo: customerNo,
-            addressID: addressID,
-          });
-          const route = await fetchRoutes(shinpping.shippingRoute);
-          const customer = await fetchCustomer(customerNo);
+            addressID: addressID
+          })
+          const route = await fetchRoutes(shinpping.shippingRoute)
+          const customer = await fetchCustomer(customerNo)
           const WeightAll = await calWeight({
             itemCode: item.itemCode,
-            qty: item.qtyPCS,
-          });
+            qty: item.qtyPCS
+          })
           const Weight = await calWeight({
             itemCode: item.itemCode,
-            qty: 1,
-          });
+            qty: 1
+          })
           const factor = await fetchfactor({
             itemCode: item.itemCode,
-            unit: item.unit,
-          });
+            unit: item.unit
+          })
           const Cost = await calCost({
             itemCode: item.itemCode,
-            qty: 1,
-          });
+            qty: 1
+          })
           const CostAll = await calCost({
             itemCode: item.itemCode,
-            qty: item.qtyPCS,
-          });
+            qty: item.qtyPCS
+          })
           return {
             coNo: orderJson[0].LINE.OBCONO,
             OACUCD: customer.OKCUCD,
@@ -521,13 +508,13 @@ exports.insert = async (req, res, next) => {
             OBDIC2: item.discount !== 0 ? 8 : 1,
             OBDIC3: orderJson[0].LINE.OBDIC3,
             OBDIC4: orderJson[0].LINE.OBDIC4,
-            OBDIC5: item.promotionCode === "" ? 1 : 6,
+            OBDIC5: item.promotionCode === '' ? 1 : 6,
             OBDIC6: orderJson[0].LINE.OBDIC6,
             OBCMP5: item.promotionCode,
-            OBDIBE: item.promotionCode !== "" ? 4 : "",
-            OBDIRE: item.promotionCode !== "" ? 0 : "",
-            OBDDSU: item.promotionCode !== "" ? 1 : 0,
-            OBACRF: item.promotionCode !== "" ? 0 : "",
+            OBDIBE: item.promotionCode !== '' ? 4 : '',
+            OBDIRE: item.promotionCode !== '' ? 0 : '',
+            OBDDSU: item.promotionCode !== '' ? 1 : 0,
+            OBACRF: item.promotionCode !== '' ? 0 : '',
             OBDWDT: requestDate,
             OBCODT: requestDate,
             OBCOHM: route.departureTime,
@@ -556,44 +543,44 @@ exports.insert = async (req, res, next) => {
             OUSTUN: itemUnitMinData.unit,
             OUITGR: itemDetail[0].itemGroup,
             itemType: itemDetail[0].itemType,
-            OUITCL: itemDetail[0].MMITCL,
-          };
+            OUITCL: itemDetail[0].MMITCL
+          }
         })
-      );
+      )
 
-      let itemNo = 1;
+      let itemNo = 1
       // let itemNo2 = 1;
-      itemsData = itemsData.map((item) => {
+      itemsData = itemsData.map(item => {
         const result = {
           ...item, // Spread the properties of the original item
-          itemNo: itemNo, // Add the itemNo property
-        };
-        itemNo++;
-        return result;
-      });
+          itemNo: itemNo // Add the itemNo property
+        }
+        itemNo++
+        return result
+      })
 
       let itemNoData = await OrderLine.findOne({
         where: {
-          orderNo: orderNo,
+          orderNo: orderNo
         },
-        order: [["itemNo", "DESC"]],
-      });
+        order: [['itemNo', 'DESC']]
+      })
       if (itemNoData != null) {
-        itemNo = itemNoData.itemNo + 1;
-        itemsData = itemsData.map((item) => {
+        itemNo = itemNoData.itemNo + 1
+        itemsData = itemsData.map(item => {
           const result = {
             ...item, // Spread the properties of the original item
-            itemNo: itemNo, // Add the itemNo property
-          };
-          itemNo++;
-          return result;
-        });
+            itemNo: itemNo // Add the itemNo property
+          }
+          itemNo++
+          return result
+        })
       }
 
       // res.status(201).json(itemsData);
 
       if (Hcase === 1) {
-        const customer = await fetchCustomer(customerNo);
+        const customer = await fetchCustomer(customerNo)
         await Order.create({
           coNo: orderJson[0].HEAD.OACONO, // OACONO,
           OADIVI: orderJson[0].HEAD.OADIVI, // OADIVI
@@ -635,7 +622,7 @@ exports.insert = async (req, res, next) => {
           OADMCU: orderJson[0].HEAD.OADMCU,
           grossWeight: totalgrossWeight.toFixed(3),
           netWeight: totalnetWeight.toFixed(3),
-          OACOAM: totalCost,
+          OACOAM: totalCost.toFixed(3),
           total: total, // OABRLA
           OANTAM: totalNet,
           totalNet: totalNet, // OANTLA
@@ -652,14 +639,13 @@ exports.insert = async (req, res, next) => {
           OACHID: orderJson[0].HEAD.OACHID, // OACHID
           OACHNO: orderJson[0].HEAD.OACHNO, // OACHID
           OALMTS: Date.now(), // OALMTS
-          OADECU: customerNo,
-        });
+          OADECU: customerNo
+        })
 
         await insertDocument({
           orderType: orderType,
-          orderNo: orderNo,
-        });
-   
+          orderNo: orderNo
+        })
       }
       const deliveryObj = {
         warehouse: warehouse,
@@ -674,67 +660,75 @@ exports.insert = async (req, res, next) => {
         OARGTM: getCurrentTimeFormatted(),
         OATIZO: orderJson[0].HEAD.OATIZO,
         grossWeight: totalgrossWeight.toFixed(3),
-        netWeight: totalnetWeight.toFixed(3),
-      };
+        netWeight: totalnetWeight.toFixed(3)
+      }
       //
       // res.json(deliveryObj);
       // res.json(itemsData);
-      await insertAllocate(itemsData);
-      await insertOrderLine(itemsData);
-      await insertDeliveryLine(itemsData);
-      await insertPrepareInovoice(itemsData);
-      await insertDeliveryHead(deliveryObj);
+      await insertAllocate(itemsData)
+      await insertOrderLine(itemsData)
+      await insertDeliveryLine(itemsData)
+      await insertPrepareInovoice(itemsData)
+      await insertDeliveryHead(deliveryObj)
+      
+      await updateRunningNumber({
+        coNo: RunningJson[0].CO.coNo,
+        series: series.OOOT05,
+        seriesType: RunningJson[0].CO.seriesType,
+        lastNo: orderNo
+      })
+    
       res.status(201).json({
-        message: "Created",
-        orderNo: orderNo,
-      });
+        message: 'Created',
+        orderNo: orderNo
+      })
     }
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 exports.deleted = async (req, res, next) => {
   try {
-    const { orderNo, coNo } = req.body;
-    const items = req.body.item;
+    const { orderNo, coNo } = req.body
+    const items = req.body.item
 
     const deleted = await Order.update(
       {
-        coNo: coNo,
+        coNo: coNo
       },
       {
-        attributes: { exclude: ["id"] },
+        attributes: { exclude: ['id'] },
         where: {
           orderNo: orderNo,
-          coNo: 410,
-        },
+          coNo: 410
+        }
       }
-    );
+    )
 
-    const itemsData = items.map((item) => {
+    const itemsData = items.map(item => {
       return {
         orderNo: orderNo,
         itemCode: item.itemCode,
-        itemNo: item.itemNo,
-      };
-    });
+        itemNo: item.itemNo
+      }
+    })
 
     await axios({
-      method: "post",
+      method: 'post',
       url: `${HOST}order/deleteitem`,
-      data: itemsData,
-    });
+      data: itemsData
+    })
     if (deleted[0] === 1) {
       res.status(202).json({
-        message: "Deleted",
-      });
+        message: 'Deleted'
+      })
     } else {
       res.status(304).json({
-        message: "Not Modified",
-      });
+        message: 'Not Modified'
+      })
     }
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
