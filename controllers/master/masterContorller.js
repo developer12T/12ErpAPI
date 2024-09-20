@@ -70,7 +70,7 @@ exports.itemdetails = async (req, res, next) => {
       const itemDescription = item.itemDescription.trim();
       const itemType = item.itemType.trim();
       const MMITGR = item.MMITGR.trim();
-      const MMITCL = item.MMITCL.trim();
+      const itemClass = item.itemClass.trim();
       const itemGroup = item.itemGroup.trim();
       const cost = itemFacObj[itemCode] || 0;
       return {
@@ -80,7 +80,7 @@ exports.itemdetails = async (req, res, next) => {
         itemName: itemName,
         itemDescription: itemDescription,
         MMITGR: MMITGR,
-        MMITCL: MMITCL,
+        MMITCL: itemClass,
         itemType: itemType,
         itemGroup: itemGroup,
         cost: cost,
@@ -257,6 +257,7 @@ exports.singlepolicy = async (req, res, next) => {
         OOORTP: orderType,
       },
     });
+
     let results = await Policy.findOne({
       where: {
         EDDPOL: policy.OODPOL,
@@ -312,13 +313,13 @@ exports.distributionpolicy = async (req, res, next) => {
 exports.singleordertype = async (req, res, next) => {
   try {
     const { orderType } = req.body;
-    const ordertype = await OOTYPE.findOne({
+    const response = await OOTYPE.findOne({
       where: {
         OOORTP: orderType,
       },
     });
 
-    res.status(200).json(ordertype);
+    res.status(200).json(response);
   } catch (error) {
     next(error);
   }

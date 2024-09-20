@@ -38,13 +38,13 @@ const M3API = require("./routes/12ErpAPI/index");
 //import middleware
 const errorHandler = require("./middleware/errorHandler");
 
-const corsOptions = {
-  origin: true,
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-  methods: ["POST"],
-  credentials: true,
-  maxAge: 3600,
-};
+// const corsOptions = {
+//   origin: true,
+//   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+//   methods: ["POST"],
+//   credentials: true,
+//   maxAge: 3600,
+// };
 // const limiter = rateLimit({
 // 	windowMs: 15 * 60 * 1000, // 1 minutes
 // 	limit: 500, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
@@ -58,7 +58,7 @@ app.use(express.json()); // Example middleware
 
 // app.use(limiter)
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 app.use(helmet());
 app.use(logger("dev"));
 app.use(express.json());

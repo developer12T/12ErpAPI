@@ -399,6 +399,7 @@ exports.insert = async (req, res, next) => {
           lastNo: orderNo,
         });
         orderNo = orderNo.toString();
+        
       }
 
       const running = await fetchRunningNumber({
@@ -658,6 +659,7 @@ exports.insert = async (req, res, next) => {
           orderType: orderType,
           orderNo: orderNo,
         });
+   
       }
       const deliveryObj = {
         warehouse: warehouse,
