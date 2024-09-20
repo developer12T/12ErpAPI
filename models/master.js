@@ -95,6 +95,11 @@ const ItemMaster = sequelize.define(
       allowNull: false,
       field: "MMGRWE",
     },
+    MMUNMS:{
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "MMUNMS",
+    },
   },
   {
     freezeTableName: true,

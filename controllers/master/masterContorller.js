@@ -83,6 +83,7 @@ exports.itemdetails = async (req, res, next) => {
         MMITCL: itemClass,
         itemType: itemType,
         itemGroup: itemGroup,
+        basicUnit:item.MMUNMS,
         cost: cost,
         netWeight: item.netWeight,
         grossWeight: item.grossWeight,

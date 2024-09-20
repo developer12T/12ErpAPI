@@ -502,7 +502,7 @@ exports.insert = async (req, res, next) => {
             OBLNAM: item.total,
             grossWeightSingle: Weight.grossWeight,
             netWeightSingle: Weight.netWeight,
-            OBSPUN: itemUnitMaxData.unit,
+            OBSPUN: item.unit,
             OBPRMO: orderJson[0].LINE.OBPRMO,
             OBDIC1: orderJson[0].LINE.OBDIC1,
             OBDIC2: item.discount !== 0 ? 8 : 1,
@@ -540,7 +540,7 @@ exports.insert = async (req, res, next) => {
             OBPMOR: 1, // Check Data ?
             OBUPAV: 1, // Check Data ?
             customerChannel: customer.customerChannel,
-            OUSTUN: itemUnitMinData.unit,
+            OUSTUN: itemDetail[0].basicUnit,
             OUITGR: itemDetail[0].itemGroup,
             itemType: itemDetail[0].itemType,
             OUITCL: itemDetail[0].MMITCL
