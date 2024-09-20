@@ -37,8 +37,8 @@ exports.insertItem = async (req, res, next) => {
         qtyCTN: item.qtyCTN,
         OBRNQT: item.qtyPCS,
         OBRNQA: item.qtyCTN,
-        OBIVQT: item.qtyPCS,
-        OBIVQA: item.qtyCTN,
+        // OBIVQT: item.qtyPCS,
+        // OBIVQA: item.qtyCTN,
         unit: item.unit,
         // OBDCCA
         // OBOCFA
