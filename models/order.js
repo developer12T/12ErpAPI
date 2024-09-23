@@ -664,13 +664,24 @@ const Order = sequelize.define(
     OANTAM: {
       type: DataTypes.DECIMAL,
       allowNull: false,
-      field: 'OANTAM',
+      field: 'OANTAM'
       // validate: {
       //   len: {
       //     args: [0, 9],
       //     msg: 'Net Weight must be 0-9 digits long'
       //   }
       // }
+    },
+    OACUDT: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      field: 'OACUDT',
+      isLenghtRequired (value) {
+        // Custom validator to ensure exactly 8 digits
+        if (value.toString().length !== 8) {
+          throw new Error('OACUDT must be exactly 8 digits')
+        }
+      }
     }
   },
   {
@@ -1528,6 +1539,21 @@ const OrderLine = sequelize.define(
           msg: 'OBRNQA must be 0-15 digits long'
         }
       }
+    },
+    OBPCOF: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'OBPCOF'
+    },
+    OBDCCS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'OBDCCS'
+    },
+    OBCOFS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'OBCOFS'
     }
   },
   {

@@ -396,12 +396,7 @@ exports.insert = async (req, res, next) => {
       })
 
       const runningNumberH = parseInt(running.lastNo) + 1
-      await updateRunningNumber({
-        coNo: RunningJson[0].DELIVERY.coNo,
-        series: series.OOSPIC,
-        seriesType: RunningJson[0].DELIVERY.seriesType,
-        lastNo: runningNumberH
-      })
+   
 
       for (let item of items) {
         const Weight = await calWeight({
@@ -464,6 +459,7 @@ exports.insert = async (req, res, next) => {
           return {
             coNo: orderJson[0].LINE.OBCONO,
             OACUCD: customer.OKCUCD,
+            zone: customer.zone,
             OBDIVI: orderJson[0].LINE.OBDIVI,
             OBORCO: orderJson[0].LINE.OBORCO,
             orderNo: orderNo, //OAORNO
@@ -541,7 +537,7 @@ exports.insert = async (req, res, next) => {
             OBUPAV: 1, // Check Data ?
             customerChannel: customer.customerChannel,
             OUSTUN: itemDetail[0].basicUnit,
-            OUITGR: itemDetail[0].itemGroup,
+            OUITGR: itemDetail[0].MMITGR,
             itemType: itemDetail[0].itemType,
             OUITCL: itemDetail[0].MMITCL
           }
@@ -578,7 +574,8 @@ exports.insert = async (req, res, next) => {
       }
 
       // res.status(201).json(itemsData);
-
+      console.log(orderNo);
+      console.log(runningNumberH);
       if (Hcase === 1) {
         const customer = await fetchCustomer(customerNo)
         await Order.create({
@@ -593,7 +590,7 @@ exports.insert = async (req, res, next) => {
           // OAORSL: orderStatusLow, // OAORSL
           customerNo: customerNo, // OACUNO
           orderDate: orderDate, // OAORDT
-          OACUDT: formatDate(), // OACUDT
+          OACUDT: orderDate, // OACUDT
           requestDate: requestDate, // OARLDT
           OARLDZ: requestDate,
           OATIZO: orderJson[0].HEAD.OATIZO, // OATIZO
@@ -611,7 +608,7 @@ exports.insert = async (req, res, next) => {
           OAVRCD: orderJson[0].HEAD.OAVRCD,
           OAFRE1: OAFRE1,
           OAPYNO: customer.salePayer,
-          OAINRC: customer.OKINRC,
+          OAINRC: customer.salePayer,
           OAPYCD: customer.OKPYCD,
           OADISY: orderJson[0].HEAD.OADISY, // *** Conditional
           OATINC: orderJson[0].HEAD.OATINC,
@@ -641,7 +638,7 @@ exports.insert = async (req, res, next) => {
           OALMTS: Date.now(), // OALMTS
           OADECU: customerNo
         })
-
+ 
         await insertDocument({
           orderType: orderType,
           orderNo: orderNo
@@ -676,6 +673,12 @@ exports.insert = async (req, res, next) => {
         series: series.OOOT05,
         seriesType: RunningJson[0].CO.seriesType,
         lastNo: orderNo
+      })
+      await updateRunningNumber({
+        coNo: RunningJson[0].DELIVERY.coNo,
+        series: series.OOSPIC,
+        seriesType: RunningJson[0].DELIVERY.seriesType,
+        lastNo: runningNumberH
       })
     
       res.status(201).json({

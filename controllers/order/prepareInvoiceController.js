@@ -43,7 +43,7 @@ exports.insertA = async (req, res, next) => {
         payer: item.payer,
         OUCUCD: item.OACUCD, // OOHEAD
         saleCode: item.OBSMCD, // OOHEAD
-        // OUSDST
+        OUSDST:item.zone,
         OUCSCD: item.OBORCO, // OOHEAD   **OOHEAD but OrderLine.OBORCO
         OUFRE1: item.OAFRE1, // OOHEAD
         warehouse: item.warehouse,
@@ -67,7 +67,7 @@ exports.insertA = async (req, res, next) => {
         OUGRPR: nonVat(item.price * item.qtyCTN), //non vat OrderLine OBNEPR
         OUSAAM: nonVat(item.netPrice * item.qtyCTN), //OrderLine OBLNAM
         OUPRMO: prepareJson[0].HEAD.OUPRMO, // 8
-        OUDISY: item.OUDISY, //OOHEAD
+        OUDISY: prepareJson[0].HEAD.OUDISY, //OOHEAD
         // add OrderLine OBDIC 1-6 use 2,5 other defult 1
         // OUDIA2  OrderLine non vat OBDIA2 * OBORQA
         // OUOFRA  OrderLine non vat OBDIA2 * OBORQA

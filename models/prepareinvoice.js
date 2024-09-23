@@ -783,6 +783,11 @@ const PrepareInvoA = sequelize.define(
         },
       },
     },
+    OUSDST: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUSDST",
+    },
   },
   {
     freezeTableName: true,

@@ -92,7 +92,7 @@ const Document = sequelize.define(
         },
         isLenghtRequired(value) {
           if (value.toString().length !== 8) {
-            throw new Error("OFNOEX must be exactly 8 digits");
+            throw new Error("OFDODT must be exactly 8 digits");
           }
         },
       },

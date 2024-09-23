@@ -246,6 +246,11 @@ const DeliveryLine = sequelize.define(
         },
       },
     },
+    URALUN: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "URALUN",
+    },
   },
   {
     freezeTableName: true,
@@ -934,6 +939,17 @@ const DeliveryHead = sequelize.define(
           msg: "OQSROT must be 0-6 digits long",
         },
       },
+    },
+    OQDTHM: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQDTHM",
+      // validate: {
+      //   len: {
+      //     args: [0, 6],
+      //     msg: "OQSROT must be 0-6 digits long",
+      //   },
+      // },
     },
   },
   {

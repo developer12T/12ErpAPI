@@ -8,6 +8,7 @@
       "OUUCCD": 1,
       "OUORTK": 1,
       "OUCHNO": 1,
+      "OUDISY": "CREDIT 18",
       "OUCHID": "MVXSECOFR"
     },
     "LINE": {
@@ -45,7 +46,7 @@
       "UCALUN": "PCS",
       "UCSPUN": "PCS",
       "UCPRMO": 8,
-      "UCDISY": "CREDIT 18 ",
+      "UCDISY": "CREDIT 18",
       "UCUCCD": 1,
       "UCORTK": 1,
       "UCADID": "INVTSP",

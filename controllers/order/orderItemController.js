@@ -1,16 +1,16 @@
-const { OrderLine } = require("../../models/order");
-const Promotion = require("../../models/promotion");
-const { Op } = require("sequelize");
+const { OrderLine } = require('../../models/order')
+const Promotion = require('../../models/promotion')
+const { Op } = require('sequelize')
 const {
   formatDate,
-  getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
-const { getJsonData } = require("../../middleware/getJsonData");
+  getCurrentTimeFormatted
+} = require('../../middleware/getDateTime')
+const { getJsonData } = require('../../middleware/getJsonData')
 
 exports.insertItem = async (req, res, next) => {
   try {
-    const items = req.body.items;
-    const orderJson = getJsonData("order.json");
+    const items = req.body.items
+    const orderJson = getJsonData('order.json')
 
     // const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
     // let orderJson = [];
@@ -45,14 +45,14 @@ exports.insertItem = async (req, res, next) => {
         // OBDMCF
         OBSPUN: item.OBSPUN,
         OBPRMO: item.OBPRMO,
-        // OBPCOF
+        OBPCOF: 1,
         // OBDCCS
-        // OBCOFS
+        OBCOFS: item.OBCOFA,
         // OBDMCS
         price: item.price,
         netPrice: item.netPrice,
         discount: item.discount,
-        OBLNAM: item.price, // recheck
+        OBLNAM: item.total, // recheck
         OBDIC1: item.OBDIC1,
         OBDIC2: item.OBDIC2,
         OBDIC3: item.OBDIC3,
@@ -80,10 +80,10 @@ exports.insertItem = async (req, res, next) => {
         OBADID: item.OBADID,
         OBROUT: item.OBROUT,
         OBRODN: item.OBRODN,
-        OBDSDT: item.OBDSDT,
+        OBDSDT: item.requestDate,
         OBDSHM: item.OBDSHM,
-        OBFDED: item.OBFDED,
-        OBLDED: item.OBLDED,
+        OBFDED: item.requestDate,
+        OBLDED: item.requestDate,
         OBCINA: item.OBCINA,
         OBDECU: item.OBDECU,
         OBTEPY: item.OBTEPY,
@@ -106,32 +106,32 @@ exports.insertItem = async (req, res, next) => {
         OBPRIO: orderJson[0].LINE.OBPRIO,
         OBUCOS: item.OBUCOS,
         OBCOFA: item.OBCOFA,
-        OBORCO: item.OBORCO,
+        OBORCO: item.OBORCO
         //OBPRIO
-      });
+      })
     }
 
     res.status(201).json({
-      message: "Created",
-    });
+      message: 'Created'
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 exports.item = async (req, res, next) => {
-  const { orderNo } = req.body;
-  const orderLineData = {};
-  const promotionData = {};
-  orderLineData[orderNo] = [];
-  promotionData[orderNo] = [];
+  const { orderNo } = req.body
+  const orderLineData = {}
+  const promotionData = {}
+  orderLineData[orderNo] = []
+  promotionData[orderNo] = []
 
   const OrderLineData = await OrderLine.findAll({
     attributes: {
-      exclude: ["id"],
+      exclude: ['id']
     },
-    where: { orderNo: orderNo },
-  });
+    where: { orderNo: orderNo }
+  })
 
   for (let i = 0; i < OrderLineData.length; i++) {
     orderLineData[orderNo].push({
@@ -144,53 +144,53 @@ exports.item = async (req, res, next) => {
       discount: OrderLineData[i].discount,
       netPrice: OrderLineData[i].netPrice,
       total: OrderLineData[i].total,
-      promotionCode: OrderLineData[i].promotionCode,
-    });
+      promotionCode: OrderLineData[i].promotionCode
+    })
   }
 
   const OrderLineData2 = await OrderLine.findAll({
     attributes: {
-      exclude: ["id"],
+      exclude: ['id']
     },
     where: {
       orderNo: orderNo,
       promotionCode: {
-        [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: "" }],
-      },
-    },
-  });
+        [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: '' }]
+      }
+    }
+  })
 
   for (let OrderLine2 of OrderLineData2) {
     const PromotionData = await Promotion.findAll({
       attributes: {
-        exclude: ["id"],
+        exclude: ['id']
       },
       where: {
         promotionCode: OrderLine2.promotionCode,
-        FZCONO: "410",
-      },
-    });
+        FZCONO: '410'
+      }
+    })
 
     if (PromotionData.length > 0) {
       promotionData[orderNo].push({
         promotionCode: OrderLine2.promotionCode,
-        promotionName: PromotionData[0].promotionName, // Assuming promotionName is a property of PromotionData
-      });
+        promotionName: PromotionData[0].promotionName // Assuming promotionName is a property of PromotionData
+      })
     } else {
-      console.log(`No promotion data found for ${OrderLine2.promotionCode}`);
+      console.log(`No promotion data found for ${OrderLine2.promotionCode}`)
       promotionData[orderNo].push({
         promotionCode: OrderLine2.promotionCode,
-        promotionName: null, // Or handle as needed if no data is found
-      });
+        promotionName: null // Or handle as needed if no data is found
+      })
     }
   }
 
-  const OrderLine = orderLineData[orderNo].map((OrderLine) => {
-    const itemCode = OrderLine.itemCode.trim();
-    const promotionCode = OrderLine.promotionCode.trim();
+  const OrderLine = orderLineData[orderNo].map(OrderLine => {
+    const itemCode = OrderLine.itemCode.trim()
+    const promotionCode = OrderLine.promotionCode.trim()
     const promotion = promotionData[orderNo].find(
-      (promo) => promo.promotionCode === OrderLine.promotionCode
-    );
+      promo => promo.promotionCode === OrderLine.promotionCode
+    )
     return {
       productNumber: OrderLine.productNumber,
       itemCode: itemCode,
@@ -202,31 +202,31 @@ exports.item = async (req, res, next) => {
       netPrice: OrderLine.netPrice,
       total: OrderLine.total,
       promotionCode: promotionCode,
-      promotionName: promotion ? promotion.promotionName : "",
-    };
-  });
+      promotionName: promotion ? promotion.promotionName : ''
+    }
+  })
 
-  res.json(OrderLine);
-};
+  res.json(OrderLine)
+}
 
 exports.deleteitem = async (req, res, next) => {
-  const items = req.body;
+  const items = req.body
 
   for (let item of items) {
     const OrderLineData = await OrderLine.update(
       {
-        coNo: -410,
+        coNo: -410
       },
       {
         attributes: {
-          exclude: ["id"],
+          exclude: ['id']
         },
         where: {
           orderNo: item.orderNo,
           itemCode: item.itemCode,
-          itemNo: item.itemNo,
-        },
+          itemNo: item.itemNo
+        }
       }
-    );
+    )
   }
-};
+}
