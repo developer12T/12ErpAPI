@@ -1554,6 +1554,16 @@ const OrderLine = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
       field: 'OBCOFS'
+    },
+    OBDMCF: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'OBDMCF'
+    },
+    OBDMCS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'OBDMCS'
     }
   },
   {
