@@ -80,7 +80,7 @@ exports.itemdetails = async (req, res, next) => {
         itemName: itemName,
         itemDescription: itemDescription,
         MMITGR: MMITGR,
-        MMITCL: itemClass,
+        itemClass: itemClass,
         itemType: itemType,
         itemGroup: itemGroup,
         basicUnit:item.MMUNMS,

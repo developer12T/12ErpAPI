@@ -2,9 +2,6 @@ const Promotion = require("../../models/promotion");
 
 exports.index = async (req, res, next) => {
   const promotionData = await Promotion.findAll({
-    attributes: {
-      exclude: ["id"],
-    },
     where: {
       FZCONO: "410",
     },
@@ -30,6 +27,17 @@ exports.update = async (req, res, next) => {
       message: "Accepted",
     });
   }
+};
+
+exports.single = async (req, res, next) => {
+  const { promotionCode } = req.body;
+  const promotionData = await Promotion.findOne({
+    where: {
+      promotionCode: promotionCode,
+      FZCONO: "410",
+    },
+  });
+  res.json(promotionData);
 };
 
 exports.insert = async (req, res, next) => {

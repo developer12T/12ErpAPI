@@ -179,7 +179,7 @@ exports.insertA = async (req, res, next) => {
 //         itemCode: item.itemCode,
 //         UCITGR: itemData.data[0].itemGroup,
 //         itemType: itemData.data[0].itemType,
-//         UCITCL: itemData.data[0].MMITCL,
+//         UCITCL: itemData.data[0].itemClass,
 //         UCSTUN: item.unit,
 //         UCALUN: item.unit,
 //         UCSPUN: item.unit,

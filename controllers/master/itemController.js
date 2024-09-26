@@ -141,7 +141,6 @@ exports.unitmax = async (req, res, next) => {
 
 exports.items = async (req, res, next) => {
   try {
-    const { itemCode } = req.body;
     const itemData = await ItemMaster.findAll({
       //   limit: 10,
       attributes: {
@@ -155,7 +154,7 @@ exports.items = async (req, res, next) => {
       const itemCode = item.itemCode.trim();
       const itemName = item.itemName.trim();
       const MMITGR = item.MMITGR.trim();
-      const MMITCL = item.MMITCL.trim();
+      const itemClass = item.itemClass.trim();
       const itemGroup = item.itemGroup.trim();
       return {
         itemCode: itemCode,
@@ -163,7 +162,7 @@ exports.items = async (req, res, next) => {
         itemName: itemName,
         itemType: item.itemType,
         MMITGR: MMITGR,
-        MMITCL: MMITCL,
+        itemClass: itemClass,
         itemGroup: itemGroup,
         netWeight: item.netWeight,
         grossWeight: item.grossWeight,
@@ -192,7 +191,7 @@ exports.itemsingle = async (req, res, next) => {
       const itemCode = item.itemCode.trim();
       const itemName = item.itemName.trim();
       const MMITGR = item.MMITGR.trim();
-      const MMITCL = item.MMITCL.trim();
+      const itemClass = item.itemClass.trim();
       const itemGroup = item.itemGroup.trim();
       return {
         itemCode: itemCode,
@@ -200,13 +199,13 @@ exports.itemsingle = async (req, res, next) => {
         itemName: itemName,
         itemType: item.itemType,
         MMITGR: MMITGR,
-        MMITCL: MMITCL,
+        itemClass: itemClass,
         itemGroup: itemGroup,
         netWeight: item.netWeight,
         grossWeight: item.grossWeight,
       };
     });
-    res.json(items);
+    res.json(items[0]);
   } catch (error) {
     next(error);
   }

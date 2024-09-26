@@ -330,7 +330,7 @@ exports.single = async (req, res, next) => {
 
 exports.insert = async (req, res, next) => {
   try {
-    const orders = req.body.orders
+    const orders = req.body
     // const errors = validationResult(req);
     // if (!errors.isEmpty()) {
     //   const error = new Error("Data is Incorrect");
@@ -539,7 +539,7 @@ exports.insert = async (req, res, next) => {
             OUSTUN: itemDetail[0].basicUnit,
             OUITGR: itemDetail[0].MMITGR,
             itemType: itemDetail[0].itemType,
-            OUITCL: itemDetail[0].MMITCL
+            OUITCL: itemDetail[0].itemClass
           }
         })
       )

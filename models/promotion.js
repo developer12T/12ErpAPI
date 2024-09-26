@@ -6,11 +6,13 @@ const Promotion = sequelize.define(
     FZCONO: {
       type: DataTypes.STRING,
       allowNull: true,
+      primaryKey: true,
       field: "FZCONO",
     },
     promotionCode: {
       type: DataTypes.STRING,
       allowNull: true,
+      primaryKey: true,
       field: "FZPIDE",
     },
     FZTX15: {

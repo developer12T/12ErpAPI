@@ -4,7 +4,7 @@ const axios = require("axios");
 
 exports.index = async (req, res, next) => {
   try {
-    const { shippingRoute } = req.body;
+
     const udiObj = {};
     const uteObj = {};
     
@@ -49,7 +49,6 @@ exports.index = async (req, res, next) => {
       const place = route.place.trim();
       const transportation = route.transportation.trim();
       return {
-        shippingRoute: shippingRoute,
         routeCode: route.routeCode,
         routeName: routeName,
         method: method,

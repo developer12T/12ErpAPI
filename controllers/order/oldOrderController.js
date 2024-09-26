@@ -555,7 +555,7 @@ exports.insert = async (req, res, next) => {
           OUSTUN: itemUnitMinData.unit,
           OUITGR: itemDetail[0].itemGroup,
           itemType: itemDetail[0].itemType,
-          OUITCL: itemDetail[0].MMITCL,
+          OUITCL: itemDetail[0].itemClass,
         };
       })
     );
