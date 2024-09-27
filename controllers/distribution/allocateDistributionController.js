@@ -1,5 +1,6 @@
 const allocate = require("../../models/allocate");
 const { getJsonData } = require("../../middleware/getJsonData");
+const { formatDate } = require("../../middleware/getDateTime");
 
 exports.index = async (req, res, next) => {};
 
@@ -14,17 +15,17 @@ exports.insertAllocate = async (req, res, next) => {
         coNo: item.coNo,
         warehouse: item.warehouse,
         itemCode: item.itemCode,
-        MOPLDT: item.MOPLDT,
-        MOTIHM: item.itemNo,
-        MOSTAT: item.orderStatusLow,
-        MOPRIO: 0,
-        MOORCA: 311,
+        MOPLDT: formatDate(),
+        MOTIHM: allocateJson.MOTIHM, // departure time
+        MOSTAT: item.itemStatus,
+        MOPRIO: allocateJson.MOPRIO,
+        MOORCA: 511, //allocateJson.MOORCA,
         orderNo: item.orderNo,
         itemNo: item.itemNo,
-        MORFTX: "",
+        MORFTX: `${item.warehouse}=>${item.towarehouse}`,
         MORPRT: allocateJson.MORPRT,
         MOTRQT: item.itemQty * -1,
-        MOALMT: allocateJson.MOALMT,
+        MOALMT: 2,//allocateJson.MOALMT,
         MOCALI: allocateJson.MOCALI,
         MOLMTS: Date.now(),
       });

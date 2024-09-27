@@ -24,6 +24,16 @@ const MGHEAD = sequelize.define(
       allowNull: true,
       field: "MGFACI",
     },
+    MGATHS: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "MGRORN",
+    },
+    MGRORN: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "MGRORN",
+    },
     MGRESP: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -49,10 +59,15 @@ const MGHEAD = sequelize.define(
       allowNull: true,
       field: "MGPRIO",
     },
-    date: {
+    tranferDate: {
       type: DataTypes.STRING,
       allowNull: true,
       field: "MGTRDT",
+    },
+    MGRIDT: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "MGRIDT",
     },
     MGTRTM: {
       type: DataTypes.INTEGER,
@@ -68,6 +83,11 @@ const MGHEAD = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "MGRITM",
+    },
+    location: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "MGTWSL",
     },
     towarehouse: {
       type: DataTypes.STRING,
@@ -183,6 +203,11 @@ const MGLINE = sequelize.define(
       allowNull: true,
       field: "MRTRDT",
     },
+    MRRPDT: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "MRRPDT",
+    },
     MRSTAS: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -252,6 +277,11 @@ const MGLINE = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
       field: "MRNUCR",
+    },
+    MRRORN: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "MRRORN",
     },
     MRRESP: {
       type: DataTypes.STRING,
@@ -437,9 +467,8 @@ const MGDADR = sequelize.define(
   }
 );
 
-
 module.exports = {
   MGHEAD,
   MGLINE,
-  MGDADR
+  MGDADR,
 };

@@ -22,6 +22,7 @@ const {
 } = require("../../middleware/apiOrder");
 const { insert } = require("./allocateDistributionController");
 const orderJson = getJsonData("distribution.json");
+const runningJson = getJsonData("runnigNumber.json");
 
 exports.index = async (req, res, next) => {
   try {
@@ -91,7 +92,7 @@ exports.insertHead = async (req, res, next) => {
   try {
     const {
       orderType,
-      date,
+      tranferDate,
       warehouse,
       towarehouse,
       location,
@@ -106,70 +107,44 @@ exports.insertHead = async (req, res, next) => {
     const calWeights = [];
 
     const running = await fetchRunningNumber({
-      coNo: 410,
-      series: "B",
-      seriesType: "14",
+      coNo: runningJson[0].DELIVERY.coNo,
+      series: "B", //series.OOSPIC,
+      seriesType: "14", // runningJson[0].DELIVERY.seriesType,
     });
     const runningNumberH = parseInt(running.lastNo) + 1;
+
+    if (Hcase === 0) {
+      if (orderNo === "") {
+        const error = new Error("Order No is required");
+        error.statusCode = 422;
+        throw error;
+      }
+    }
+
+    if (orderNo == "") {
+      orderNo = "";
+      const orderNoRunning = await fetchRunningNumber({
+        coNo: 410,
+        series: "B",
+        seriesType: "14",
+      });
+      orderNo = parseInt(orderNoRunning.lastNo) + 1;
+      orderNo = orderNo.toString();
+      orderNo = orderNo.padStart(10, "0");
+    }
+
     updateRunningNumber({
       coNo: 410,
       series: "B",
       seriesType: "14",
-      lastNo: runningNumberH,
+      lastNo: orderNo,
     });
-
-    if (orderNo == "") {
-      orderNo = "";
-      // const orderNoRunning = await fetchRunningNumber({
-      //   coNo: 410,
-      //   series: "B",
-      //   seriesType: "14",
-      // });
-      // const orderNoRunning = await axios({
-      //   method: "post",
-      //   url: `${HOST}master/runningNumber/`,
-      //   data: {
-      //     coNo: 410,
-      //     series: "B",
-      //     seriesType: "14",
-      //   },
-      // });
-
-      // orderNo = parseInt(running.lastNo) + 1;
-
-      // await axios({
-      //   method: "post",
-      //   url: `${HOST}master/runningNumber/update`,
-      //   data: {
-      //     coNo: 410,
-      //     series: "B",
-      //     seriesType: "14",
-      //     lastNo: orderNo,
-      //   },
-      // });
-      // updateRunningNumber({
-      //   coNo: 410,
-      //   series: "B",
-      //   seriesType: "14",
-      //   lastNo: orderNo,
-      // });
-      orderNo = runningNumberH.toString();
-      orderNo = orderNo.padStart(10, "0");
-    }
 
     for (let item of items) {
       const weight = await calWeight({
         itemCode: item.itemCode,
         qty: item.itemQty,
       });
-      // const { data } = await axios({
-      //   method: "post",
-      //   url: `${HOST}master/calWeight`,
-      //   data: {
-      //     itemCode: item.itemCode,
-      //     qty: item.itemQty,
-      //   },
-      // });
       calWeights.push(weight);
     }
 
@@ -185,48 +160,26 @@ exports.insertHead = async (req, res, next) => {
           itemCode: item.itemCode,
           qty: item.itemQty,
         });
-        // const calWeight = await axios({
-        //   method: "post",
-        //   url: `${HOST}master/calWeight`,
-        //   data: {
-        //     itemCode: item.itemCode,
-        //     qty: item.itemQty,
-        //   },
-        // });
-        // const factor = await axios({
-        //   method: "post",
-        //   url: `${HOST}master/unit`,
-        //   data: {
-        //     itemCode: item.itemCode,
-        //     unit: item.itemUnit,
-        //   },
-        // });
-
         const stock = fetchStock({
           warehouse: warehouse,
           itemCode: item.itemCode,
         });
 
-        // const stock = await axios({
-        //   method: "post",
-        //   url: `${HOST}master/stocksingle`,
-        //   data: {
-        //     warehouse: warehouse,
-        //     itemCode: item.itemCode,
-        //   },
-        // });
-
         return {
           coNo: 410,
           runningNumberH: runningNumberH,
           orderNo: orderNo, //OAORNO
+          warehouse: warehouse, //OARLDT
           itemCode: item.itemCode, //OQDLIX
           itemName: item.itemName, //OAORTP
+          itemTranferDate: tranferDate, //OQDQTY
           itemQty: item.itemQty, //OAORSL
           itemUnit: item.itemUnit, //OAORDT
           itemLocation: item.itemLocation, //OARLDT
           itemLot: item.itemLot,
           itemStatus: item.itemStatus,
+          warehouse: warehouse,
+          towarehouse: towarehouse,
           MRWHLO: item.MRWHLO,
           MRGRWE: weight.grossWeight,
           MRSTAS: stock.allocateMethod,
@@ -271,8 +224,11 @@ exports.insertHead = async (req, res, next) => {
       await MGHEAD.create({
         coNo: 410,
         orderNo: orderNo,
+        MGRORN: orderNo,
         orderType: orderType,
-        date: date,
+        tranferDate: tranferDate,
+        MGRIDT: tranferDate,
+        MGATHS: 1,
         warehouse: warehouse,
         towarehouse: towarehouse,
         location: location,
@@ -284,34 +240,50 @@ exports.insertHead = async (req, res, next) => {
         // MGATHS: 0,
         // MGPRIO: 0,
         MGTRTM: parseInt(getCurrentTimeFormatted()),
-        MGRIDT: formatDate(),
+        // MGRIDT: formatDate(),
         MGRITM: getCurrentTimeFormatted().slice(0, -2),
-        MGGRWE: totalgrossWeight,
-        // MGNUGL: 0,
+        MGGRWE: totalgrossWeight.toFixed(3),
+        MGNUGL: 1,
         MGRGDT: formatDate(),
         MGRGTM: getCurrentTimeFormatted(),
         MGLMDT: formatDate(),
-        // MGCHNO: 0,
+        MGCHNO: 1,
         MGCHID: orderJson[0].HEAD.MGCHID,
         MGLMTS: Date.now(),
       });
     }
-    await insertDistributionAllocate(itemsData);
-    await insertDistributionDeliveryHead({
+    const deliveryHead = {
       warehouse: warehouse,
       coNo: 410,
       runningNumberH: runningNumberH,
       orderNo: orderNo,
       orderType: orderType,
-      grossWeight: totalgrossWeight,
-      // netWeight: totalnetWeight,
-    });
+      grossWeight: totalgrossWeight.toFixed(3),
+      tranferDate: tranferDate,
+      towarehouse: towarehouse,
+    };
+
+    // const test = {
+    //   warehouse: 105,
+    //   coNo: 410,
+    //   runningNumberH: 6700000075,
+    //   orderNo: "6700000073",
+    //   orderType: "T01",
+    //   grossWeight: 379.656,
+    //   transferDate: "20241106",
+    //   towarehouse: "513",
+    // };
+
+    await insertDistributionAllocate(itemsData);
+    await insertDistributionDeliveryHead(deliveryHead);
     await insertDistributionDeliveryLine(itemsData);
     await insertDistributionLine(itemsData);
     await insertDistributionMGDADR(orderNo);
 
     res.status(201).json({
       orderNo: orderNo,
+      // item: itemsData,
+      // deliveryHead: deliveryHead,
       message: "Created",
     });
     // res.json(data);
@@ -333,22 +305,24 @@ exports.insertLine = async (req, res, next) => {
         itemName: item.itemName,
         itemQty: item.itemQty,
         itemUnit: item.itemUnit,
-        itemLocation: item.itemLocation,
-        itemLot: item.itemLot,
+        itemLocation: item.itemLocation, //MRWHSL
+        itemLot: item.itemLot, //MRBANO
         itemStatus: item.itemStatus,
         MRWHLO: item.warehouse,
         MRGRWE: item.MRGRWE,
-        MRTRDT: formatDate(),
+        MRTRDT: item.itemTranferDate,
+        MRRPDT: item.itemTranferDate,
         MRSTAS: item.MRSTAS,
         MRWHSL: item.MRWHSL,
-        MRTWSL: item.MRTWSL,
+        MRTWSL: item.itemLocation,
         MRTRQT: item.itemQty,
-        MRRPQT: item.itemQty,
-        MRACQT: item.itemQty,
-        // // MRSTCD: 1,
+        // MRRPQT: item.itemQty,
+        // MRACQT: item.itemQty,
+        MRSTCD: 1,
         MRCUCD: orderJson[0].LINE.MRCUCD,
-        MRPRDT: formatDate(),
-        // // MRNUCR: 2,
+        // MRPRDT: formatDate(),
+        MRNUCR: 1,
+        MRRORN: item.orderNo,
         MRRESP: orderJson[0].LINE.MRCHID,
         MRTIHM: getCurrentTimeFormatted().slice(0, -2),
         MRRGDT: formatDate(),

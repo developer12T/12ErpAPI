@@ -292,12 +292,12 @@ exports.distributionpolicy = async (req, res, next) => {
 
     let results = await Policy.findOne({
       where: {
-        EDDNID: policy.YXNBID,
+        EDDPOL: policy.YXDPOL,
         coNo: 410,
       },
     });
-    // res.status(200).json(results);
-    results = {
+    res.status(200).json(results);
+    policy = {
       coNo: results.coNo,
       EDDPOL: results.EDDPOL,
       EDTX40: results.EDTX40,

@@ -27,8 +27,8 @@ exports.insertDeliveryHead = async (req, res, next) => {
       orderNo,
       orderType,
       grossWeight,
-      orderDate,
-      requestDate,
+      tranferDate,
+      towarehouse,
     } = req.body;
 
     //validation
@@ -41,15 +41,6 @@ exports.insertDeliveryHead = async (req, res, next) => {
     //   throw error;
     // }
 
-    // const jsonPath = path.join(__dirname, "../../", "Jsons", "delivery.json");
-    // let deliveryData = [];
-    // if (fs.existsSync(jsonPath)) {
-    //   const jsonData = fs.readFileSync(jsonPath, "utf-8");
-    //   deliveryData = JSON.parse(jsonData);
-    // }
-
-    // res.json(deliveryData[0].HEAD);
-    
     const policy = await fetchPolicyDistribution(orderType);
 
     await DeliveryHead.create({
@@ -58,53 +49,57 @@ exports.insertDeliveryHead = async (req, res, next) => {
       OQDPOL: policy.EDDPOL, // POLICY
       OQWHLO: warehouse,
       OQINOU: deliveryData[0].HEAD.OQINOU,
-      OQCONA: warehouse, //OOHEAD.OAWHLO
-      // OQCOAA
-      // OQCOAF
-      // OQCONB
-      OQSDES:  0, // ROUTE PLACE
-      // OQDSDT: requestDate, //OOHEAD OARLDT requestDate
-      OQDSHM:  0, // departureTime
-      // // OQTRDT: orderDate, //OOHEAD OAORDT
+      OQCONA: towarehouse, //OOHEAD.OAWHLO
+      // OQCOAA: "ID",
+      // OQCOAF: "ID",
+      // OQCONB: warehouse, //OOHEAD.OAWHLO
+      OQSDES: "TH00000", //route.place, // ROUTE PLACE
+      OQDSDT: tranferDate, //requestDate, //OOHEAD OARLDT requestDate
+      OQDSHM: 0, // departureTime
+      OQTRDT: tranferDate, //OOHEAD OAORDT
       OQTRTM: getCurrentTimeFormatted(), //OOHEAD
-      OQSROT: '', // ROUTE
-      OQROUT: '', // ROUTE
-      // OQRODN
-      // OQMODL
-      // OQMODF
-      // OQTEDL
-      // OQTEDF
-      OQRORC: deliveryData[0].HEAD.OQRORC, // 3
+      OQSROT: "CT213", //route.routeCode, // ROUTE
+      OQSROD: 0, //route.routeDeparture, // ROUTE routeDeparture
+      OQROUT: "CT213", //route.routeCode, // ROUTE
+      // OQRODN: 0, //route.routeDeparture, // ROUTE routeDeparture
+      // OQMODL: 0, //customer.OKMODL, empty
+      // OQMODF: 0, //customer.OKMODL, empty
+      // OQTEDL: 0, //customer.OKTEDL, empty
+      // OQTEDF: 0, //customer.OKTEDL, empty
+      OQRORC: 5, // deliveryData[0].HEAD.OQRORC, // 3 to 5
       // OQTTYP
-      OQTTYP: deliveryData[0].HEAD.OQTTYP,
+      OQTTYP: 51, //deliveryData[0].HEAD.OQTTYP,
       OQRIDN: orderNo,
-      OQEDES: "", // ROUTE PLACE
+      OQEDES: "TH00000", //route.place, // ROUTE PLACE
       //OQPUTP
       //OQPUSN
       //OQBLOP
       //OQRLFA
       //OQRLTD
-      //OQPGRS
+      OQPGRS: deliveryData[0].HEAD.OQPGRS,
+      OQPIST: deliveryData[0].HEAD.OQPIST,
+      OQECAR: 0, //customer.OKECAR,
+      OQPONO: 0, //shinpping.shippingPoscode,
+      OQULZO: 0, //shinpping.shippingRoute,
+      OQFWNS: 0, //route.forwarding,
+      OQFWNO: 0, //route.forwarding,
+      OQIRST: deliveryData[0].HEAD.OQIRST,
       //OQPCKA
       //OQPLSX
-      // OQNEWE: netWeight, // OrderLine SUM
+      OQNEWE: 0, // netWeight, // OrderLine SUM
+      OQDTDT: tranferDate, //requestDate,
       OQGRWE: grossWeight, // OrderLine SUM
-      // OQTIZO: OATIZO, // OOHEAD.OATIZO
-      OQDTDT: formatDate(), // OOHEAD requestDate
-      OQDTHM: 0, // departureTime
+      OQTIZO: 0, //OATIZO, // OOHEAD.OATIZO
+      OQDTDT: "20240603", //requestDate, // OOHEAD requestDate
+      OQDTHM: 2359, //route.departureTime, // departureTime
       OQDOCR: deliveryData[0].HEAD.OQDOCR, // 1
       OQDOCE: deliveryData[0].HEAD.OQDOCE, // 1 ** 1 digit in Database TST
       OQDEWD: deliveryData[0].HEAD.OQDEWD, // 0
       OQSEEQ: deliveryData[0].HEAD.OQSEEQ, // 50
-      OQIVSS: deliveryData[0].HEAD.OQIVSS, // 2
+      // OQIVSS: deliveryData[0].HEAD.OQIVSS, // 0
       OQPRIO: deliveryData[0].HEAD.OQPRIO, // 5
-      OQCUCL: '', // OCUSMA
-      OQCSCD: '', // OCUSMA
-      OQECAR: '', // OCUSMA
-      OQPONO: '', // OCUSAD
-      OQULZO: '', // OCUSAD
-      OQFWNS: '', // Route forwarding
-      OQFWNO: '', // Route forwarding
+      OQCUCL: "", //customer.customerChannel, // OCUSMA
+      OQCSCD: "", //customer.OKCSCD, // OCUSMA
       OQAGKY: deliveryData[0].HEAD.OQAGKY, // emthy
       OQRGDT: formatDate(),
       OQRGTM: getCurrentTimeFormatted(),
@@ -117,7 +112,11 @@ exports.insertDeliveryHead = async (req, res, next) => {
 
     // console.log(test);
 
-    res.status(201).json("Created");
+    res.status(201).json({
+      orderNo: orderNo,
+      // item: itemsData,
+      message: "Created",
+    });
   } catch (error) {
     next(error);
   }

@@ -361,7 +361,7 @@ exports.insert = async (req, res, next) => {
       const calWeights = []
       const calCosts = []
       const orderJson = getJsonData('order.json')
-      const RunningJson = getJsonData('runnigNumber.json')
+      const runningJson = getJsonData('runnigNumber.json')
 
       if (Hcase === 0) {
         if (orderNo === '') {
@@ -381,18 +381,18 @@ exports.insert = async (req, res, next) => {
       if (orderNo == '') {
         orderNo = ''
         const orderNoRunning = await fetchRunningNumber({
-          coNo: RunningJson[0].CO.coNo,
+          coNo: runningJson[0].CO.coNo,
           series: series.OOOT05,
-          seriesType: RunningJson[0].CO.seriesType
+          seriesType: runningJson[0].CO.seriesType
         })
         orderNo = parseInt(orderNoRunning.lastNo) + 1
         orderNo = orderNo.toString()
       }
 
       const running = await fetchRunningNumber({
-        coNo: RunningJson[0].DELIVERY.coNo,
+        coNo: runningJson[0].DELIVERY.coNo,
         series: series.OOSPIC,
-        seriesType: RunningJson[0].DELIVERY.seriesType
+        seriesType: runningJson[0].DELIVERY.seriesType
       })
 
       const runningNumberH = parseInt(running.lastNo) + 1
@@ -669,15 +669,15 @@ exports.insert = async (req, res, next) => {
       await insertDeliveryHead(deliveryObj)
       
       await updateRunningNumber({
-        coNo: RunningJson[0].CO.coNo,
+        coNo: runningJson[0].CO.coNo,
         series: series.OOOT05,
-        seriesType: RunningJson[0].CO.seriesType,
+        seriesType: runningJson[0].CO.seriesType,
         lastNo: orderNo
       })
       await updateRunningNumber({
-        coNo: RunningJson[0].DELIVERY.coNo,
+        coNo: runningJson[0].DELIVERY.coNo,
         series: series.OOSPIC,
-        seriesType: RunningJson[0].DELIVERY.seriesType,
+        seriesType: runningJson[0].DELIVERY.seriesType,
         lastNo: runningNumberH
       })
     

@@ -381,6 +381,12 @@ const MGTYPE = sequelize.define(
       primaryKey: true,
       field: "YXTRTP",
     },
+    YXDPOL: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      field: "YXDPOL",
+    },
     YXTX40: {
       type: DataTypes.STRING,
       allowNull: false,

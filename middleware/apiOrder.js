@@ -103,6 +103,8 @@ async function insertDistributionDeliveryHead(data) {
     orderNo,
     orderType,
     grossWeight,
+    tranferDate,
+    towarehouse,
   } = data;
   return makePostRequest("/distribution/insertDeliveryHead", {
     warehouse: warehouse,
@@ -111,6 +113,8 @@ async function insertDistributionDeliveryHead(data) {
     orderNo: orderNo,
     orderType: orderType,
     grossWeight: grossWeight,
+    towarehouse: towarehouse,
+    tranferDate: tranferDate,
   });
 }
 async function insertDistributionDeliveryLine(itemsData) {
