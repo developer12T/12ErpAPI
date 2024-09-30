@@ -1,19 +1,16 @@
 const axiosInstance = require("./axios");
 
-
 async function insertAllocate(itemsData) {
   return makePostRequest("/allocate/insert", {
     items: itemsData,
   });
 }
 
-
 async function insertOrderLine(itemsData) {
   return makePostRequest("/order/insertorderitem", {
     items: itemsData,
   });
 }
-
 
 async function insertDeliveryHead(data) {
   const {
@@ -47,8 +44,6 @@ async function insertDeliveryHead(data) {
   });
 }
 
-
-
 async function insertDeliveryLine(itemsData) {
   try {
     await axiosInstance.post("/delivery/insertLine", {
@@ -71,7 +66,6 @@ async function insertPrepareInovoice(itemsData) {
   }
 }
 
-
 async function insertDocument(data) {
   const { orderType, orderNo } = data;
   return makePostRequest("/document/insert", {
@@ -81,20 +75,17 @@ async function insertDocument(data) {
   });
 }
 
-
 async function insertDistributionLine(itemsData) {
   return makePostRequest("/distribution/insertLine", {
     items: itemsData,
   });
 }
 
-
 async function insertDistributionMGDADR(orderNo) {
   return makePostRequest("/distribution/insertMGDADR", {
     orderNo: orderNo,
   });
 }
-
 
 async function insertDistributionDeliveryHead(data) {
   const {
@@ -105,6 +96,8 @@ async function insertDistributionDeliveryHead(data) {
     grossWeight,
     tranferDate,
     towarehouse,
+    netWeight,
+    routeCode,
   } = data;
   return makePostRequest("/distribution/insertDeliveryHead", {
     warehouse: warehouse,
@@ -115,6 +108,8 @@ async function insertDistributionDeliveryHead(data) {
     grossWeight: grossWeight,
     towarehouse: towarehouse,
     tranferDate: tranferDate,
+    netWeight: netWeight,
+    routeCode: routeCode,
   });
 }
 async function insertDistributionDeliveryLine(itemsData) {
@@ -123,13 +118,11 @@ async function insertDistributionDeliveryLine(itemsData) {
   });
 }
 
-
 async function insertDistributionAllocate(itemsData) {
   return makePostRequest("/distribution/insertAllocate", {
     items: itemsData,
   });
 }
-
 
 async function makePostRequest(endpoint, data) {
   try {

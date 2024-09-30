@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+
 const {
   index,
   insertHead,
@@ -10,6 +11,7 @@ const {
 const {
   insertAllocate,
 } = require("../../controllers/distribution/allocateDistributionController");
+
 const {
   insertDeliveryHead,
   insertDeliveryLine,

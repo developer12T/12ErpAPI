@@ -109,6 +109,11 @@ const MGHEAD = sequelize.define(
       allowNull: true,
       field: "MGGRWE",
     },
+    MGDEPT: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "MGDEPT",
+    },
     MGNUGL: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -213,11 +218,6 @@ const MGLINE = sequelize.define(
       allowNull: true,
       field: "MRSTAS",
     },
-    MRTWSL: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "MRTWSL",
-    },
     itemQty: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -233,10 +233,15 @@ const MGLINE = sequelize.define(
       allowNull: true,
       field: "MRALUN",
     },
-    itemLocation: {
+    location: {
       type: DataTypes.STRING,
       allowNull: true,
       field: "MRWHSL",
+    },
+    toLocation: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "MRTWSL",
     },
     itemLot: {
       type: DataTypes.STRING,

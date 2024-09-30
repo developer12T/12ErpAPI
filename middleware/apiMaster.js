@@ -95,6 +95,12 @@ async function fetchItemUnitMax(itemCode) {
   });
 }
 
+async function fetchRouteDetail(routeCode) {
+  return makePostRequest("/route/routecode", {
+    routeCode: routeCode,
+  });
+}
+
 async function makePostRequest(endpoint, data) {
   try {
     const response = await axiosInstance.post(endpoint, data);
@@ -120,4 +126,5 @@ module.exports = {
   fetchItemDetail,
   fetchItemUnitMin,
   fetchItemUnitMax,
+  fetchRouteDetail,
 };

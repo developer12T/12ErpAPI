@@ -10,6 +10,9 @@ const {
   updateRunningNumber,
   fetchStock,
   calWeight,
+  fetchItemDetail,
+  fetchRouteDetail,
+  fetchPolicyDistribution,
 } = require("../../middleware/apiMaster");
 
 const { getJsonData } = require("../../middleware/getJsonData");
@@ -21,7 +24,7 @@ const {
   insertDistributionDeliveryLine,
 } = require("../../middleware/apiOrder");
 const { insert } = require("./allocateDistributionController");
-const orderJson = getJsonData("distribution.json");
+const distributionJson = getJsonData("distribution.json");
 const runningJson = getJsonData("runnigNumber.json");
 
 exports.index = async (req, res, next) => {
@@ -90,124 +93,126 @@ exports.index = async (req, res, next) => {
 
 exports.insertHead = async (req, res, next) => {
   try {
-    const {
-      orderType,
-      tranferDate,
-      warehouse,
-      towarehouse,
-      location,
-      statusLow,
-      statusHigh,
-      remark,
-      Hcase,
-    } = req.body;
+    const distributions = req.body;
+    for (let distribution of distributions) {
+      const {
+        orderType,
+        tranferDate,
+        warehouse,
+        towarehouse,
+        location,
+        statusLow,
+        statusHigh,
+        remark,
+        Hcase,
+        MGNUGL,
+        MGDEPT,
+        routeCode,
+      } = distribution;
+      const items = distribution.items;
+      let { orderNo } = distribution;
+      const calWeights = [];
+      const running = await fetchRunningNumber({
+        coNo: runningJson[0].DISTRIBUTION_DELIVERY.coNo,
+        series: runningJson[0].DISTRIBUTION_DELIVERY.series, //series.OOSPIC,
+        seriesType: runningJson[0].DISTRIBUTION_DELIVERY.seriesType, // runningJson[0].DELIVERY.seriesType,
+      });
+      const runningNumberH = parseInt(running.lastNo) + 1;
 
-    const items = req.body.items;
-    let { orderNo } = req.body;
-    const calWeights = [];
-
-    const running = await fetchRunningNumber({
-      coNo: runningJson[0].DELIVERY.coNo,
-      series: "B", //series.OOSPIC,
-      seriesType: "14", // runningJson[0].DELIVERY.seriesType,
-    });
-    const runningNumberH = parseInt(running.lastNo) + 1;
-
-    if (Hcase === 0) {
-      if (orderNo === "") {
-        const error = new Error("Order No is required");
-        error.statusCode = 422;
-        throw error;
+      if (Hcase === 0) {
+        if (orderNo === "") {
+          const error = new Error("Order No is required");
+          error.statusCode = 422;
+          throw error;
+        }
       }
-    }
 
-    if (orderNo == "") {
-      orderNo = "";
-      const orderNoRunning = await fetchRunningNumber({
-        coNo: 410,
-        series: "B",
-        seriesType: "14",
+      if (orderNo == "") {
+        orderNo = "";
+        const orderNoRunning = await fetchRunningNumber({
+          coNo: runningJson[0].DISTRIBUTION.coNo,
+          series: runningJson[0].DISTRIBUTION.series,
+          seriesType: runningJson[0].DISTRIBUTION.seriesType,
+        });
+        orderNo = parseInt(orderNoRunning.lastNo) + 1;
+        orderNo = orderNo.toString();
+        orderNo = orderNo.padStart(10, "0");
+      }
+
+      updateRunningNumber({
+        coNo: runningJson[0].DISTRIBUTION.coNo,
+        series: runningJson[0].DISTRIBUTION.series,
+        seriesType: runningJson[0].DISTRIBUTION.seriesType,
+        lastNo: orderNo,
       });
-      orderNo = parseInt(orderNoRunning.lastNo) + 1;
-      orderNo = orderNo.toString();
-      orderNo = orderNo.padStart(10, "0");
-    }
-
-    updateRunningNumber({
-      coNo: 410,
-      series: "B",
-      seriesType: "14",
-      lastNo: orderNo,
-    });
-
-    for (let item of items) {
-      const weight = await calWeight({
-        itemCode: item.itemCode,
-        qty: item.itemQty,
+      updateRunningNumber({
+        coNo: runningJson[0].DISTRIBUTION_DELIVERY.coNo,
+        series: runningJson[0].DISTRIBUTION_DELIVERY.series,
+        seriesType: runningJson[0].DISTRIBUTION_DELIVERY.seriesType,
+        lastNo: runningNumberH,
       });
-      calWeights.push(weight);
-    }
 
-    const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
-      return accumulator + calWeight.grossWeight;
-    }, 0);
-
-    // res.json(orderNo);
-
-    let itemsData = await Promise.all(
-      items.map(async (item) => {
+      for (let item of items) {
         const weight = await calWeight({
           itemCode: item.itemCode,
           qty: item.itemQty,
         });
-        const stock = fetchStock({
-          warehouse: warehouse,
-          itemCode: item.itemCode,
-        });
+        calWeights.push(weight);
+      }
 
-        return {
-          coNo: 410,
-          runningNumberH: runningNumberH,
-          orderNo: orderNo, //OAORNO
-          warehouse: warehouse, //OARLDT
-          itemCode: item.itemCode, //OQDLIX
-          itemName: item.itemName, //OAORTP
-          itemTranferDate: tranferDate, //OQDQTY
-          itemQty: item.itemQty, //OAORSL
-          itemUnit: item.itemUnit, //OAORDT
-          itemLocation: item.itemLocation, //OARLDT
-          itemLot: item.itemLot,
-          itemStatus: item.itemStatus,
-          warehouse: warehouse,
-          towarehouse: towarehouse,
-          MRWHLO: item.MRWHLO,
-          MRGRWE: weight.grossWeight,
-          MRSTAS: stock.allocateMethod,
-          MRWHSL: item.MRWHSL,
-          MRTWSL: item.MRTWSL,
-        };
-      })
-    );
-    // res.json(itemsData);
+      const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
+        return accumulator + calWeight.grossWeight;
+      }, 0);
 
-    let itemNo = 1;
-    itemsData = itemsData.map((item) => {
-      const result = {
-        ...item, // Spread the properties of the original item
-        itemNo: itemNo, // Add the itemNo property
-      };
-      itemNo++;
-      return result;
-    });
-    let itemNoData = await MGLINE.findOne({
-      where: {
-        orderNo: orderNo,
-      },
-      order: [["itemNo", "DESC"]],
-    });
+      const totalnetWeight = calWeights.reduce((accumulator, calWeight) => {
+        return accumulator + calWeight.netWeight;
+      }, 0);
+      // console.log("NetWeightTEST: " + totalnetWeight);
 
-    if (itemNoData != null) {
-      itemNo = itemNoData.itemNo + 1;
+      // res.json(orderNo);
+
+      let itemsData = await Promise.all(
+        items.map(async (item) => {
+          const weight = await calWeight({
+            itemCode: item.itemCode,
+            qty: item.itemQty,
+          });
+          const stock = await fetchStock({
+            warehouse: warehouse,
+            itemCode: item.itemCode,
+          });
+
+          const itemDetail = await fetchItemDetail(item.itemCode);
+          // console.log(`Stock: ${stock[0].allocateMethod}`);
+
+          return {
+            coNo: distributionJson[0].HEAD.MGCONO,
+            runningNumberH: runningNumberH,
+            orderNo: orderNo, //OAORNO
+            location: item.location,
+            toLocation: item.toLocation,
+            warehouse: warehouse,
+            towarehouse: towarehouse,
+            itemCode: item.itemCode, //OQDLIX
+            itemName: itemDetail[0].itemDescription, //OAORTP
+            itemTranferDate: tranferDate, //OQDQTY
+            itemQty: item.itemQty, //OAORSL
+            itemUnit: itemDetail[0].basicUnit, //OAORDT
+            itemLocation: item.itemLocation, //OARLDT
+            itemLot: item.itemLot,
+            itemStatus: item.itemStatus,
+            MRWHLO: item.MRWHLO,
+            MRGRWE: weight.grossWeight,
+            MRNEWE: weight.netWeight,
+            MRSTAS: stock[0].allocateMethod,
+            // MRWHSL: item.MRWHSL,
+            // MRTWSL: item.MRTWSL,
+          };
+        })
+      );
+      // res.json(itemsData);
+
+      let itemNo = 1;
       itemsData = itemsData.map((item) => {
         const result = {
           ...item, // Spread the properties of the original item
@@ -216,77 +221,101 @@ exports.insertHead = async (req, res, next) => {
         itemNo++;
         return result;
       });
-    }
-    // res.json(itemsData);
-    // console.log(getCurrentTimeFormatted());
-
-    if (Hcase == 1) {
-      await MGHEAD.create({
-        coNo: 410,
-        orderNo: orderNo,
-        MGRORN: orderNo,
-        orderType: orderType,
-        tranferDate: tranferDate,
-        MGRIDT: tranferDate,
-        MGATHS: 1,
-        warehouse: warehouse,
-        towarehouse: towarehouse,
-        location: location,
-        statusLow: statusLow,
-        statusHigh: statusHigh,
-        remark: remark,
-        MGFACI: orderJson[0].HEAD.MGFACI,
-        MGRESP: orderJson[0].HEAD.MGCHID,
-        // MGATHS: 0,
-        // MGPRIO: 0,
-        MGTRTM: parseInt(getCurrentTimeFormatted()),
-        // MGRIDT: formatDate(),
-        MGRITM: getCurrentTimeFormatted().slice(0, -2),
-        MGGRWE: totalgrossWeight.toFixed(3),
-        MGNUGL: 1,
-        MGRGDT: formatDate(),
-        MGRGTM: getCurrentTimeFormatted(),
-        MGLMDT: formatDate(),
-        MGCHNO: 1,
-        MGCHID: orderJson[0].HEAD.MGCHID,
-        MGLMTS: Date.now(),
+      let itemNoData = await MGLINE.findOne({
+        where: {
+          orderNo: orderNo,
+        },
+        order: [["itemNo", "DESC"]],
       });
+
+      if (itemNoData != null) {
+        itemNo = itemNoData.itemNo + 1;
+        itemsData = itemsData.map((item) => {
+          const result = {
+            ...item, // Spread the properties of the original item
+            itemNo: itemNo, // Add the itemNo property
+          };
+          itemNo++;
+          return result;
+        });
+      }
+      // res.json(itemsData);
+      // console.log(getCurrentTimeFormatted());
+
+      if (Hcase == 1) {
+        await MGHEAD.create({
+          coNo: distributionJson[0].HEAD.MGCONO,
+          orderNo: orderNo,
+          MGRORN: orderNo,
+          orderType: orderType,
+          tranferDate: tranferDate,
+          MGRIDT: tranferDate,
+          MGATHS: distributionJson[0].HEAD.MGATHS,
+          warehouse: warehouse,
+          towarehouse: towarehouse,
+          location: location,
+          statusLow: statusLow,
+          statusHigh: statusHigh,
+          remark: remark,
+          MGFACI: distributionJson[0].HEAD.MGFACI,
+          MGRESP: distributionJson[0].HEAD.MGCHID,
+          MGDEPT: MGDEPT,
+          MGPRIO: distributionJson[0].HEAD.MGPRIO,
+          MGTRTM: parseInt(getCurrentTimeFormatted()),
+          MGRITM: getCurrentTimeFormatted().slice(0, -2),
+          MGGRWE: totalgrossWeight.toFixed(3),
+          MGNUGL: MGNUGL,
+          MGRGDT: formatDate(),
+          MGRGTM: getCurrentTimeFormatted(),
+          MGLMDT: formatDate(),
+          MGCHNO: distributionJson[0].HEAD.MGCHNO,
+          MGCHID: distributionJson[0].HEAD.MGCHID,
+          MGLMTS: Date.now(),
+        });
+      }
+
+      const deliveryHead = {
+        warehouse: warehouse,
+        coNo: distributionJson[0].HEAD.MGCONO,
+        runningNumberH: runningNumberH,
+        orderNo: orderNo,
+        orderType: orderType,
+        grossWeight: totalgrossWeight.toFixed(3),
+        tranferDate: tranferDate,
+        towarehouse: towarehouse,
+        netWeight: totalnetWeight.toFixed(3),
+        routeCode: routeCode,
+        // routeDeparture: route[0].routeDeparture,
+        // method: route[0].method,
+        // departureTime: route[0].departureTime,
+        // policy: policy.EDDPOL,
+      };
+
+      // const test = {
+      //   warehouse: 105,
+      //   coNo: 410,
+      //   runningNumberH: 6700000075,
+      //   orderNo: "6700000073",
+      //   orderType: "T01",
+      //   grossWeight: 379.656,
+      //   transferDate: "20241106",
+      //   towarehouse: "513",
+      // };
+
+      await insertDistributionAllocate(itemsData);
+      await insertDistributionDeliveryHead(deliveryHead);
+      await insertDistributionDeliveryLine(itemsData);
+      await insertDistributionLine(itemsData);
+      await insertDistributionMGDADR(orderNo);
+
+      res.status(201).json({
+        orderNo: orderNo,
+        // item: itemsData,
+        // deliveryHead: deliveryHead,
+        message: "Created",
+      });
+      // res.json(data);
     }
-    const deliveryHead = {
-      warehouse: warehouse,
-      coNo: 410,
-      runningNumberH: runningNumberH,
-      orderNo: orderNo,
-      orderType: orderType,
-      grossWeight: totalgrossWeight.toFixed(3),
-      tranferDate: tranferDate,
-      towarehouse: towarehouse,
-    };
-
-    // const test = {
-    //   warehouse: 105,
-    //   coNo: 410,
-    //   runningNumberH: 6700000075,
-    //   orderNo: "6700000073",
-    //   orderType: "T01",
-    //   grossWeight: 379.656,
-    //   transferDate: "20241106",
-    //   towarehouse: "513",
-    // };
-
-    await insertDistributionAllocate(itemsData);
-    await insertDistributionDeliveryHead(deliveryHead);
-    await insertDistributionDeliveryLine(itemsData);
-    await insertDistributionLine(itemsData);
-    await insertDistributionMGDADR(orderNo);
-
-    res.status(201).json({
-      orderNo: orderNo,
-      // item: itemsData,
-      // deliveryHead: deliveryHead,
-      message: "Created",
-    });
-    // res.json(data);
   } catch (error) {
     next(error);
   }
@@ -313,25 +342,24 @@ exports.insertLine = async (req, res, next) => {
         MRTRDT: item.itemTranferDate,
         MRRPDT: item.itemTranferDate,
         MRSTAS: item.MRSTAS,
-        MRWHSL: item.MRWHSL,
-        MRTWSL: item.itemLocation,
-        MRTRQT: item.itemQty,
+        MRWHSL: item.location,
+        MRTWSL: item.toLocation,
         // MRRPQT: item.itemQty,
         // MRACQT: item.itemQty,
-        MRSTCD: 1,
-        MRCUCD: orderJson[0].LINE.MRCUCD,
+        MRSTCD: distributionJson[0].LINE.MRSTCD,
+        MRCUCD: distributionJson[0].LINE.MRCUCD,
         // MRPRDT: formatDate(),
-        MRNUCR: 1,
+        MRNUCR: distributionJson[0].LINE.MRNUCR,
         MRRORN: item.orderNo,
-        MRRESP: orderJson[0].LINE.MRCHID,
+        MRRESP: distributionJson[0].LINE.MRCHID,
         MRTIHM: getCurrentTimeFormatted().slice(0, -2),
         MRRGDT: formatDate(),
         MRRGTM: getCurrentTimeFormatted(),
         MRLMDT: formatDate(),
-        // MRCHNO: 3,
-        MRCHID: orderJson[0].LINE.MRCHID,
+        MRCHNO: distributionJson[0].LINE.MRCHNO,
+        MRCHID: distributionJson[0].LINE.MRCHID,
         MRLMTS: Date.now(),
-        MRPRIO: 5,
+        MRPRIO: distributionJson[0].LINE.MRPRIO,
       });
     }
     res.status(201).json({
@@ -370,6 +398,7 @@ exports.insertMGDADR = async (req, res, next) => {
       MACHNO: 0,
       MACHID: "",
     });
+
     res.status(201).json({
       message: "Created",
     });
