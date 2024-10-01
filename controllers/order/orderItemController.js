@@ -6,12 +6,14 @@ const {
   getCurrentTimeFormatted,
 } = require("../../middleware/getDateTime");
 const { getJsonData } = require("../../middleware/getJsonData");
+const { sequelize } = require("../../config/m3db");
 
 exports.insertItem = async (req, res, next) => {
+  let transaction;
   try {
     const items = req.body.items;
     const orderJson = getJsonData("order.json");
-
+    transaction = await sequelize.transaction();
     // const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
     // let orderJson = [];
     // if (fs.existsSync(jsonPathOrder)) {
@@ -22,100 +24,213 @@ exports.insertItem = async (req, res, next) => {
     // res.json(fs.existsSync(jsonPath))
     // let itemNo = 1;
     for (let item of items) {
-      await OrderLine.create({
-        coNo: orderJson[0].LINE.OBCONO, //
-        OBDIVI: orderJson[0].LINE.OBDIVI, //
-        orderNo: item.orderNo,
-        itemNo: item.itemNo,
-        orderStatusLow: item.orderStatusLow,
-        OBFACI: orderJson[0].LINE.OBFACI,
-        warehouse: item.warehouse,
-        itemCode: item.itemCode,
-        OBITDS: item.OBITDS,
-        itemName: item.itemName,
-        qtyPCS: item.qtyPCS,
-        qtyCTN: item.qtyCTN,
-        OBRNQT: item.qtyPCS,
-        OBRNQA: item.qtyCTN,
-        // OBIVQT: item.qtyPCS,
-        // OBIVQA: item.qtyCTN,
-        unit: item.unit,
-        // OBDCCA
-        // OBOCFA
-        OBDMCF: orderJson[0].LINE.OBDMCF,
-        OBSPUN: item.OBSPUN,
-        OBPRMO: item.OBPRMO,
-        OBPCOF: orderJson[0].LINE.OBPCOF,
-        // OBDCCS
-        OBCOFS: item.OBCOFA,
-        OBDMCS: orderJson[0].LINE.OBDMCS,
-        price: item.price,
-        netPrice: item.netPrice,
-        discount: item.discount,
-        OBLNAM: item.total, // recheck
-        OBDIC1: item.OBDIC1,
-        OBDIC2: item.OBDIC2,
-        OBDIC3: item.OBDIC3,
-        OBDIC4: item.OBDIC4,
-        OBDIC5: item.OBDIC5,
-        OBDIC6: item.OBDIC6,
-        OBCMP5: item.OBCMP5,
-        OBDIBE: item.OBDIBE,
-        OBDIRE: item.OBDIRE,
-        OBDDSU: item.OBDDSU,
-        OBACRF: item.OBACRF,
-        OBDWDT: item.OBDWDT,
-        OBCODT: item.OBCODT,
-        OBCOHM: item.OBCOHM,
-        OBDWDZ: item.OBDWDZ,
-        OBCODZ: item.OBCODZ,
-        OBCOHZ: item.OBCOHZ,
-        OBTIZO: item.OBTIZO,
-        OBSTCD: item.OBSTCD,
-        OBCOCD: item.OBCOCD,
-        OBUCCD: item.OBUCCD,
-        OBVTCD: item.OBVTCD,
-        OBSMCD: item.OBSMCD,
-        OBCUNO: item.OBCUNO,
-        OBADID: item.OBADID,
-        OBROUT: item.OBROUT,
-        OBRODN: item.OBRODN,
-        OBDSDT: item.requestDate,
-        OBDSHM: item.OBDSHM,
-        OBFDED: item.requestDate,
-        OBLDED: item.requestDate,
-        OBCINA: item.OBCINA,
-        OBDECU: item.OBDECU,
-        OBTEPY: item.OBTEPY,
-        OBPMOR: item.OBPMOR,
-        OBUPAV: item.OBUPAV,
-        OBDIA5: 0,
-        total: item.total,
-        promotionCode: item.promotionCode,
-        OBATPR: orderJson[0].LINE.OBATPR,
-        OBMODL: orderJson[0].LINE.OBMODL,
-        OBTEDL: orderJson[0].LINE.OBTEDL,
-        OBRGDT: formatDate(),
-        OBRGTM: getCurrentTimeFormatted(),
-        OBLMDT: formatDate(),
-        OBCHNO: orderJson[0].LINE.OBCHNO,
-        OBCHID: orderJson[0].LINE.OBCHID,
-        OBLMTS: Date.now(),
-        OBPLDT: formatDate(),
-        OBPLHM: orderJson[0].LINE.OBPLHM,
-        OBPRIO: orderJson[0].LINE.OBPRIO,
-        OBUCOS: item.OBUCOS,
-        OBCOFA: item.OBCOFA,
-        OBORCO: item.OBORCO,
-        //OBPRIO
-      });
-    }
+      await OrderLine.create(
+        {
+          coNo: orderJson[0].LINE.OBCONO, //
+          OBDIVI: orderJson[0].LINE.OBDIVI, //
+          orderNo: item.orderNo,
+          itemNo: item.itemNo,
+          orderStatusLow: item.orderStatusLow,
+          OBFACI: orderJson[0].LINE.OBFACI,
+          warehouse: item.warehouse,
+          itemCode: item.itemCode,
+          OBITDS: item.OBITDS,
+          itemName: item.itemName,
+          qtyPCS: item.qtyPCS,
+          qtyCTN: item.qtyCTN,
+          OBRNQT: item.qtyPCS,
+          OBRNQA: item.qtyCTN,
+          // OBIVQT: item.qtyPCS,
+          // OBIVQA: item.qtyCTN,
+          unit: item.unit,
+          // OBDCCA
+          // OBOCFA
+          OBDMCF: orderJson[0].LINE.OBDMCF,
+          OBSPUN: item.OBSPUN,
+          OBPRMO: item.OBPRMO,
+          OBPCOF: orderJson[0].LINE.OBPCOF,
+          // OBDCCS
+          OBCOFS: item.OBCOFA,
+          OBDMCS: orderJson[0].LINE.OBDMCS,
+          price: item.price,
+          netPrice: item.netPrice,
+          discount: item.discount,
+          OBLNAM: item.total, // recheck
+          OBDIC1: item.OBDIC1,
+          OBDIC2: item.OBDIC2,
+          OBDIC3: item.OBDIC3,
+          OBDIC4: item.OBDIC4,
+          OBDIC5: item.OBDIC5,
+          OBDIC6: item.OBDIC6,
+          OBCMP5: item.OBCMP5,
+          OBDIBE: item.OBDIBE,
+          OBDIRE: item.OBDIRE,
+          OBDDSU: item.OBDDSU,
+          OBACRF: item.OBACRF,
+          OBDWDT: item.OBDWDT,
+          OBCODT: item.OBCODT,
+          OBCOHM: item.OBCOHM,
+          OBDWDZ: item.OBDWDZ,
+          OBCODZ: item.OBCODZ,
+          OBCOHZ: item.OBCOHZ,
+          OBTIZO: item.OBTIZO,
+          OBSTCD: item.OBSTCD,
+          OBCOCD: item.OBCOCD,
+          OBUCCD: item.OBUCCD,
+          OBVTCD: item.OBVTCD,
+          OBSMCD: item.OBSMCD,
+          OBCUNO: item.OBCUNO,
+          OBADID: item.OBADID,
+          OBROUT: item.OBROUT,
+          OBRODN: item.OBRODN,
+          OBDSDT: item.requestDate,
+          OBDSHM: item.OBDSHM,
+          OBFDED: item.requestDate,
+          OBLDED: item.requestDate,
+          OBCINA: item.OBCINA,
+          OBDECU: item.OBDECU,
+          OBTEPY: item.OBTEPY,
+          OBPMOR: item.OBPMOR,
+          OBUPAV: item.OBUPAV,
+          OBDIA5: 0,
+          total: item.total,
+          promotionCode: item.promotionCode,
+          OBATPR: orderJson[0].LINE.OBATPR,
+          OBMODL: orderJson[0].LINE.OBMODL,
+          OBTEDL: orderJson[0].LINE.OBTEDL,
+          OBRGDT: formatDate(),
+          OBRGTM: getCurrentTimeFormatted(),
+          OBLMDT: formatDate(),
+          OBCHNO: orderJson[0].LINE.OBCHNO,
+          OBCHID: orderJson[0].LINE.OBCHID,
+          OBLMTS: Date.now(),
+          OBPLDT: formatDate(),
+          OBPLHM: orderJson[0].LINE.OBPLHM,
+          OBPRIO: orderJson[0].LINE.OBPRIO,
+          OBUCOS: item.OBUCOS,
+          OBCOFA: item.OBCOFA,
+          OBORCO: item.OBORCO,
 
+          //OBPRIO
+        },
+        {
+          transaction,
+        }
+      );
+    }
     res.status(201).json({
       message: "Created",
     });
   } catch (error) {
+    if (transaction) {
+      await transaction.rollback();
+    }
     next(error);
+  }
+};
+
+exports.orderLineInsert = async (itemData, transaction) => {
+  // let transaction;
+  try {
+    const items = itemData;
+    const orderJson = getJsonData("order.json");
+    for (let item of items) {
+      await OrderLine.create(
+        {
+          coNo: orderJson[0].LINE.OBCONO, //
+          OBDIVI: orderJson[0].LINE.OBDIVI, //
+          orderNo: item.orderNo,
+          itemNo: item.itemNo,
+          orderStatusLow: item.orderStatusLow,
+          OBFACI: orderJson[0].LINE.OBFACI,
+          warehouse: item.warehouse,
+          itemCode: item.itemCode,
+          OBITDS: item.OBITDS,
+          itemName: item.itemName,
+          qtyPCS: item.qtyPCS,
+          qtyCTN: item.qtyCTN,
+          OBRNQT: item.qtyPCS,
+          OBRNQA: item.qtyCTN,
+          // OBIVQT: item.qtyPCS,
+          // OBIVQA: item.qtyCTN,
+          unit: item.unit,
+          // OBDCCA
+          // OBOCFA
+          OBDMCF: orderJson[0].LINE.OBDMCF,
+          OBSPUN: item.OBSPUN,
+          OBPRMO: item.OBPRMO,
+          OBPCOF: orderJson[0].LINE.OBPCOF,
+          // OBDCCS
+          OBCOFS: item.OBCOFA,
+          OBDMCS: orderJson[0].LINE.OBDMCS,
+          price: item.price,
+          netPrice: item.netPrice,
+          discount: item.discount,
+          OBLNAM: item.total, // recheck
+          OBDIC1: item.OBDIC1,
+          OBDIC2: item.OBDIC2,
+          OBDIC3: item.OBDIC3,
+          OBDIC4: item.OBDIC4,
+          OBDIC5: item.OBDIC5,
+          OBDIC6: item.OBDIC6,
+          OBCMP5: item.OBCMP5,
+          OBDIBE: item.OBDIBE,
+          OBDIRE: item.OBDIRE,
+          OBDDSU: item.OBDDSU,
+          OBACRF: item.OBACRF,
+          OBDWDT: item.OBDWDT,
+          OBCODT: item.OBCODT,
+          OBCOHM: item.OBCOHM,
+          OBDWDZ: item.OBDWDZ,
+          OBCODZ: item.OBCODZ,
+          OBCOHZ: item.OBCOHZ,
+          OBTIZO: item.OBTIZO,
+          OBSTCD: item.OBSTCD,
+          OBCOCD: item.OBCOCD,
+          OBUCCD: item.OBUCCD,
+          OBVTCD: item.OBVTCD,
+          OBSMCD: item.OBSMCD,
+          OBCUNO: item.OBCUNO,
+          OBADID: item.OBADID,
+          OBROUT: item.OBROUT,
+          OBRODN: item.OBRODN,
+          OBDSDT: item.requestDate,
+          OBDSHM: item.OBDSHM,
+          OBFDED: item.requestDate,
+          OBLDED: item.requestDate,
+          OBCINA: item.OBCINA,
+          OBDECU: item.OBDECU,
+          OBTEPY: item.OBTEPY,
+          OBPMOR: item.OBPMOR,
+          OBUPAV: item.OBUPAV,
+          OBDIA5: 0,
+          total: item.total,
+          promotionCode: item.promotionCode,
+          OBATPR: orderJson[0].LINE.OBATPR,
+          OBMODL: orderJson[0].LINE.OBMODL,
+          OBTEDL: orderJson[0].LINE.OBTEDL,
+          OBRGDT: formatDate(),
+          OBRGTM: getCurrentTimeFormatted(),
+          OBLMDT: formatDate(),
+          OBCHNO: orderJson[0].LINE.OBCHNO,
+          OBCHID: orderJson[0].LINE.OBCHID,
+          OBLMTS: Date.now(),
+          OBPLDT: formatDate(),
+          OBPLHM: orderJson[0].LINE.OBPLHM,
+          OBPRIO: orderJson[0].LINE.OBPRIO,
+          OBUCOS: item.OBUCOS,
+          OBCOFA: item.OBCOFA,
+          OBORCO: item.OBORCO,
+
+          //OBPRIO
+        },
+        {
+          transaction,
+        }
+      );
+    }
+  } catch (error) {
+    throw error;
   }
 };
 

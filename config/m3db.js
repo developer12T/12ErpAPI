@@ -20,6 +20,7 @@ const sequelize = new Sequelize(M3_DATABASE, M3_USER, M3_PASSWORD, {
   define: {
     noPrimaryKey: true,
   },
+  logging: console.log
 });
 
 module.exports = {

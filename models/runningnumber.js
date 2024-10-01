@@ -6,6 +6,7 @@ const NumberSeries = sequelize.define(
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       field: "CNCONO",
     },
     series: {

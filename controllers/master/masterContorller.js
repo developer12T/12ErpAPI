@@ -83,7 +83,7 @@ exports.itemdetails = async (req, res, next) => {
         itemClass: itemClass,
         itemType: itemType,
         itemGroup: itemGroup,
-        basicUnit:item.MMUNMS,
+        basicUnit: item.MMUNMS,
         cost: cost,
         netWeight: item.netWeight,
         grossWeight: item.grossWeight,
@@ -236,14 +236,6 @@ exports.warehouse = async (req, res, next) => {
         coNo: 410,
       },
     });
-
-    // const items = itemData.map((item) => {
-    //   const itemCode = item.itemCode.trim();
-    //   return {
-    //     itemCode: itemCode,
-    //     cost: Math.round(item.cost * qty * 1000000) / 1000000,
-    //   };
-    // });
     res.json(warehouse);
   } catch (error) {
     next(error);
