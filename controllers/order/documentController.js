@@ -1,11 +1,14 @@
 const Document = require("../../models/document");
-const { getJsonData } = require("../../middleware/getJsonData");
+const { getJsonData } = require("../../utils/getJsonData");
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
+} = require("../../utils/getDateTime");
 
 const { fetchDocumentType } = require("../../middleware/apiMaster");
+const errorEndpoint = require("../../middleware/errorEndpoint");
+const path = require("path");
+const currentFilePath = path.basename(__filename);
 
 exports.index = async (req, res, next) => {};
 
@@ -38,7 +41,7 @@ exports.insert = async (req, res, next) => {
       );
     }
   } catch (error) {
-    throw error;
+   ;
   }
 };
 
@@ -73,9 +76,6 @@ exports.documentInsert = async (data, transaction) => {
       );
     }
   } catch (error) {
-    if (transaction) {
-      await transaction.rollback();
-    }
-    next(error);
+    throw errorEndpoint(currentFilePath, "Document:", error);
   }
 };

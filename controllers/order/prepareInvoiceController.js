@@ -1,16 +1,14 @@
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
+} = require("../../utils/getDateTime");
 const { HOST } = require("../../config/index");
 const axios = require("axios");
 const { PrepareInvoA, PrepareInvoB } = require("../../models/prepareinvoice");
 const now = new Date();
 const currentYear = now.getFullYear();
-const fs = require("fs");
-const path = require("path");
-const { totalNonVat, nonVat } = require("../../middleware/calVat");
-const { getJsonData } = require("../../middleware/getJsonData");
+const { totalNonVat, nonVat } = require("../../utils/calVat");
+const { getJsonData } = require("../../utils/getJsonData");
 const {
   fetchItemDetail,
   fetchItemUnitMax,
@@ -18,6 +16,10 @@ const {
 } = require("../../middleware/apiMaster");
 const { fetchCustomer } = require("../../middleware/apiCustomer");
 const { sequelize } = require("../../config/m3db");
+
+const errorEndpoint = require("../../middleware/errorEndpoint");
+const path = require("path");
+const currentFilePath = path.basename(__filename);
 
 exports.index = async (req, res, next) => {};
 
@@ -119,6 +121,7 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
     // transaction = await sequelize.transaction();
     const items = itemData;
     let prepareJson = getJsonData("prepareinvoice.json");
+    // let prepareJson;
     for (let item of items) {
       // console.log(item.costPCS);
 
@@ -126,7 +129,7 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
         {
           coNo: item.coNo,
           OUDIVI: item.OBDIVI,
-          OUFACI: "F10",
+          OUFACI: prepareJson[0].HEAD.OUFACI,
           orderNo: item.orderNo,
           itemNo: item.itemNo,
           OUOSSQ: prepareJson[0].HEAD.OUOSSQ,
@@ -198,7 +201,7 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
       );
     }
   } catch (error) {
-    throw error;
+    throw errorEndpoint(currentFilePath, "Prepare Invoice:", error);
   }
 };
 

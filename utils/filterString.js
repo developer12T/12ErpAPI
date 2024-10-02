@@ -61,10 +61,6 @@ module.exports.filterStringParentTH = (str) => {
   return result.trim();
 };
 
-// create module change string to Hello all world
-module.exports.changeStringToHelloAllWorld = (str) => {
-  return `Hello all ${str}`;
-};
 
 module.exports.formatPhoneNumberMap = (phoneNumbers) => {
   return phoneNumbers.map((number) => {
@@ -80,6 +76,7 @@ module.exports.formatPhoneNumberMap = (phoneNumbers) => {
     }
   });
 };
+
 
 module.exports.formatPhoneNumber = (number) => {
   let cleanedNumber = number.replace(/[^\d-]/g, '');

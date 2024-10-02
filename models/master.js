@@ -41,6 +41,7 @@ const ItemMaster = sequelize.define(
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       field: "MMCONO",
     },
     status: {
@@ -411,6 +412,11 @@ const MGTYPE = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
       field: "YXNBID",
+    },
+    YXFSQ3: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "YXFSQ3",
     },
   },
   {

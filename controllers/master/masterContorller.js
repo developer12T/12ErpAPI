@@ -282,22 +282,21 @@ exports.distributionpolicy = async (req, res, next) => {
     });
     // res.status(200).json(policy);
 
-    let results = await Policy.findOne({
-      where: {
-        EDDPOL: policy.YXDPOL,
-        coNo: 410,
-      },
-    });
-    res.status(200).json(results);
-    policy = {
-      coNo: results.coNo,
-      EDDPOL: results.EDDPOL,
-      EDTX40: results.EDTX40,
-      EDTX15: results.EDTX15.trim(),
-      EDTRLV: results.EDTRLV,
-    };
+    // let results = await Policy.findOne({
+    //   where: {
+    //     EDDPOL: policy.YXDPOL,
+    //     coNo: 410,
+    //   },
+    // });
+    // policy = {
+    //   coNo: results.coNo,
+    //   EDDPOL: results.EDDPOL,
+    //   EDTX40: results.EDTX40,
+    //   EDTX15: results.EDTX15.trim(),
+    //   EDTRLV: results.EDTRLV,
+    // };
 
-    res.status(200).json(results);
+    res.status(200).json(policy);
   } catch (error) {
     next(error);
   }

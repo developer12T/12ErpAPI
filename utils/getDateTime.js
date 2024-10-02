@@ -7,6 +7,9 @@ module.exports.formatDate = () => {
   return `${year}${month}${day}`;
 };
 
+
+
+
 module.exports.getCurrentTimeFormatted = () => {
   const now = new Date();
   const hours = String(now.getHours()).padStart(2, "0");

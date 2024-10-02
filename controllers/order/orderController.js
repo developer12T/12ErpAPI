@@ -4,19 +4,17 @@ const Promotion = require("../../models/promotion");
 const axios = require("axios");
 const { HOST } = require("../../config/index");
 const { Op } = require("sequelize");
-const { handleApiError } = require("../../middleware/errorHandlerApi");
 const { sequelize } = require("../../config/m3db");
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
+} = require("../../utils/getDateTime");
 const Shipping = require("../../models/shipping");
 const { validationResult } = require("express-validator");
 const {
   fetchOrderType,
   fetchOrderNoRunning,
   fetchRunningNumber,
-  updateRunningNumber,
   calCost,
   calWeight,
   fetchfactor,
@@ -37,10 +35,10 @@ const {
   insertDocument,
 } = require("../../middleware/apiOrder");
 const { fetchRoutes } = require("../../middleware/apiRoutes");
-const { getJsonData } = require("../../middleware/getJsonData");
-const { nonVat } = require("../../middleware/calVat");
+const { getJsonData } = require("../../utils/getJsonData");
+const { nonVat } = require("../../utils/calVat");
 // Get the current year and month
-const { getCurrentYearMonth } = require("../../middleware/getDateTime");
+const { getCurrentYearMonth } = require("../../utils/getDateTime");
 const { allocateItem } = require("./allocateController");
 const {
   deliveryHeadInsert,
@@ -50,6 +48,10 @@ const { orderLineInsert } = require("./orderItemController");
 const { prepareInvoiceInsertA } = require("./prepareInvoiceController");
 const { NumberSeries } = require("../../models/runningnumber");
 const { documentInsert } = require("./documentController");
+const {
+  runningNumber,
+  updateRunningNumber,
+} = require("../../services/runningNumberService");
 
 exports.index = async (req, res, next) => {
   try {
@@ -415,6 +417,25 @@ exports.insert = async (req, res, next) => {
 
       const runningNumberH = parseInt(running.lastNo) + 1;
 
+      await updateRunningNumber(
+        {
+          coNo: runningJson[0].CO.coNo,
+          series: series.OOOT05,
+          seriesType: runningJson[0].CO.seriesType,
+          lastNo: orderNo,
+        },
+        transaction
+      );
+      await updateRunningNumber(
+        {
+          coNo: runningJson[0].DELIVERY.coNo,
+          series: series.OOSPIC,
+          seriesType: runningJson[0].DELIVERY.seriesType,
+          lastNo: runningNumberH,
+        },
+        transaction
+      );
+
       for (let item of items) {
         const Weight = await calWeight({
           itemCode: item.itemCode,
@@ -440,7 +461,21 @@ exports.insert = async (req, res, next) => {
         return accumulator + calWeight.netWeight;
       }, 0);
 
-      // res.json(totalCost);
+      const deliveryObj = {
+        warehouse: warehouse,
+        coNo: 410,
+        runningNumberH: runningNumberH,
+        orderNo: orderNo,
+        orderType: orderType,
+        addressID: addressID,
+        customerNo: customerNo,
+        orderDate: orderDate,
+        requestDate: requestDate,
+        OARGTM: getCurrentTimeFormatted(),
+        OATIZO: orderJson[0].HEAD.OATIZO,
+        grossWeight: totalgrossWeight.toFixed(3),
+        netWeight: totalnetWeight.toFixed(3),
+      };
 
       let itemsData = await Promise.all(
         items.map(async (item) => {
@@ -562,7 +597,6 @@ exports.insert = async (req, res, next) => {
       );
 
       let itemNo = 1;
-      // let itemNo2 = 1;
       itemsData = itemsData.map((item) => {
         const result = {
           ...item, // Spread the properties of the original item
@@ -663,88 +697,21 @@ exports.insert = async (req, res, next) => {
           },
           transaction
         );
-
-        // await insertDocument({
-        //   orderType: orderType,
-        //   orderNo: orderNo,
-        // });
       }
-      const deliveryObj = {
-        warehouse: warehouse,
-        coNo: 410,
-        runningNumberH: runningNumberH,
-        orderNo: orderNo,
-        orderType: orderType,
-        addressID: addressID,
-        customerNo: customerNo,
-        orderDate: orderDate,
-        requestDate: requestDate,
-        OARGTM: getCurrentTimeFormatted(),
-        OATIZO: orderJson[0].HEAD.OATIZO,
-        grossWeight: totalgrossWeight.toFixed(3),
-        netWeight: totalnetWeight.toFixed(3),
-      };
-
-      await NumberSeries.update(
-        { lastNo: orderNo },
-        {
-          where: {
-            coNo: runningJson[0].CO.coNo,
-            series: series.OOOT05,
-            seriesType: runningJson[0].CO.seriesType,
-          },
-          transaction,
-        }
-      );
-
-      await NumberSeries.update(
-        { lastNo: runningNumberH },
-        {
-          where: {
-            coNo: runningJson[0].DELIVERY.coNo,
-            series: series.OOSPIC,
-            seriesType: runningJson[0].DELIVERY.seriesType,
-          },
-          transaction,
-        }
-      );
-
       await allocateItem(itemsData, transaction);
       await deliveryHeadInsert(deliveryObj, transaction);
       await deliveryLineInsert(itemsData, transaction);
       await orderLineInsert(itemsData, transaction);
       await prepareInvoiceInsertA(itemsData, transaction);
 
-      // await insertAllocate(itemsData);
-      // await insertOrderLine(itemsData);
-      // await insertDeliveryLine(itemsData);
-      // await insertPrepareInovoice(itemsData);
-      // await insertDeliveryHead(deliveryObj);
-
-      // await updateRunningNumber({
-      //   coNo: runningJson[0].CO.coNo,
-      //   series: series.OOOT05,
-      //   seriesType: runningJson[0].CO.seriesType,
-      //   lastNo: orderNo,
-      // });
-      // await updateRunningNumber({
-      //   coNo: runningJson[0].DELIVERY.coNo,
-      //   series: series.OOSPIC,
-      //   seriesType: runningJson[0].DELIVERY.seriesType,
-      //   lastNo: runningNumberH,
-      // });
       await transaction.commit();
       res.status(201).json({
         message: "Created",
         orderNo: orderNo,
-        // transaction: transaction,
-        itemNoData: itemNoData,
       });
     }
   } catch (error) {
-    if (transaction) {
-      await transaction.rollback();
-    }
+    if (transaction) await transaction.rollback();
     next(error);
   }
 };

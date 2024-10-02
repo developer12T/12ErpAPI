@@ -1,58 +1,8 @@
-const { Balance, Locate, ItemMaster } = require("../../models/master");
-const axios = require("axios");
-const { HOST } = require("../../config/index");
-const { sequelize } = require("../../config/m3db");
-const fs = require("fs");
-const path = require("path");
+const { Balance, Locate, ItemMaster } = require("../models/master");
+
 const { Op } = require("sequelize");
-const {
-  formatDate,
-  getCurrentTimeFormatted,
-} = require("../../utils/getDateTime");
 
-exports.index = async (req, res, next) => {};
-
-exports.balance = async (req, res, next) => {
-  try {
-    const { warehouse, itemCode } = req.body;
-    const BalanceData = await Balance.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
-      where: {
-        warehouse: warehouse,
-        itemCode: {
-          [Op.like]: `%${itemCode}%`,
-        },
-        coNo: 410,
-      },
-    });
-    res.json(BalanceData);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.locate = async (req, res, next) => {
-  try {
-    const { warehouse, itemCode } = req.body;
-    const LocateData = await Locate.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
-      where: {
-        warehouse: warehouse,
-        itemCode: itemCode.trim(),
-        coNo: 410,
-      },
-    });
-    res.json(LocateData);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.stock = async (req, res, next) => {
+exports.stockALL = async (req, res, next) => {
   try {
     const locateData = {};
     const { warehouse } = req.body;
@@ -150,7 +100,7 @@ exports.stock = async (req, res, next) => {
   }
 };
 
-exports.stocksingle = async (req, res, next) => {
+exports.stock = async (req, res, next) => {
   try {
     let locatearr = [];
     const Data = {};

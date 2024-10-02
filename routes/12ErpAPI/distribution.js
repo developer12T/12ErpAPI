@@ -17,18 +17,16 @@ const {
   insertDeliveryLine,
 } = require("../../controllers/distribution/deliveryDistributionController");
 
-router.post("/", index);
+router.post("/insertdistribution", insertHead);
 
-router.post("/insertHead", insertHead);
+// router.post("/insertLine", insertLine);
 
-router.post("/insertLine", insertLine);
+// router.post("/insertMGDADR", insertMGDADR);
 
-router.post("/insertMGDADR", insertMGDADR);
+// router.post("/insertAllocate", insertAllocate);
 
-router.post("/insertAllocate", insertAllocate);
+// router.post("/insertDeliveryHead", insertDeliveryHead);
 
-router.post("/insertDeliveryHead", insertDeliveryHead);
-
-router.post("/insertDeliveryLine", insertDeliveryLine);
+// router.post("/insertDeliveryLine", insertDeliveryLine);
 
 module.exports = router;

@@ -1,6 +1,8 @@
 const allocate = require("../../models/allocate");
-const { getJsonData } = require("../../middleware/getJsonData");
-const { sequelize } = require("../../config/m3db");
+const { getJsonData } = require("../../utils/getJsonData");
+const errorEndpoint = require("../../middleware/errorEndpoint");
+const path = require("path");
+const currentFilePath = path.basename(__filename);
 
 exports.index = async (req, res, next) => {};
 
@@ -69,6 +71,6 @@ exports.allocateItem = async (items, transaction) => {
       );
     }
   } catch (error) {
-    throw error;
+    throw errorEndpoint(currentFilePath, "Allocate:", error);
   }
 };

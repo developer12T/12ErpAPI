@@ -7,11 +7,11 @@ const { HOST } = require("../../config/index");
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
+} = require("../../utils/getDateTime");
 const fs = require("fs");
 const path = require("path");
-const { filterStringParentTH } = require("../../middleware/filterString");
-const { decryptData, encryptData } = require("../../middleware/hashData");
+const { filterStringParentTH } = require("../../utils/filterString");
+const { decryptData, encryptData } = require("../../utils/hashData");
 
 exports.index = async (req, res, next) => {
   try {
@@ -117,6 +117,7 @@ exports.index = async (req, res, next) => {
     next(error);
   }
 };
+
 
 exports.single = async (req, res, next) => {
   try {

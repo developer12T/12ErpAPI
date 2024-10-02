@@ -4,9 +4,13 @@ const { Op } = require("sequelize");
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
-const { getJsonData } = require("../../middleware/getJsonData");
+} = require("../../utils/getDateTime");
+const { getJsonData } = require("../../utils/getJsonData");
 const { sequelize } = require("../../config/m3db");
+const errorEndpoint = require("../../middleware/errorEndpoint");
+const path = require("path");
+const currentFilePath = path.basename(__filename);
+
 
 exports.insertItem = async (req, res, next) => {
   let transaction;
@@ -230,7 +234,7 @@ exports.orderLineInsert = async (itemData, transaction) => {
       );
     }
   } catch (error) {
-    throw error;
+    throw errorEndpoint(currentFilePath, "Order Line:", error);
   }
 };
 

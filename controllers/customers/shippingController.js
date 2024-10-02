@@ -6,12 +6,12 @@ const { sequelize } = require("../../config/m3db");
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
+} = require("../../utils/getDateTime");
 const {
   filterStringEN,
   filterStringNumber,
   formatPhoneNumber,
-} = require("../../middleware/filterString");
+} = require("../../utils/filterString");
 
 exports.index = async (req, res, next) => {
   try {

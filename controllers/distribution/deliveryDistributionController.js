@@ -2,9 +2,9 @@ const { DeliveryHead, DeliveryLine } = require("../../models/delivery");
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
+} = require("../../utils/getDateTime");
 const { validationResult } = require("express-validator");
-const { getJsonData } = require("../../middleware/getJsonData");
+const { getJsonData } = require("../../utils/getJsonData");
 const {
   fetchShipping,
   fetchCustomer,
@@ -14,13 +14,12 @@ const {
   fetchPolicy,
   fetchRouteDetail,
 } = require("../../middleware/apiMaster");
-const { fetchRoutes } = require("../../middleware/apiRoutes");
-const axios = require("axios");
 const deliveryData = getJsonData("distribution.json");
+const errorEndpoint = require("../../middleware/errorEndpoint");
+const path = require("path");
+const currentFilePath = path.basename(__filename);
 
-exports.index = async (req, res, next) => {};
-
-exports.insertDeliveryHead = async (req, res, next) => {
+exports.distributionDeliveryHead = async (data, transaction) => {
   try {
     const {
       coNo,
@@ -36,30 +35,14 @@ exports.insertDeliveryHead = async (req, res, next) => {
       routeDeparture,
       method,
       departureTime,
-    } = req.body;
-
-    //validation
-    // const errors = validationResult(req);
-
-    // if (!errors.isEmpty()) {
-    //   const error = new Error("Data is Incorrect");
-    //   error.statusCode = 422;
-    //   error.validation = errors.array();
-    //   throw error;
-    // }
-
-    // res.status(201).json({
-    //   // route: route,
-    //   // item: itemsData,
-    //   message: "Created",
-    // });
+    } = data;
     const route = await fetchRouteDetail(routeCode);
     const policy = await fetchPolicyDistribution(orderType);
 
-    await DeliveryHead.create({
+    let deliveryobj = {
       coNo: coNo,
       OQDLIX: runningNumberH,
-      OQDPOL: policy.EDDPOL, // POLICY
+      OQDPOL: policy.YXDPOL, // POLICY
       OQWHLO: warehouse,
       OQINOU: deliveryData[0].DELIVERY_HEAD.OQINOU,
       OQCONA: towarehouse, //OOHEAD.OAWHLO
@@ -79,9 +62,8 @@ exports.insertDeliveryHead = async (req, res, next) => {
       OQMODF: route[0].method, //customer.OKMODL, empty
       // OQTEDL: 0, //customer.OKTEDL, empty
       // OQTEDF: 0, //customer.OKTEDL, empty
-      OQRORC: deliveryData[0].DELIVERY_HEAD.OQRORC, // deliveryData[0].DELIVERY_HEAD.OQRORC, // 3 to 5
-      // OQTTYP
-      OQTTYP: deliveryData[0].DELIVERY_HEAD.OQTTYP, //deliveryData[0].DELIVERY_HEAD.OQTTYP,
+      OQRORC: String(policy.YXTTYP).slice(0, 1), // deliveryData[0].DELIVERY_HEAD.OQRORC, // 3 to 5
+      OQTTYP: String(policy.YXTTYP), //deliveryData[0].DELIVERY_HEAD.OQTTYP,
       OQRIDN: orderNo,
       OQEDES: deliveryData[0].DELIVERY_HEAD.OQEDES, //route.place, // ROUTE PLACE
       //OQPUTP
@@ -89,7 +71,7 @@ exports.insertDeliveryHead = async (req, res, next) => {
       //OQBLOP
       //OQRLFA
       //OQRLTD
-      OQPGRS: deliveryData[0].DELIVERY_HEAD.OQPGRS,
+      OQPGRS: deliveryData[0].DELIVERY_HEAD.OQPGRS, // 00
       OQPIST: deliveryData[0].DELIVERY_HEAD.OQPIST,
       // OQECAR: 0, //customer.OKECAR,
       OQPONO: routeCode, //shinpping.shippingPoscode,
@@ -113,7 +95,11 @@ exports.insertDeliveryHead = async (req, res, next) => {
       OQPRIO: deliveryData[0].DELIVERY_HEAD.OQPRIO, // 5
       // OQCUCL: "", //customer.customerChannel, // OCUSMA
       OQCSCD: deliveryData[0].DELIVERY_HEAD.OQCSCD, //customer.OKCSCD, // OCUSMA
-      OQAGKY: `                                        ${deliveryData[0].DELIVERY_HEAD.OQAGKY}${warehouse}${policy.EDDPOL}${route[0].method}   ${routeCode}`, // emthy
+      OQAGKY: `                                        ${
+        deliveryData[0].DELIVERY_HEAD.OQINOU
+      }${String(policy.YXTTYP).slice(0, 1)}${warehouse}${policy.YXDPOL}${
+        route[0].method
+      }   ${routeCode}`, // emthy
       OQRGDT: formatDate(),
       OQRGTM: getCurrentTimeFormatted(),
       OQLMDT: formatDate(),
@@ -121,83 +107,66 @@ exports.insertDeliveryHead = async (req, res, next) => {
       OQCHID: deliveryData[0].DELIVERY_HEAD.OQCHID,
       OQSCES: deliveryData[0].DELIVERY_HEAD.OQSCES, //90
       OQLMTS: Date.now(),
-    });
+    };
 
-    // console.log(test);
-
-    res.status(201).json({
-      orderNo: orderNo,
-      // item: itemsData,
-      message: "Created",
-    });
+    switch (orderType.slice(0, 1)) {
+      case "T":
+        await DeliveryHead.create(deliveryobj, {
+          transaction,
+        });
+        break;
+      case "I":
+        deliveryobj.OQDEWD = "3";
+        await DeliveryHead.create(deliveryobj, {
+          transaction,
+        });
+        break;
+      case "R":
+        deliveryobj.OQINOU = "2";
+        deliveryobj.OQDEWD = "4";
+        await DeliveryHead.create(deliveryobj, {
+          transaction,
+        });
+        break;
+    }
   } catch (error) {
-    next(error);
+    throw errorEndpoint(currentFilePath, "Distribution Delivery Head:", error);
   }
 };
 
-exports.insertDeliveryLine = async (req, res, next) => {
+exports.distributionDeliveryLine = async (data, transaction) => {
   try {
-    const items = req.body.items;
-
-    // Validation
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      const error = new Error("Data is Incorrect");
-      error.statusCode = 422;
-      error.validation = errors.array();
-      throw error;
-    }
-
+    const items = data;
     for (let item of items) {
-      // const jsonPath = path.join(__dirname, "../../", "Jsons", "delivery.json");
-      // let deliveryData = [];
-      // if (fs.existsSync(jsonPath)) {
-      //   const jsonData = fs.readFileSync(jsonPath, "utf-8");
-      //   deliveryData = JSON.parse(jsonData);
-      // }
-      // const deliveryData = getJsonData("delivery.json");
-      // res.json(deliveryData)
-      await DeliveryLine.create({
-        coNo: item.coNo,
-        URDLIX: item.runningNumberH,
-        URRORC: deliveryData[0].DELIVERY_HEAD.OQRORC, // MHDISH
-        URRIDN: item.orderNo,
-        URRIDL: item.itemNo,
-        URITNO: item.itemCode,
-        URFACI: deliveryData[0].DELIVERY_LINE.URFACI, // json
-        URTRQT: item.itemQty, // OrderLine qtyCTN (pcs)
-        URSTCD: deliveryData[0].DELIVERY_LINE.URSTCD, // 1
-        grossWeight: item.MRGRWE, // OrderLine
-        netWeight: item.MRNEWE, // OrderLine
-        // URALUN OrderLine
-        URALUN: item.itemUnit,
-        URRGDT: formatDate(),
-        URRGTM: getCurrentTimeFormatted(),
-        URLMDT: formatDate(),
-        URCHNO: deliveryData[0].DELIVERY_LINE.URCHNO,
-        URCHID: deliveryData[0].DELIVERY_LINE.URCHID,
-        URLMTS: Date.now(),
-        URSCES: deliveryData[0].DELIVERY_HEAD.OQSCES, // MHDISH
-      });
+      await DeliveryLine.create(
+        {
+          coNo: item.coNo,
+          URDLIX: item.runningNumberH,
+          URRORC: deliveryData[0].DELIVERY_HEAD.OQRORC, // MHDISH
+          URRIDN: item.orderNo,
+          URRIDL: item.itemNo,
+          URITNO: item.itemCode,
+          URFACI: deliveryData[0].DELIVERY_LINE.URFACI, // json
+          URTRQT: item.itemQty, // OrderLine qtyCTN (pcs)
+          URSTCD: deliveryData[0].DELIVERY_LINE.URSTCD, // 1
+          grossWeight: item.MRGRWE, // OrderLine
+          netWeight: item.MRNEWE, // OrderLine
+          // URALUN OrderLine
+          URALUN: item.itemUnit,
+          URRGDT: formatDate(),
+          URRGTM: getCurrentTimeFormatted(),
+          URLMDT: formatDate(),
+          URCHNO: deliveryData[0].DELIVERY_LINE.URCHNO,
+          URCHID: deliveryData[0].DELIVERY_LINE.URCHID,
+          URLMTS: Date.now(),
+          URSCES: deliveryData[0].DELIVERY_HEAD.OQSCES, // MHDISH
+        },
+        {
+          transaction,
+        }
+      );
     }
-    res.status(201).json("Created");
   } catch (error) {
-    next(error);
-  }
-};
-
-exports.deleteL = async (req, res, next) => {
-  try {
-    const { warehouse } = req.body;
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.deleteH = async (req, res, next) => {
-  try {
-    const { warehouse } = req.body;
-  } catch (error) {
-    next(error);
+    throw errorEndpoint(currentFilePath, "Distribution Delivery Line:", error);
   }
 };

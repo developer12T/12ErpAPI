@@ -2,9 +2,9 @@ const { DeliveryHead, DeliveryLine } = require("../../models/delivery");
 const {
   formatDate,
   getCurrentTimeFormatted,
-} = require("../../middleware/getDateTime");
+} = require("../../utils/getDateTime");
 const { validationResult } = require("express-validator");
-const { getJsonData } = require("../../middleware/getJsonData");
+const { getJsonData } = require("../../utils/getJsonData");
 const {
   fetchShipping,
   fetchCustomer,
@@ -16,6 +16,9 @@ const {
 const { fetchRoutes } = require("../../middleware/apiRoutes");
 const deliveryData = getJsonData("delivery.json");
 const { sequelize } = require("../../config/m3db");
+const errorEndpoint = require("../../middleware/errorEndpoint");
+const path = require("path");
+const currentFilePath = path.basename(__filename);
 
 exports.index = async (req, res, next) => {};
 
@@ -262,7 +265,7 @@ exports.deliveryHeadInsert = async (data, transaction) => {
       }
     );
   } catch (error) {
-    throw error;
+    throw errorEndpoint(currentFilePath, "Delivery Head:", error);
   }
 };
 
@@ -303,7 +306,7 @@ exports.deliveryLineInsert = async (itemData, transaction) => {
     }
     // res.status(201).json({ message: "Created" });
   } catch (error) {
-    throw error;
+    throw errorEndpoint(currentFilePath, "Delivery Line:", error);
     // next(error);
   }
 };
