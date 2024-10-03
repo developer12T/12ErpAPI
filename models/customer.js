@@ -12,6 +12,7 @@ const Customer = sequelize.define(
     customerStatus: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "OKSTAT",
     },
     customerChannel: {

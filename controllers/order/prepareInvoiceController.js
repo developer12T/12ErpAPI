@@ -123,8 +123,6 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
     let prepareJson = getJsonData("prepareinvoice.json");
     // let prepareJson;
     for (let item of items) {
-      // console.log(item.costPCS);
-
       await PrepareInvoA.create(
         {
           coNo: item.coNo,

@@ -10,16 +10,16 @@ const currentFilePath = path.basename(__filename);
 exports.runningNumber = async (data) => {
   try {
     const { series, seriesType, coNo } = data;
-    const result = await NumberSeries.findOne({
+    const response = await NumberSeries.findOne({
       where: {
         coNo: coNo,
         series: series,
         seriesType: seriesType,
       },
     });
-    return { status: 200, data: result };
+    return response;
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "Running Number:", error);
+    throw errorEndpoint(currentFilePath, "RunningNumber:", error);
   }
 };
 
@@ -71,7 +71,7 @@ exports.updateRunningNumber = async (data, transaction) => {
         transaction,
       }
     );
-    return { status: 200, data: update };
+    return { status: 202, data: update };
   } catch (error) {
     throw errorEndpoint(currentFilePath, "Update Running Number:", error);
   }

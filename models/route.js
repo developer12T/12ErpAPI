@@ -6,6 +6,7 @@ const DRODPR = sequelize.define(
     coNo: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "DOCONO",
     },
     place: {

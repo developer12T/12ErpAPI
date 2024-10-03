@@ -1,5 +1,4 @@
 const { OrderLine, Order } = require("../../models/order");
-const allocate = require("../../models/allocate");
 const Promotion = require("../../models/promotion");
 const axios = require("axios");
 const { HOST } = require("../../config/index");
@@ -10,48 +9,44 @@ const {
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
 const Shipping = require("../../models/shipping");
-const { validationResult } = require("express-validator");
 const {
   fetchOrderType,
   fetchOrderNoRunning,
   fetchRunningNumber,
-  calCost,
-  calWeight,
+  // calCost,
+  // calWeight,
   fetchfactor,
   fetchItemUnitMax,
-  fetchItemUnitMin,
-  fetchItemDetail,
 } = require("../../middleware/apiMaster");
 const {
   fetchCustomer,
   fetchShipping,
 } = require("../../middleware/apiCustomer");
-const {
-  insertAllocate,
-  insertOrderLine,
-  insertDeliveryHead,
-  insertDeliveryLine,
-  insertPrepareInovoice,
-  insertDocument,
-} = require("../../middleware/apiOrder");
 const { fetchRoutes } = require("../../middleware/apiRoutes");
 const { getJsonData } = require("../../utils/getJsonData");
 const { nonVat } = require("../../utils/calVat");
 // Get the current year and month
 const { getCurrentYearMonth } = require("../../utils/getDateTime");
-const { allocateItem } = require("./allocateController");
+const { allocateInsert } = require("./allocateController");
 const {
   deliveryHeadInsert,
   deliveryLineInsert,
 } = require("./deliveryController");
 const { orderLineInsert } = require("./orderItemController");
 const { prepareInvoiceInsertA } = require("./prepareInvoiceController");
-const { NumberSeries } = require("../../models/runningnumber");
 const { documentInsert } = require("./documentController");
 const {
   runningNumber,
   updateRunningNumber,
 } = require("../../services/runningNumberService");
+const { getSeries } = require("../../services/orderService");
+const {
+  getCalCost,
+  getCalWeight,
+  getItemDetails,
+} = require("../../services/itemsService");
+const { getCustomer, getShipping } = require("../../services/customerService");
+const { getRoute } = require("../../services/routeService");
 
 exports.index = async (req, res, next) => {
   try {
@@ -351,13 +346,6 @@ exports.insert = async (req, res, next) => {
   try {
     transaction = await sequelize.transaction();
     const orders = req.body;
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //   const error = new Error("Data is Incorrect");
-    //   error.statusCode = 422;
-    //   error.validation = errors.array();
-    //   throw error;
-    // }
     for (let order of orders) {
       const {
         Hcase,
@@ -391,7 +379,7 @@ exports.insert = async (req, res, next) => {
         }
       }
 
-      const series = await fetchOrderType(orderType);
+      const series = await getSeries(orderType);
       if (series == null) {
         const error = new Error("Order Type is incorrect or not found");
         error.statusCode = 422;
@@ -400,7 +388,7 @@ exports.insert = async (req, res, next) => {
 
       if (orderNo == "") {
         orderNo = "";
-        const orderNoRunning = await fetchRunningNumber({
+        const orderNoRunning = await runningNumber({
           coNo: runningJson[0].CO.coNo,
           series: series.OOOT05,
           seriesType: runningJson[0].CO.seriesType,
@@ -409,7 +397,7 @@ exports.insert = async (req, res, next) => {
         orderNo = orderNo.toString();
       }
 
-      const running = await fetchRunningNumber({
+      const running = await runningNumber({
         coNo: runningJson[0].DELIVERY.coNo,
         series: series.OOSPIC,
         seriesType: runningJson[0].DELIVERY.seriesType,
@@ -437,12 +425,12 @@ exports.insert = async (req, res, next) => {
       );
 
       for (let item of items) {
-        const Weight = await calWeight({
+        const Weight = await getCalWeight({
           itemCode: item.itemCode,
           qty: item.qtyPCS,
         });
 
-        const Cost = await calCost({
+        const Cost = await getCalCost({
           itemCode: item.itemCode,
           qty: item.qtyPCS,
         });
@@ -479,20 +467,19 @@ exports.insert = async (req, res, next) => {
 
       let itemsData = await Promise.all(
         items.map(async (item) => {
-          const itemUnitMinData = await fetchItemUnitMin(item.itemCode);
           const itemUnitMaxData = await fetchItemUnitMax(item.itemCode);
-          const itemDetail = await fetchItemDetail(item.itemCode);
-          const shinpping = await fetchShipping({
+          const itemDetail = await getItemDetails(item.itemCode);
+          const shinpping = await getShipping({
             customerNo: customerNo,
             addressID: addressID,
           });
-          const route = await fetchRoutes(shinpping.shippingRoute);
-          const customer = await fetchCustomer(customerNo);
-          const WeightAll = await calWeight({
+          const route = await getRoute(shinpping.shippingRoute);
+          const customer = await getCustomer(customerNo);
+          const WeightAll = await getCalWeight({
             itemCode: item.itemCode,
             qty: item.qtyPCS,
           });
-          const Weight = await calWeight({
+          const Weight = await getCalWeight({
             itemCode: item.itemCode,
             qty: 1,
           });
@@ -500,11 +487,11 @@ exports.insert = async (req, res, next) => {
             itemCode: item.itemCode,
             unit: item.unit,
           });
-          const Cost = await calCost({
+          const Cost = await getCalCost({
             itemCode: item.itemCode,
             qty: 1,
           });
-          const CostAll = await calCost({
+          const CostAll = await getCalCost({
             itemCode: item.itemCode,
             qty: item.qtyPCS,
           });
@@ -623,8 +610,9 @@ exports.insert = async (req, res, next) => {
           return result;
         });
       }
+
       if (Hcase === 1) {
-        const customer = await fetchCustomer(customerNo);
+        const customer = await getCustomer(customerNo);
         await Order.create(
           {
             coNo: orderJson[0].HEAD.OACONO, // OACONO,
@@ -688,7 +676,6 @@ exports.insert = async (req, res, next) => {
           },
           { transaction }
         );
-
         await documentInsert(
           {
             coNo: orderJson[0].HEAD.OACONO,
@@ -698,12 +685,11 @@ exports.insert = async (req, res, next) => {
           transaction
         );
       }
-      await allocateItem(itemsData, transaction);
+      await allocateInsert(itemsData, transaction);
       await deliveryHeadInsert(deliveryObj, transaction);
       await deliveryLineInsert(itemsData, transaction);
       await orderLineInsert(itemsData, transaction);
       await prepareInvoiceInsertA(itemsData, transaction);
-
       await transaction.commit();
       res.status(201).json({
         message: "Created",

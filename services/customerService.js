@@ -1,104 +1,132 @@
 const Customer = require("../models/customer");
 const Shipping = require("../models/shipping");
 const Sale = require("../models/sale");
-const { filterStringParentTH } = require("../../utils/filterString");
-const path = require('path');
+const path = require("path");
 const currentFilePath = path.basename(__filename);
+const {
+  formatPhoneNumber,
+  filterStringParentTH,
+} = require("../utils/filterString");
 
-exports.customer = async (data) => {
+exports.getCustomer = async (customerNo) => {
   try {
-    const { customerNo } = data;
-
-    const customersData = await Customer.findAll({
-      attributes: { exclude: ["id"] },
+    const customersData = await Customer.findOne({
       where: { customerStatus: 20, coNo: 410, customerNo },
     });
-
     const shippingarr = [];
     const salearr = [];
 
-    for (const customer of customersData) {
-      const shippingData = await Shipping.findAll({
-        attributes: { exclude: ["id"] },
-        where: { customerNo: customer.customerNo, coNo: "410" },
+    const shippingData = await Shipping.findAll({
+      where: { customerNo: customersData.customerNo, coNo: "410" },
+    });
+
+    shippingData.forEach((shipping) => {
+      shippingarr.push({
+        addressID: shipping.addressID,
+        customerName: shipping.customerName,
+        shippingAddress1: shipping.shippingAddress1.trim(),
+        shippingAddress2: shipping.shippingAddress2.trim(),
+        shippingAddress3: shipping.shippingAddress3.trim(),
+        shippingPoscode: shipping.shippingPoscode.trim(),
+        shippingPhone: shipping.shippingPhone.trim(),
       });
+    });
 
-      shippingData.forEach((shipping) => {
-        shippingarr.push({
-          addressID: shipping.addressID,
-          customerName: shipping.customerName,
-          shippingAddress1: shipping.shippingAddress1.trim(),
-          shippingAddress2: shipping.shippingAddress2.trim(),
-          shippingAddress3: shipping.shippingAddress3.trim(),
-          shippingPoscode: shipping.shippingPoscode.trim(),
-          shippingPhone: shipping.shippingPhone.trim(),
-        });
-      });
-    }
+    const saleData = await Sale.findAll({
+      where: { saleCode: customersData.saleCode, CTSTCO: "SMCD", coNo: 410 },
+    });
 
-    for (const customer of customersData) {
-      const saleData = await Sale.findAll({
-        attributes: { exclude: ["id"] },
-        where: { saleCode: customer.saleCode, CTSTCO: "SMCD", coNo: 410 },
-      });
-
-      const sales = saleData.map((sale) => ({
-        saleCode: sale.saleCode.trim(),
-        saleName: filterStringParentTH(sale.saleName.trim()),
-      }));
-
-      sales.forEach((sale) => {
-        salearr.push({
-          saleCode: sale.saleCode,
-          sale_name: sale.saleName,
-        });
-      });
-    }
-
-    const customers = customersData.map((customer) => ({
-      coNo: customer.coNo,
-      customerStatus: customer.customerStatus,
-      customerNo: customer.customerNo.trim(),
-      customerChannel: customer.customerChannel,
-      customerName:
-        customer.customerChannel == "102" || customer.customerChannel == "103"
-          ? customer.customerName + customer.customerAddress4
-          : customer.customerName,
-      customerAddress1: customer.customerAddress1,
-      customerAddress2: customer.customerAddress2,
-      customerAddress3: customer.customerAddress3,
-      customerAddress4: customer.customerAddress4,
-      customerPoscode: customer.customerPoscode.trim(),
-      customerPhone: customer.customerPhone.trim(),
-      creditTerm: customer.creditTerm,
-      orderType: customer.orderType,
-      zone: customer.saleZone.trim(),
-      saleTeam: customer.saleTeam.trim(),
-      saleCode: customer.saleCode.trim(),
-      salePayer: customer.salePayer.trim(),
-      OKCFC1: customer.OKCFC1.trim(),
-      OKCFC3: customer.OKCFC3.trim(),
-      OKCFC6: customer.OKCFC6.trim(),
-      creditLimit: customer.creditLimit,
-      taxno: customer.taxno.trim(),
-      OKCSCD: customer.OKCSCD.trim(),
-      OKECAR: customer.OKECAR,
-      OKFACI: customer.OKFACI.trim(),
-      OKINRC: customer.OKINRC.trim(),
-      OKCUCD: customer.OKCUCD.trim(),
-      OKALCU: customer.OKALCU.trim(),
-      OKPYCD: customer.OKPYCD,
-      OKMODL: customer.OKMODL,
-      OKTEDL: customer.OKTEDL,
-      shippings: shippingarr,
-      sale: salearr,
+    const sales = saleData.map((sale) => ({
+      saleCode: sale.saleCode.trim(),
+      saleName: filterStringParentTH(sale.saleName.trim()),
     }));
 
-    if (!customers.length) {
-      throw { statusCode: 404, message: "Not Found" };
-    }
+    sales.forEach((sale) => {
+      salearr.push({
+        saleCode: sale.saleCode,
+        sale_name: sale.saleName,
+      });
+    });
 
-    return { status: 200, data: customers };
+    const customers = {
+      coNo: customersData.coNo,
+      customerStatus: customersData.customerStatus,
+      customerNo: customersData.customerNo.trim(),
+      customerChannel: customersData.customerChannel,
+      customerName:
+        customersData.customerChannel == "102" ||
+        customersData.customerChannel == "103"
+          ? customersData.customerName + customersData.customerAddress4
+          : customersData.customerName,
+      customerAddress1: customersData.customerAddress1,
+      customerAddress2: customersData.customerAddress2,
+      customerAddress3: customersData.customerAddress3,
+      customerAddress4: customersData.customerAddress4,
+      customerPoscode: customersData.customerPoscode.trim(),
+      customerPhone: customersData.customerPhone.trim(),
+      creditTerm: customersData.creditTerm,
+      orderType: customersData.orderType,
+      zone: customersData.saleZone.trim(),
+      saleTeam: customersData.saleTeam.trim(),
+      saleCode: customersData.saleCode.trim(),
+      salePayer: customersData.salePayer.trim(),
+      OKCFC1: customersData.OKCFC1.trim(),
+      OKCFC3: customersData.OKCFC3.trim(),
+      OKCFC6: customersData.OKCFC6.trim(),
+      creditLimit: customersData.creditLimit,
+      taxno: customersData.taxno.trim(),
+      OKCSCD: customersData.OKCSCD.trim(),
+      OKECAR: customersData.OKECAR,
+      OKFACI: customersData.OKFACI.trim(),
+      OKINRC: customersData.OKINRC.trim(),
+      OKCUCD: customersData.OKCUCD.trim(),
+      OKALCU: customersData.OKALCU.trim(),
+      OKPYCD: customersData.OKPYCD,
+      OKMODL: customersData.OKMODL,
+      OKTEDL: customersData.OKTEDL,
+      shippings: shippingarr,
+      sale: salearr,
+    };
+
+    if (!customers) {
+      throw { statusCode: 404, message: "Not Found" };
+    } 
+
+    return customers;
+  } catch (error) {
+    // Throw the error with the current file path and error details
+    const enhancedError = new Error(
+      `Error in ${currentFilePath}, function 'getCustomer': ${error.message}`
+    );
+    enhancedError.status = error.status || 500;
+    enhancedError.stack = error.stack; // Preserve the original stack trace
+    throw enhancedError;
+  }
+};
+
+exports.getShipping = async (data) => {
+  try {
+    const { customerNo, addressID } = data;
+    let shippingData = await Shipping.findOne({
+      where: {
+        coNo: 410,
+        customerNo,
+        addressID,
+      },
+    });
+    shippingData = {
+      coNo: shippingData.coNo,
+      customerNo: shippingData.customerNo.trim(),
+      shippingRoute: shippingData.shippingRoute,
+      addressID: shippingData.addressID,
+      customerName: shippingData.customerName,
+      shippingAddress1: shippingData.shippingAddress1,
+      shippingAddress2: shippingData.shippingAddress2,
+      shippingAddress3: shippingData.shippingAddress3,
+      shippingPoscode: shippingData.shippingPoscode.trim(),
+      shippingPhone: formatPhoneNumber(shippingData.shippingPhone),
+    };
+    return shippingData;
   } catch (error) {
     // Throw the error with the current file path and error details
     const enhancedError = new Error(

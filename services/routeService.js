@@ -1,39 +1,48 @@
-
 const { DRODPR, DROUDI, DROUTE } = require("../models/route");
-exports.route = async (req, res, next) => {
+const path = require("path");
+const currentFilePath = path.basename(__filename);
+const errorEndpoint = require("../middleware/errorEndpoint");
+exports.getRoute = async (shippingRoute) => {
   try {
-    const { shippingRoute } = req.body;
     const udiObj = {};
     const uteObj = {};
     let RouteData = await DRODPR.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         DOOBV1: shippingRoute,
         coNo: 410,
       },
     });
-    const udiData = await axios({
-      method: "post",
-      url: `${HOST}route/udi`,
-      data: { routeCode: RouteData[0].routeCode },
+
+    const udiDatas = await DROUDI.findAll({
+      where: {
+        routeCode: RouteData[0].routeCode,
+        coNo: 410,
+      },
+    });
+    const udiData = udiDatas.map((data) => {
+      return {
+        routeCode: data.routeCode,
+        DSRODN: data.DSRODN,
+        method: data.method,
+        departureTime: `${data.DSDETH}${data.DSDETM}`,
+      };
     });
 
-    const uteData = await axios({
-      method: "post",
-      url: `${HOST}route/ute`,
-      data: { routeCode: RouteData[0].routeCode },
+    const uteData = await DROUTE.findAll({
+      where: {
+        routeCode: RouteData[0].routeCode,
+        coNo: 410,
+      },
     });
 
-    udiData.data.forEach((udi) => {
+    udiData.forEach((udi) => {
       udiObj[udi.routeCode] = {
         method: udi.method,
         departureTime: udi.departureTime,
       };
     });
 
-    uteData.data.forEach((ute) => {
+    uteData.forEach((ute) => {
       uteObj[ute.routeCode] = ute.routeName;
     });
 
@@ -57,9 +66,9 @@ exports.route = async (req, res, next) => {
         departureTime: departureTime,
       };
     });
-    res.json(routes);
+    return routes[0];
   } catch (error) {
-    next(error);
+    throw errorEndpoint(currentFilePath, "getRoute:", error);
   }
 };
 

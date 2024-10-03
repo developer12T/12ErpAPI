@@ -10,9 +10,10 @@ const {
   fetchCustomer,
 } = require("../../middleware/apiCustomer");
 const {
-  fetchPolicyDistribution,
-  fetchPolicy,
-} = require("../../middleware/apiMaster");
+  getCustomer,
+  getShipping
+} = require("../../services/customerService");
+const { fetchPolicy } = require("../../middleware/apiMaster");
 const { fetchRoutes } = require("../../middleware/apiRoutes");
 const deliveryData = getJsonData("delivery.json");
 const { sequelize } = require("../../config/m3db");
@@ -39,8 +40,8 @@ exports.insertHead = async (req, res, next) => {
       requestDate,
     } = req.body;
     const policy = await fetchPolicy(orderType);
-    const customer = await fetchCustomer(customerNo);
-    const shinpping = await fetchShipping({
+    const customer = await getCustomer(customerNo);
+    const shinpping = await getShipping({
       customerNo: customerNo,
       addressID: addressID,
     });

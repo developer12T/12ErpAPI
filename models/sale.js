@@ -6,11 +6,13 @@ const Sale = sequelize.define(
     coNo: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "CTCONO",
     },
     saleCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "CTSTKY",
     },
     saleName: {

@@ -42,7 +42,7 @@ exports.insert = async (req, res, next) => {
   }
 };
 
-exports.allocateItem = async (items, transaction) => {
+exports.allocateInsert = async (items, transaction) => {
   // let transaction;
   try {
     const allocateJson = getJsonData("allocate.json");
@@ -71,6 +71,6 @@ exports.allocateItem = async (items, transaction) => {
       );
     }
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "Allocate:", error);
+    throw errorEndpoint(currentFilePath, "allocateInsert", error);
   }
 };

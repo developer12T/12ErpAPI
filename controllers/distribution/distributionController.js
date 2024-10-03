@@ -13,7 +13,11 @@ const {
   fetchPolicyDistribution,
 } = require("../../middleware/apiMaster");
 
-const { calWeight,itemdetails } = require("../../services/itemsService");
+const {
+  getCalCost,
+  getCalWeight,
+  getItemDetails,
+} = require("../../services/itemsService");
 
 const { getJsonData } = require("../../utils/getJsonData");
 
@@ -65,7 +69,7 @@ exports.insertHead = async (req, res, next) => {
         series: runningJson[0].DISTRIBUTION_DELIVERY.series, //series.OOSPIC,
         seriesType: runningJson[0].DISTRIBUTION_DELIVERY.seriesType, // runningJson[0].DELIVERY.seriesType,
       });
-      const runningNumberH = parseInt(running.data.lastNo) + 1;
+      const runningNumberH = parseInt(running.lastNo) + 1;
 
       if (Hcase === 0) {
         if (orderNo === "") {
@@ -82,7 +86,7 @@ exports.insertHead = async (req, res, next) => {
           series: runningJson[0].DISTRIBUTION.series,
           seriesType: runningJson[0].DISTRIBUTION.seriesType,
         });
-        orderNo = parseInt(orderNoRunning.data.lastNo) + 1;
+        orderNo = parseInt(orderNoRunning.lastNo) + 1;
         orderNo = orderNo.toString();
         orderNo = orderNo.padStart(10, "0");
       }
@@ -107,11 +111,11 @@ exports.insertHead = async (req, res, next) => {
       );
 
       for (let item of items) {
-        const weight = await calWeight({
+        const weight = await getCalWeight({
           itemCode: item.itemCode,
           qty: item.itemQty,
         });
-        calWeights.push(weight.data);
+        calWeights.push(weight);
       }
       const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
         return accumulator + calWeight.grossWeight;
@@ -123,7 +127,7 @@ exports.insertHead = async (req, res, next) => {
 
       let itemsData = await Promise.all(
         items.map(async (item) => {
-          const weight = await calWeight({
+          const weight = await getCalWeight({
             itemCode: item.itemCode,
             qty: item.itemQty,
           });
@@ -132,7 +136,7 @@ exports.insertHead = async (req, res, next) => {
             itemCode: item.itemCode,
           });
 
-          const itemDetail = await itemdetails(item.itemCode);
+          const itemDetail = await getItemDetails(item.itemCode);
           return {
             coNo: distributionJson[0].HEAD.MGCONO,
             runningNumberH: runningNumberH,
@@ -142,16 +146,16 @@ exports.insertHead = async (req, res, next) => {
             warehouse: warehouse,
             towarehouse: towarehouse,
             itemCode: item.itemCode, //OQDLIX
-            itemName: itemDetail.data[0].itemDescription, //OAORTP
+            itemName: itemDetail[0].itemDescription, //OAORTP
             itemTranferDate: tranferDate, //OQDQTY
             itemQty: item.itemQty, //OAORSL
-            itemUnit: itemDetail.data[0].basicUnit, //OAORDT
+            itemUnit: itemDetail[0].basicUnit, //OAORDT
             itemLocation: item.itemLocation, //OARLDT
             itemLot: item.itemLot,
             itemStatus: item.itemStatus,
             MRWHLO: item.MRWHLO,
-            MRGRWE: weight.data.grossWeight,
-            MRNEWE: weight.data.netWeight,
+            MRGRWE: weight.grossWeight,
+            MRNEWE: weight.netWeight,
             MRSTAS: stock[0].allocateMethod,
           };
         })

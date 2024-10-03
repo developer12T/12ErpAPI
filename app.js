@@ -30,7 +30,6 @@ const masterRouter = require("./routes/12ErpAPI/master");
 const deliveryRouter = require("./routes/12ErpAPI/delivery");
 const allocateRouter = require("./routes/12ErpAPI/allocate");
 const prepareInvoiceRouter = require("./routes/12ErpAPI/prepareInvoice");
-const documentRouter = require("./routes/12ErpAPI/document");
 const routeRouter = require("./routes/12ErpAPI/route");
 const distributionRouter = require("./routes/12ErpAPI/distribution");
 
@@ -82,7 +81,6 @@ app.use("/master", masterRouter);
 app.use("/prepare", prepareInvoiceRouter);
 app.use("/delivery", deliveryRouter);
 app.use("/allocate", allocateRouter);
-app.use("/document", documentRouter);
 app.use("/route", routeRouter);
 app.use("/distribution", distributionRouter);
 

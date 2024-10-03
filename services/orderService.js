@@ -1,18 +1,36 @@
 const DocumentType = require("../models/documenttype");
-const path = require('path');
+const { OOTYPE, MGTYPE } = require("../models/master");
+const path = require("path");
 const currentFilePath = path.basename(__filename);
+const errorEndpoint = require("../middleware/errorEndpoint");
 
-exports.documentType = async (req, res, next) => {
+exports.getDocumentType = async (orderType) => {
   try {
-    const { orderType } = req.body;
-    const data = await DocumentType.findAll({
+    const response = await DocumentType.findAll({
       where: {
         coNo: 410,
         orderType: orderType,
       },
     });
-    res.json(data);
+    return response;
   } catch (error) {
-    next(error);
+    throw errorEndpoint(
+      currentFilePath,
+      "Order service document type :",
+      error
+    );
+  }
+};
+
+exports.getSeries = async (orderType) => {
+  try {
+    const response = await OOTYPE.findOne({
+      where: {
+        OOORTP: orderType,
+      },
+    });
+    return response;
+  } catch (error) {
+    throw errorEndpoint(currentFilePath, "Order service order type :", error);
   }
 };
