@@ -4,46 +4,7 @@ const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
 
-exports.index = async (req, res, next) => {};
-
-exports.insert = async (req, res, next) => {
-  // let transaction;
-  try {
-    const items = req.body.items;
-    const allocateJson = getJsonData("allocate.json");
-    // console.log(items.qtyPCS);
-    // transaction = await sequelize.transaction();
-    for (let item of items) {
-      await allocate.create({
-        coNo: item.coNo,
-        warehouse: item.warehouse,
-        itemCode: item.itemCode,
-        MOPLDT: item.MOPLDT,
-        MOTIHM: item.OBDSHM,
-        MOSTAT: item.orderStatusLow,
-        MOPRIO: item.MOPRIO,
-        MOORCA: allocateJson.MOORCA,
-        orderNo: item.orderNo,
-        itemNo: item.itemNo,
-        MORFTX: item.OKALCU + "    " + item.customerNo,
-        MORPRT: allocateJson.MORPRT,
-        MOTRQT: item.qtyPCS * -1,
-        MOALMT: allocateJson.MOALMT,
-        MOCALI: allocateJson.MOCALI,
-        MOLMTS: Date.now(),
-      });
-    }
-
-    res.status(201).json({
-      message: "Created",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 exports.allocateInsert = async (items, transaction) => {
-  // let transaction;
   try {
     const allocateJson = getJsonData("allocate.json");
     for (let item of items) {
@@ -65,12 +26,46 @@ exports.allocateInsert = async (items, transaction) => {
           MOALMT: allocateJson.MOALMT,
           MOCALI: allocateJson.MOCALI,
           MOLMTS: Date.now(),
-          // awdawd:dawd
         },
         { transaction }
       );
     }
   } catch (error) {
     throw errorEndpoint(currentFilePath, "allocateInsert", error);
+  }
+};
+
+exports.getAllocate = async (req, res, next) => {
+  try {
+    const { orderNo } = req.body;
+    const allocateData = await allocate.findAll({
+      where: {
+        orderNo: orderNo,
+      },
+    });
+    const response = allocateData.map((item) => {
+      const itemCode = item.itemCode.trim();
+      return {
+        coNo: item.coNo,
+        warehouse: item.warehouse,
+        itemCode: itemCode,
+        MOPLDT: item.MOPLDT,
+        MOTIHM: item.MOTIHM,
+        MOSTAT: item.MOSTAT,
+        MOPRIO: item.MOPRIO,
+        MOORCA: item.MOORCA,
+        orderNo: item.orderNo,
+        itemNo: item.itemNo,
+        MORFTX: item.MORFTX,
+        MORPRT: item.MORPRT,
+        MOTRQT: item.MOTRQT,
+        MOALMT: item.MOALMT,
+        MOCALI: item.MOCALI,
+        MOLMTS: item.MOLMTS,
+      };
+    });
+    res.status(200).json(response);;
+  } catch (error) {
+    next(error);
   }
 };

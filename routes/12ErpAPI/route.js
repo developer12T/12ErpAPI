@@ -1,31 +1,19 @@
 const {
-  single,
-  index,
-  dpr,
-  udi,
-  ute,
-  routecode,
+  getRoute,
+  getRouteAll,
+  getRouteCode,
 } = require("../../controllers/master/routeController");
 const express = require("express");
 const router = express.Router();
 
 /* GET home page. */
 //http://localhost:3000/promotion/
-router.post("/", index);
+router.post("/all", getRouteAll);
 
 //http://localhost:3000/promotion/edit
-router.post("/single", single);
+router.post("/", getRoute);
 
 //http://localhost:3000/promotion/edit
-router.post("/routecode", routecode);
-
-//http://localhost:3000/promotion/edit
-router.post("/udi", udi);
-
-//http://localhost:3000/promotion/edit
-router.post("/ute", ute);
-
-//http://localhost:3000/promotion/edit
-router.post("/dpr", dpr);
+router.post("/routecode", getRouteCode);
 
 module.exports = router;

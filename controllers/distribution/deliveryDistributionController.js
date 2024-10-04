@@ -5,15 +5,15 @@ const {
 } = require("../../utils/getDateTime");
 const { validationResult } = require("express-validator");
 const { getJsonData } = require("../../utils/getJsonData");
-const {
-  fetchShipping,
-  fetchCustomer,
-} = require("../../middleware/apiCustomer");
-const {
-  fetchPolicyDistribution,
-  fetchPolicy,
-  fetchRouteDetail,
-} = require("../../middleware/apiMaster");
+// const { fetchShipping, fetchCustomer } = require("../../archive/apiCustomer");
+// const {
+//   fetchPolicyDistribution,
+//   fetchPolicy,
+//   fetchRouteDetail,
+// } = require("../../archive/apiMaster");
+const { fetchRouteCode } = require("../../services/routeService");
+const { fetchDistributionPolicy } = require("../../services/policyService");
+
 const deliveryData = getJsonData("distribution.json");
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
@@ -32,12 +32,10 @@ exports.distributionDeliveryHead = async (data, transaction) => {
       towarehouse,
       routeCode,
       netWeight,
-      routeDeparture,
-      method,
-      departureTime,
     } = data;
-    const route = await fetchRouteDetail(routeCode);
-    const policy = await fetchPolicyDistribution(orderType);
+
+    const route = await fetchRouteCode(routeCode);
+    const policy = await fetchDistributionPolicy(orderType);
 
     let deliveryobj = {
       coNo: coNo,

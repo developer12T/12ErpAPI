@@ -9,23 +9,8 @@ const {
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
 const Shipping = require("../../models/shipping");
-const {
-  fetchOrderType,
-  fetchOrderNoRunning,
-  fetchRunningNumber,
-  // calCost,
-  // calWeight,
-  fetchfactor,
-  fetchItemUnitMax,
-} = require("../../middleware/apiMaster");
-const {
-  fetchCustomer,
-  fetchShipping,
-} = require("../../middleware/apiCustomer");
-const { fetchRoutes } = require("../../middleware/apiRoutes");
 const { getJsonData } = require("../../utils/getJsonData");
 const { nonVat } = require("../../utils/calVat");
-// Get the current year and month
 const { getCurrentYearMonth } = require("../../utils/getDateTime");
 const { allocateInsert } = require("./allocateController");
 const {
@@ -41,14 +26,19 @@ const {
 } = require("../../services/runningNumberService");
 const { getSeries } = require("../../services/orderService");
 const {
-  getCalCost,
-  getCalWeight,
-  getItemDetails,
+  fetchCalCost,
+  fetchCalWeight,
+  fetchItemDetails,
+  fetchItemFactor,
 } = require("../../services/itemsService");
-const { getCustomer, getShipping } = require("../../services/customerService");
-const { getRoute } = require("../../services/routeService");
+const {
+  fetchCustomer,
+  fetchShipping,
+} = require("../../services/customerService");
+const { fetchRoute } = require("../../services/routeService");
+const { formatPhoneNumber } = require("../../utils/String");
 
-exports.index = async (req, res, next) => {
+exports.getOrderAll = async (req, res, next) => {
   try {
     const { orderType } = req.body;
     let { orderDate } = req.body;
@@ -57,15 +47,11 @@ exports.index = async (req, res, next) => {
       orderDate = `${getCurrentYearMonth()}`;
     }
     const orderData = await Order.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         orderType: orderType,
         orderDate: {
           [Op.like]: `${orderDate}%`,
         },
-        // orderNo:orderNo
       },
     });
 
@@ -75,9 +61,6 @@ exports.index = async (req, res, next) => {
 
     for (let i = 0; i < orderData.length; i++) {
       const OrderLineData = await OrderLine.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
         where: { orderNo: orderData[i].orderNo },
       });
       // Initialize the array for current orderNo
@@ -99,9 +82,6 @@ exports.index = async (req, res, next) => {
       }
 
       const OrderLineData2 = await OrderLine.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
         where: {
           orderNo: orderData[i].orderNo,
           promotionCode: {
@@ -114,9 +94,6 @@ exports.index = async (req, res, next) => {
 
       for (let OrderLine2 of OrderLineData2) {
         const PromotionData = await Promotion.findAll({
-          attributes: {
-            exclude: ["id"],
-          },
           where: {
             promotionCode: OrderLine2.promotionCode,
             FZCONO: "410",
@@ -139,9 +116,6 @@ exports.index = async (req, res, next) => {
         }
       }
     }
-
-    // If you want to keep all OrderLine data in a single array as well
-    // OrderLinearr = Object.values(orderLineData).flat();
 
     const orders = orderData.map((order) => {
       const orderNo = order.orderNo.trim();
@@ -185,23 +159,19 @@ exports.index = async (req, res, next) => {
         item: OrderLine,
       };
     });
-
     res.json(orders);
   } catch (error) {
     next(error);
   }
 };
 
-exports.single = async (req, res, next) => {
+exports.getOrder = async (req, res, next) => {
   try {
     const { orderNo } = req.body;
     let OrderLinearr = [];
     let promotionArr = [];
     let shippingarr = [];
     const orderData = await Order.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         orderNo: orderNo,
       },
@@ -228,11 +198,7 @@ exports.single = async (req, res, next) => {
       }
 
       const ShippingData = await Shipping.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
         where: {
-          // addressID: orderData[i].addressID,
           customerNo: orderData[i].customerNo,
           coNo: "410",
         },
@@ -246,28 +212,22 @@ exports.single = async (req, res, next) => {
           shippingAddress2: shipping.shippingAddress2,
           shippingAddress3: shipping.shippingAddress3,
           shippingPoscode: shipping.shippingPoscode.trim(),
-          shippingPhone: shipping.shippingPhone.trim(),
+          shippingPhone: formatPhoneNumber(shipping.shippingPhone.trim()),
         });
       }
     }
     const OrderLineData2 = await OrderLine.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         orderNo: orderNo,
         promotionCode: {
           [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: "" }],
         },
       },
-      // group: ["promotionCode"],
     });
 
     for (let OrderLine2 of OrderLineData2) {
       const PromotionData = await Promotion.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
+        
         where: {
           promotionCode: OrderLine2.promotionCode,
           FZCONO: "410",
@@ -287,8 +247,6 @@ exports.single = async (req, res, next) => {
         });
       }
     }
-
-    // res.json(promotionArr);
 
     const OrderLineData = OrderLinearr.map((OrderLine) => {
       let promotionNameC = "";
@@ -335,7 +293,6 @@ exports.single = async (req, res, next) => {
       };
     });
     res.json(orders);
-    // res.json(PromotionData);
   } catch (error) {
     next(error);
   }
@@ -425,12 +382,12 @@ exports.insert = async (req, res, next) => {
       );
 
       for (let item of items) {
-        const Weight = await getCalWeight({
+        const Weight = await fetchCalWeight({
           itemCode: item.itemCode,
           qty: item.qtyPCS,
         });
 
-        const Cost = await getCalCost({
+        const Cost = await fetchCalCost({
           itemCode: item.itemCode,
           qty: item.qtyPCS,
         });
@@ -467,31 +424,29 @@ exports.insert = async (req, res, next) => {
 
       let itemsData = await Promise.all(
         items.map(async (item) => {
-          const itemUnitMaxData = await fetchItemUnitMax(item.itemCode);
-          const itemDetail = await getItemDetails(item.itemCode);
-          const shinpping = await getShipping({
+          const itemDetail = await fetchItemDetails(item.itemCode);
+          const shinpping = await fetchShipping({
             customerNo: customerNo,
             addressID: addressID,
           });
-          const route = await getRoute(shinpping.shippingRoute);
-          const customer = await getCustomer(customerNo);
-          const WeightAll = await getCalWeight({
+          const route = await fetchRoute(shinpping.shippingRoute);
+          const customer = await fetchCustomer(customerNo);
+          const WeightAll = await fetchCalWeight({
             itemCode: item.itemCode,
             qty: item.qtyPCS,
           });
-          const Weight = await getCalWeight({
+          const Weight = await fetchCalWeight({
             itemCode: item.itemCode,
             qty: 1,
           });
-          const factor = await fetchfactor({
-            itemCode: item.itemCode,
-            unit: item.unit,
-          });
-          const Cost = await getCalCost({
+          const itemFactor = await fetchItemFactor(item.itemCode, item.unit);
+          console.log(itemFactor);
+
+          const Cost = await fetchCalCost({
             itemCode: item.itemCode,
             qty: 1,
           });
-          const CostAll = await getCalCost({
+          const CostAll = await fetchCalCost({
             itemCode: item.itemCode,
             qty: item.qtyPCS,
           });
@@ -531,7 +486,7 @@ exports.insert = async (req, res, next) => {
             MOPLDT: formatDate(),
             MOTIHM: orderJson[0].LINE.OBPLHM,
             MOPRIO: orderJson[0].LINE.OBPRIO,
-            OBCOFA: factor.factor,
+            OBCOFA: itemFactor.factor,
             OBUCOS: Cost.cost,
             costPCS: CostAll.cost,
             OBLNAM: item.total,
@@ -557,7 +512,7 @@ exports.insert = async (req, res, next) => {
             OBCODZ: requestDate,
             OBTIZO: orderJson[0].LINE.OBTIZO, // Check Data ?
             OBSTCD: orderJson[0].LINE.OBSTCD,
-            OBCOCD: itemUnitMaxData.factor,
+            OBCOCD: itemFactor.factor,
             OBUCCD: orderJson[0].LINE.OBUCCD,
             OBVTCD: orderJson[0].LINE.OBVTCD,
             OBSMCD: customer.saleCode, // SaleCode
@@ -612,7 +567,7 @@ exports.insert = async (req, res, next) => {
       }
 
       if (Hcase === 1) {
-        const customer = await getCustomer(customerNo);
+        const customer = await fetchCustomer(customerNo);
         await Order.create(
           {
             coNo: orderJson[0].HEAD.OACONO, // OACONO,
@@ -733,6 +688,7 @@ exports.deleted = async (req, res, next) => {
       url: `${HOST}order/deleteitem`,
       data: itemsData,
     });
+
     if (deleted[0] === 1) {
       res.status(202).json({
         message: "Deleted",

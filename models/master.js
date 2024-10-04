@@ -158,6 +158,7 @@ const Warehouse = sequelize.define(
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       field: "MWCONO",
     },
     warehouse: {
@@ -186,16 +187,19 @@ const Locate = sequelize.define(
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       field: "MLCONO",
     },
     warehouse: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "MLWHLO",
     },
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "MLITNO",
     },
     location: {
@@ -234,16 +238,19 @@ const Balance = sequelize.define(
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       field: "MBCONO",
     },
     warehouse: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "MBWHLO",
     },
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       field: "MBITNO",
     },
     itemPcs: {

@@ -2,114 +2,25 @@ const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
-const { HOST } = require("../../config/index");
-const axios = require("axios");
 const { PrepareInvoA, PrepareInvoB } = require("../../models/prepareinvoice");
-const now = new Date();
-const currentYear = now.getFullYear();
-const { totalNonVat, nonVat } = require("../../utils/calVat");
+const { nonVat } = require("../../utils/calVat");
 const { getJsonData } = require("../../utils/getJsonData");
-const {
-  fetchItemDetail,
-  fetchItemUnitMax,
-  fetchItemUnitMin,
-} = require("../../middleware/apiMaster");
-const { fetchCustomer } = require("../../middleware/apiCustomer");
-const { sequelize } = require("../../config/m3db");
-
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
+const { trimObjectStrings } = require("../../utils/String");
 
-exports.index = async (req, res, next) => {};
-
-exports.insertA = async (req, res, next) => {
-  let transaction;
+exports.index = async (req, res, next) => {
   try {
-    transaction = await sequelize.transaction();
-    const items = req.body.items;
-    let prepareJson = getJsonData("prepareinvoice.json");
-    for (let item of items) {
-      console.log(item.costPCS);
-
-      await PrepareInvoA.create(
-        {
-          coNo: item.coNo,
-          OUDIVI: item.OBDIVI,
-          OUFACI: "F10",
-          orderNo: item.orderNo,
-          itemNo: item.itemNo,
-          OUOSSQ: prepareJson[0].HEAD.OUOSSQ,
-          OUOSDT: item.orderDate, // OOHEAD.OAORDT
-          OUOSPE: parseInt(item.orderDate.toString().slice(0, 6)), // OOHEAD.OAORDT 6 digit font
-          customerNo: item.customerNo,
-          customerChannel: item.customerChannel, // OrderLine *ไม่มีใน OrderLine และ OOHEAD
-          OUCUST: item.customerNo, // customerNo
-          orderType: item.orderType, //
-          payer: item.payer,
-          OUCUCD: item.OACUCD, // OOHEAD
-          saleCode: item.OBSMCD, // OOHEAD
-          OUSDST: item.zone,
-          OUCSCD: item.OBORCO, // OOHEAD   **OOHEAD but OrderLine.OBORCO
-          OUFRE1: item.OAFRE1, // OOHEAD
-          warehouse: item.warehouse,
-          itemCode: item.itemCode,
-          OUITGR: item.OUITGR,
-          itemType: item.itemType,
-          OUITCL: item.OUITCL,
-          OUORST: item.orderStatusLow,
-          OUORQT: item.qtyPCS, // OrderLine QT = PCS
-          OUORQA: item.qtyCTN,
-          unit: item.unit,
-          OUCOFA: item.OBCOFA, // OrderLine
-          OUDMCF: prepareJson[0].HEAD.OUDMCF, // 1
-          OUSPUN: item.OBSPUN, // Bigest
-          OUORQS: item.qtyCTN, // OrderLine CTN
-          OUSTUN: item.OUSTUN, // ** smallest
-          grossWeight: item.grossWeight, // OrderLine
-          netWeight: item.netWeight, // OrderLine
-          OUDCCD: prepareJson[0].HEAD.OUDCCD, // 2
-          OUSAPR: nonVat(item.price), //non vat OrderLine.OBSAPR
-          OUGRPR: nonVat(item.price * item.qtyCTN), //non vat OrderLine OBNEPR
-          OUSAAM: nonVat(item.netPrice * item.qtyCTN), //OrderLine OBLNAM
-          OUPRMO: prepareJson[0].HEAD.OUPRMO, // 8
-          OUDISY: prepareJson[0].HEAD.OUDISY, //OOHEAD
-          // add OrderLine OBDIC 1-6 use 2,5 other defult 1
-          // OUDIA2  OrderLine non vat OBDIA2 * OBORQA
-          // OUOFRA  OrderLine non vat OBDIA2 * OBORQA
-          // OrderLine non vat OBDIA2 * OBORQA
-          OUDIA2: nonVat(item.discount * item.qtyCTN), //OrderLine non vat OBDIA2 * OBORQA
-          OUOFRA: nonVat(item.discount * item.qtyCTN),
-          OUDWDT: item.requestDate, //OOHEAD OARLDT
-          OUCODT: item.requestDate, //OOHEAD OARLDT
-          OUUCOS: item.costPCS.toFixed(2), //OrderLine OBUCOS * OBORQT
-          OUUCCD: prepareJson[0].HEAD.OUUCCD, // 1
-          OUUNMS: item.OUSTUN, // หน่วยเล็กสุดของ item
-          OUORTK: prepareJson[0].HEAD.OUORTK, // 1
-          addressID: item.addressID,
-          OUSDEP: "",
-          OUBUAR: "",
-          OUINRC: item.customerNo, // customer
-          OURGDT: formatDate(),
-          OURGTM: getCurrentTimeFormatted(),
-          OULMDT: formatDate(),
-          OUCHNO: prepareJson[0].HEAD.OUCHNO, // 1
-          OUCHID: prepareJson[0].HEAD.OUCHID,
-          // OUCAWE
-          OULMTS: Date.now(),
-          OUACOS: item.costPCS, //OrderLine OBUCOS * OBORQT
-          OUTEPY: item.OBTEPY, //OCUSMA
-          OUDECU: item.customerNo, // customer
-          OURQWH: item.warehouse, // warehouse
-        },
-        {
-          transaction,
-        }
-      );
-    }
-    res.status(201).json({
-      message: "Created",
+    const { orderNo } = req.body;
+    const itemData = await PrepareInvoA.findAll({
+      where: {
+        coNo: 410,
+        orderNo: orderNo,
+      },
     });
+    const response = itemData.map((item) => trimObjectStrings(item.toJSON()));
+    res.status(200).json(response);
   } catch (error) {
     next(error);
   }

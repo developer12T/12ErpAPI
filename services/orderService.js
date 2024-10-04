@@ -16,7 +16,7 @@ exports.getDocumentType = async (orderType) => {
   } catch (error) {
     throw errorEndpoint(
       currentFilePath,
-      "Order service document type :",
+      "getDocumentType",
       error
     );
   }
@@ -31,6 +31,6 @@ exports.getSeries = async (orderType) => {
     });
     return response;
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "Order service order type :", error);
+    throw errorEndpoint(currentFilePath, "getSeries", error);
   }
 };

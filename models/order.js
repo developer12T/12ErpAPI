@@ -6,6 +6,7 @@ const Order = sequelize.define(
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       field: 'OACONO',
       validate: {
         isNumeric: true

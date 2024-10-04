@@ -2,7 +2,8 @@ const { DRODPR, DROUDI, DROUTE } = require("../models/route");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
 const errorEndpoint = require("../middleware/errorEndpoint");
-exports.getRoute = async (shippingRoute) => {
+
+exports.fetchRoute = async (shippingRoute) => {
   try {
     const udiObj = {};
     const uteObj = {};
@@ -68,41 +69,43 @@ exports.getRoute = async (shippingRoute) => {
     });
     return routes[0];
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "getRoute:", error);
+    throw errorEndpoint(currentFilePath, "fetchRoute:", error);
   }
 };
 
-exports.routecode = async (req, res, next) => {
+exports.fetchRouteCode = async (routeCode) => {
   try {
-    const { routeCode } = req.body;
     const udiObj = {};
     const uteObj = {};
-    let RouteData = await DRODPR.findAll({
+    const RouteData = await DRODPR.findAll({
       where: {
         routeCode: routeCode,
         coNo: 410,
       },
     });
-    const udiData = await axios({
-      method: "post",
-      url: `${HOST}route/udi`,
-      data: { routeCode: RouteData[0].routeCode },
+
+    const udiData = await DROUDI.findAll({
+      where: {
+        routeCode: RouteData[0].routeCode,
+        coNo: 410,
+      },
     });
 
-    const uteData = await axios({
-      method: "post",
-      url: `${HOST}route/ute`,
-      data: { routeCode: RouteData[0].routeCode },
+    const uteData = await DROUTE.findAll({
+      where: {
+        routeCode: RouteData[0].routeCode,
+        coNo: 410,
+      },
     });
 
-    udiData.data.forEach((udi) => {
+    udiData.forEach((udi) => {
       udiObj[udi.routeCode] = {
         method: udi.method,
         departureTime: udi.departureTime,
       };
     });
 
-    uteData.data.forEach((ute) => {
+    uteData.forEach((ute) => {
       uteObj[ute.routeCode] = ute.routeName;
     });
 
@@ -125,8 +128,8 @@ exports.routecode = async (req, res, next) => {
         departureTime: departureTime,
       };
     });
-    res.json(routes);
+    return routes;
   } catch (error) {
-    next(error);
+    throw errorEndpoint(currentFilePath, "fetchRoute:", error);
   }
 };

@@ -2,31 +2,16 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  index,
   insertHead,
-  insertLine,
-  insertMGDADR,
 } = require("../../controllers/distribution/distributionController");
 
 const {
-  insertAllocate,
-} = require("../../controllers/distribution/allocateDistributionController");
-
-const {
-  insertDeliveryHead,
-  insertDeliveryLine,
-} = require("../../controllers/distribution/deliveryDistributionController");
+  getAddress,
+} = require("../../controllers/distribution/addressDistributionController");
 
 router.post("/insertdistribution", insertHead);
 
-// router.post("/insertLine", insertLine);
+router.post("/address", getAddress);
 
-// router.post("/insertMGDADR", insertMGDADR);
-
-// router.post("/insertAllocate", insertAllocate);
-
-// router.post("/insertDeliveryHead", insertDeliveryHead);
-
-// router.post("/insertDeliveryLine", insertDeliveryLine);
 
 module.exports = router;

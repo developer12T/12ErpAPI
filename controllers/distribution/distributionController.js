@@ -1,22 +1,23 @@
 const { MGHEAD, MGLINE, MGDADR } = require("../../models/distribution");
-// Get the current year and month
 const {
-  getCurrentYearMonth,
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
-const {
-  fetchRunningNumber,
-  fetchStock,
-  fetchItemDetail,
-  fetchRouteDetail,
-  fetchPolicyDistribution,
-} = require("../../middleware/apiMaster");
+
+// const {
+//   fetchRunningNumber,
+//   fetchStock,
+//   fetchItemDetail,
+//   fetchRouteDetail,
+//   fetchPolicyDistribution,
+// } = require("../../archive/apiMaster");
+
+const { fetchStock } = require("../../services/stockService");
 
 const {
-  getCalCost,
-  getCalWeight,
-  getItemDetails,
+  fetchCalCost,
+  fetchCalWeight,
+  fetchItemDetails,
 } = require("../../services/itemsService");
 
 const { getJsonData } = require("../../utils/getJsonData");
@@ -38,6 +39,7 @@ const {
 const { sequelize } = require("../../config/m3db");
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
+const { distributionAddress } = require("./addressDistributionController");
 const currentFilePath = path.basename(__filename);
 
 exports.insertHead = async (req, res, next) => {
@@ -59,6 +61,7 @@ exports.insertHead = async (req, res, next) => {
         MGNUGL,
         MGDEPT,
         routeCode,
+        addressCode
       } = distribution;
       const items = distribution.items;
       let { orderNo } = distribution;
@@ -111,7 +114,7 @@ exports.insertHead = async (req, res, next) => {
       );
 
       for (let item of items) {
-        const weight = await getCalWeight({
+        const weight = await fetchCalWeight({
           itemCode: item.itemCode,
           qty: item.itemQty,
         });
@@ -127,7 +130,7 @@ exports.insertHead = async (req, res, next) => {
 
       let itemsData = await Promise.all(
         items.map(async (item) => {
-          const weight = await getCalWeight({
+          const weight = await fetchCalWeight({
             itemCode: item.itemCode,
             qty: item.itemQty,
           });
@@ -135,8 +138,7 @@ exports.insertHead = async (req, res, next) => {
             warehouse: warehouse,
             itemCode: item.itemCode,
           });
-
-          const itemDetail = await getItemDetails(item.itemCode);
+          const itemDetail = await fetchItemDetails(item.itemCode);
           return {
             coNo: distributionJson[0].HEAD.MGCONO,
             runningNumberH: runningNumberH,
@@ -188,9 +190,6 @@ exports.insertHead = async (req, res, next) => {
           return result;
         });
       }
-      // res.json(itemsData);
-      // console.log(getCurrentTimeFormatted());
-
       if (Hcase == 1) {
         await MGHEAD.create(
           {
@@ -241,9 +240,9 @@ exports.insertHead = async (req, res, next) => {
 
       await distributionDeliveryLine(itemsData, transaction);
       await distributionAllocate(itemsData, orderType, transaction);
-      await distributionDeliveryHead(deliveryHead, transaction);
+      // await distributionDeliveryHead(deliveryHead, transaction);
       await insertLine(itemsData, transaction);
-      await insertMGDADR(orderNo, transaction);
+      await insertMGDADR(orderNo, addressCode, transaction);
 
       await transaction.commit();
       res.status(201).json({
@@ -311,29 +310,30 @@ insertLine = async (data, transaction) => {
   }
 };
 
-insertMGDADR = async (orderNo, transaction) => {
+insertMGDADR = async (orderNo, addressCode, transaction) => {
   try {
-    // const orderNo  = data;
+    const address = await distributionAddress(addressCode);
     await MGDADR.create(
       {
         coNo: 410,
         orderNo: orderNo,
-        MAADK1: "",
+        MAADK1: addressCode,
+        MAADK2: address.OAADK2,
         MASUNO: "",
         MAADID: "",
-        MACONM: "",
-        MAADR1: "",
-        MAADR2: "",
-        MAADR3: "",
-        MAADR4: "",
-        MAPONO: "",
-        MACSCD: "",
+        MACONM: address.OACONM,
+        MAADR1: address.OAADR1,
+        MAADR2: address.OAADR2,
+        MAADR3: address.OAADR3,
+        MAADR4: address.OAADR4,
+        MAPONO: address.OAPONO,
+        MACSCD: address.OACSCD,
         MAADVI: "",
         MAOREF: "",
         MAYREF: "",
-        MATXID: 0,
+        MATXID: address.OATXID,
         MATOWN: "",
-        MAECAR: "",
+        MAECAR: address.OAECAR,
         MARGDT: formatDate(),
         MARGTM: getCurrentTimeFormatted(),
         MALMDT: formatDate(),

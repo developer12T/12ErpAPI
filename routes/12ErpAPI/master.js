@@ -1,121 +1,86 @@
 const express = require("express");
 const router = express.Router();
 const {
-  index,
-  //   items,
-  // itemsingle,
-  //   fac,
-  itemdetails,
-  //   unit,
-  calCost,
-  calWeight,
-  runningNumber,
-  runningNumberInvoice,
-  updateRunningNumber,
-  updateRunningNumberInvoice,
-  warehouse,
-  singlepolicy,
-  singleordertype,
-  distributionpolicy,
+  getCalCost,
+  getCalWeight,
+  getRunningNumber,
+  getRunningNumberInvoice,
+  postUpdateRunningNumber,
+  postUpdateRunningNumberInvoice,
+  getWarehouse,
+  getPolicy,
+  getOrdertype,
+  getDistributionpolicy,
+  getItemAll,
+  getItemDetails,
 } = require("../../controllers/master/masterContorller");
-
 const {
-  fac,
-  items,
-  unit,
-  itemsingle,
-  unitmin,
-  unitmax,
-} = require("../../controllers/master/itemController");
-
-const {
-  stock,
-  balance,
-  locate,
-  stocksingle,
+  getStockAll,
+  getStockDetail,
 } = require("../../controllers/master/stockController");
-
 const {
-  indexdoc,
-  singledoc,
+  getDocumentTypeAll,
+  getDocumentType,
 } = require("../../controllers/master/documentTypeController");
 
-// Item
-//http://localhost:3000/master/
-router.post("/", index);
 
-//http://localhost:3000/master/
-router.post("/items", items);
+//================================== Item Master ===============================
+//http://localhost:3000/master/items
+router.post("/items", getItemAll);
 
-//http://localhost:3000/master/
-router.post("/fac", fac);
+//http://localhost:3000/master/itemdetails
+router.post("/itemdetails", getItemDetails);
 
-//http://localhost:3000/master/
-router.post("/unit", unit);
 
-//http://localhost:3000/master/
-router.post("/unitmin", unitmin);
 
-//http://localhost:3000/master/
-router.post("/unitmax", unitmax);
+//=================================== Order ====================================
+//http://localhost:3000/master/ordertype
+router.post("/ordertype", getOrdertype);
 
-//http://localhost:3000/master/
-router.post("/itemdetails", itemdetails);
+//http://localhost:3000/master/documenttype
+router.post("/documenttype", getDocumentTypeAll);
 
-//http://localhost:3000/master/
-router.post("/itemsingle", itemsingle);
+//http://localhost:3000/master/documenttype/single
+router.post("/documenttype/single", getDocumentType);
 
-// Order Type
-router.post("/ordertype", singleordertype);
+//http://localhost:3000/master/policy/single
+router.post("/policy/single", getPolicy);
 
-// Calculate
-//http://localhost:3000/master/calCost
-router.post("/calcost", calCost);
+//http://localhost:3000/master/policy/distribution/single
+router.post("/policy/distribution/single", getDistributionpolicy);
 
-//http://localhost:3000/master/calWeight
-router.post("/calweight", calWeight);
 
-// Number Running
+//================================== Calulate ==================================
+//http://localhost:3000/master/getCalCost
+router.post("/getCalCost", getCalCost);
+
+//http://localhost:3000/master/getCalWeight
+router.post("/getCalWeight", getCalWeight);
+
+
+//=============================== Number Running ===============================
 //http://localhost:3000/master/runningNumber/
-router.post("/runningNumber", runningNumber);
+router.post("/runningNumber", getRunningNumber);
 
-//http://localhost:3000/master/runningNumber/edit
-router.post("/runningNumber/update", updateRunningNumber);
+//http://localhost:3000/master/runningNumber/update
+router.post("/runningNumber/update", postUpdateRunningNumber);
 
-//http://localhost:3000/master/runningNumber/
-router.post("/runningNumberInvoice/", runningNumberInvoice);
+//http://localhost:3000/master/runningNumberInvoice/
+router.post("/runningNumberInvoice/", getRunningNumberInvoice);
 
-//http://localhost:3000/master/runningNumber/edit
-router.post("/runningNumberInvoice/update", updateRunningNumberInvoice);
+//http://localhost:3000/master/runningNumberInvoice/update
+router.post("/runningNumberInvoice/update", postUpdateRunningNumberInvoice);
 
-// Warehouse
-//http://localhost:3000/master/calWeight
-router.post("/warehouse", warehouse);
 
-// Stock
-//http://localhost:3000/master/calWeight
-router.post("/stock", stock);
+//=============================== Warehouse ===============================
+//http://localhost:3000/master/warehouse
+router.post("/warehouse", getWarehouse);
 
-//http://localhost:3000/master/calWeight
-router.post("/stocksingle", stocksingle);
+//=============================== Stock ===============================
+//http://localhost:3000/master/stockAll
+router.post("/stockAll", getStockAll);
 
-//http://localhost:3000/master/calWeight
-router.post("/balance", balance);
-
-//http://localhost:3000/master/calWeight
-router.post("/locate", locate);
-
-// Document
-//http://localhost:3000/master/calWeight
-router.post("/documenttype", indexdoc);
-
-//http://localhost:3000/master/calWeight
-router.post("/documenttype/single", singledoc);
-
-//http://localhost:3000/master/calWeight
-router.post("/policy/single", singlepolicy);
-
-//http://localhost:3000/master/calWeight
-router.post("/policy/distribution/single", distributionpolicy);
+//http://localhost:3000/master/stockDetail
+router.post("/stockDetail", getStockDetail);
 
 module.exports = router;

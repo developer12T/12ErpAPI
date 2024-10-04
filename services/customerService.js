@@ -6,9 +6,9 @@ const currentFilePath = path.basename(__filename);
 const {
   formatPhoneNumber,
   filterStringParentTH,
-} = require("../utils/filterString");
+} = require("../utils/String");
 
-exports.getCustomer = async (customerNo) => {
+exports.fetchCustomer = async (customerNo) => {
   try {
     const customersData = await Customer.findOne({
       where: { customerStatus: 20, coNo: 410, customerNo },
@@ -96,7 +96,7 @@ exports.getCustomer = async (customerNo) => {
   } catch (error) {
     // Throw the error with the current file path and error details
     const enhancedError = new Error(
-      `Error in ${currentFilePath}, function 'getCustomer': ${error.message}`
+      `Error in ${currentFilePath}, function 'fetchCustomer': ${error.message}`
     );
     enhancedError.status = error.status || 500;
     enhancedError.stack = error.stack; // Preserve the original stack trace
@@ -104,7 +104,7 @@ exports.getCustomer = async (customerNo) => {
   }
 };
 
-exports.getShipping = async (data) => {
+exports.fetchShipping = async (data) => {
   try {
     const { customerNo, addressID } = data;
     let shippingData = await Shipping.findOne({

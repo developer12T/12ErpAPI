@@ -1,10 +1,10 @@
 const express = require("express");
 const {
-  index,
   update,
   insert,
   deleted,
-  single,
+  getShipping,
+  getShippingAll,
 } = require("../../controllers/customers/shippingController");
 // const passportJWT = require("../../middleware/passportJWT");
 
@@ -13,11 +13,11 @@ module.exports = (io) => {
   const router = express.Router();
 
   // Define routes
-  router.post("/", index);
+  router.post("/all", getShippingAll);
   router.post("/update", update);
   router.post("/insert", insert);
   router.post("/deleted", deleted);
-  router.post("/single", single(io)); // Pass io to the controller
+  router.post("/", getShipping(io)); // Pass io to the controller
 
   return router;
 };

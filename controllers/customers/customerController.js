@@ -10,7 +10,7 @@ const {
 } = require("../../utils/getDateTime");
 const fs = require("fs");
 const path = require("path");
-const { filterStringParentTH } = require("../../utils/filterString");
+const { filterStringParentTH } = require("../../utils/String");
 const { decryptData, encryptData } = require("../../utils/hashData");
 
 exports.index = async (req, res, next) => {
@@ -73,9 +73,6 @@ exports.index = async (req, res, next) => {
 
     for (const customer of customers) {
       const shippingData = await Shipping.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
         where: { customerNo: customer.customerNo, coNo: "410" },
       });
 
@@ -96,9 +93,6 @@ exports.index = async (req, res, next) => {
 
     for (const customer of customers) {
       const saleData = await Sale.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
         where: { saleCode: customer.customerNo, CTSTCO: "SMCD" },
       });
 
@@ -117,7 +111,6 @@ exports.index = async (req, res, next) => {
     next(error);
   }
 };
-
 
 exports.single = async (req, res, next) => {
   try {
@@ -139,9 +132,6 @@ exports.single = async (req, res, next) => {
 
     for (let i = 0; i < customersData.length; i++) {
       const shippingData = await Shipping.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
         where: { customerNo: customersData[i].customerNo, coNo: "410" },
         // group: ["MMFUDS"],
       });
@@ -177,9 +167,6 @@ exports.single = async (req, res, next) => {
 
     for (let i = 0; i < customersData.length; i++) {
       const saleData = await Sale.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
         where: {
           saleCode: customersData[i].saleCode,
           CTSTCO: "SMCD",
@@ -399,8 +386,6 @@ exports.update = async (req, res, next) => {
       updateFields.saleCode = saleCode;
     }
 
-
-
     if ((customerName.trim().length > 36 && customerChannel == !105) || 103) {
       updateFields.customerAddress4 = customerName.trim().slice(35);
       updateFields.customerName = customerName.trim().slice(0, 35);
@@ -578,9 +563,6 @@ exports.saleZone = (io) => {
     try {
       const { saleZone } = req.body;
       const customersData = await Customer.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
         where: {
           customerStatus: 20,
           coNo: 410,
@@ -647,7 +629,6 @@ exports.deleted = async (req, res, next) => {
     const deleted = await Customer.update(
       { coNo: `${coNo * -1}` },
       {
-   
         where: {
           coNo: coNo,
           customerNo: customerNo,

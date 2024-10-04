@@ -361,7 +361,12 @@ const MGDADR = sequelize.define(
       primaryKey: true,
       field: "MAADK1",
     },
-
+    MAADK2: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      primaryKey: true,
+      field: "MAADK2",
+    },
     MASUNO: {
       type: DataTypes.NUMBER,
       allowNull: true,
@@ -477,18 +482,20 @@ const CIADDR = sequelize.define(
   {
     coNo: {
       type: DataTypes.STRING,
+      primaryKey: true,
       allowNull: true,
       field: "OACONO",
     },
     OAADK1: {
       type: DataTypes.STRING,
+      primaryKey: true,
       allowNull: true,
       field: "OAADK1",
     },
     OAADK2: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OAADK1",
+      field: "OAADK2",
     },
     OACONM: {
       type: DataTypes.STRING,
@@ -524,6 +531,16 @@ const CIADDR = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
       field: "OAPONO",
+    },
+    OAECAR: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OAECAR",
+    },
+    OATXID: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OATXID",
     },
   },
   {

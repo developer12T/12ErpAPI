@@ -15,7 +15,7 @@ module.exports = (io) => {
   //http://localhost:3000/customer/
   router.post("/", [passportJWT.isLogin], index);
 
-  //http://localhost:3000/customer/
+  //http://localhost:3000/customer/single
   router.post("/single", single);
 
   //http://localhost:3000/customer/edit
@@ -24,7 +24,7 @@ module.exports = (io) => {
   //http://localhost:3000/customer/insert
   router.post("/insert", insert(io));
 
-  //http://localhost:3000/customer/insert
+  //http://localhost:3000/customer/saleZone
   router.post("/saleZone", saleZone(io));
 
   //http://localhost:3000/customer/delete

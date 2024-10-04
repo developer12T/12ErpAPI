@@ -1,11 +1,10 @@
-const { Balance, Locate, ItemMaster } = require("../models/master");
+const { Balance, Locate } = require("../models/master");
 
 const { Op } = require("sequelize");
 
-exports.stockALL = async (req, res, next) => {
+exports.fetchStockAll = async (warehouse) => {
   try {
     const locateData = {};
-    const { warehouse } = req.body;
     const BalanceData = await Balance.findAll({
       attributes: {
         exclude: ["id"],
@@ -30,54 +29,26 @@ exports.stockALL = async (req, res, next) => {
     // res.json(BalanceData);
 
     for (let i = 0; i < BalanceData.length; i++) {
-      locateData[BalanceData[i].itemCode] = [];
-
-      const locate = await axios({
-        method: "post",
-        url: `${HOST}master/locate`,
-        data: { warehouse: warehouse, itemCode: BalanceData[i].itemCode },
+      locateData[BalanceData[i].itemCode.trim()] = [];
+      const locate = await Locate.findAll({
+        where: {
+          warehouse: warehouse,
+          itemCode: BalanceData[i].itemCode.trim(),
+          coNo: 410,
+        },
       });
 
-      if (locate.data.length > 0) {
-        const location = locate.data[0].location.trim();
+      if (locate.length > 0) {
+        const location = locate[0].location.trim();
         locateData[BalanceData[i].itemCode].push({
           location: location,
-          lot: locate.data[0].lot,
-          itemOnHand: locate.data[0].itemOnHand,
-          itemallocated: locate.data[0].itemallocated, // Assuming promotionName is a property of PromotionData
+          lot: locate[0].lot,
+          itemOnHand: locate[0].itemOnHand,
+          itemallocated: locate[0].itemallocated, // Assuming promotionName is a property of PromotionData
         });
       } else {
         console.log(`No promotion data found for`);
       }
-
-      // for (let i = 0; i < locate.data.length; i++) {
-      //   const location = locate.data[i].location.trim();
-      //   locateData[BalanceData[i].itemCode].push({
-      //     location: location,
-      //     lot: locate.data[i].lot,
-      //     itemOnHand: locate.data[i].itemOnHand,
-      //     itemallocated: locate.data[i].itemallocated,
-      //   });
-      // }
-
-      // console.log(locate);
-      // const LocateData = await Locate.findAll({
-      //   attributes: {
-      //     exclude: ["id"],
-      //   },
-      //   where: {
-      //     itemCode: BalanceData[i].itemCode,
-      //     warehouse: BalanceData[i].warehouse,
-      //   },
-      // });
-      // for (let j = 0; j < LocateData.length; j++) {
-      //   locateData[BalanceData[i].itemCode].push({
-      //     location: LocateData[j].location,
-      //     lot: LocateData[j].lot,
-      //     itemOnHand: LocateData[j].itemOnHand,
-      //     itemallocated: LocateData[j].itemallocated,
-      //   });
-      // }
     }
 
     const stocks = BalanceData.map((stock) => {
@@ -94,17 +65,16 @@ exports.stockALL = async (req, res, next) => {
         lot: locate,
       };
     });
-    res.json(stocks);
+    return stocks;
   } catch (error) {
-    next(error);
+    throw errorEndpoint(currentFilePath, "fetchStockAll", error);
   }
 };
 
-exports.stock = async (req, res, next) => {
+exports.fetchStock = async (data) => {
   try {
     let locatearr = [];
-    const Data = {};
-    const { warehouse, itemCode } = req.body;
+    const { warehouse, itemCode } = data;
     const BalanceData = await Balance.findAll({
       attributes: {
         exclude: ["id"],
@@ -115,19 +85,21 @@ exports.stock = async (req, res, next) => {
         coNo: 410,
       },
     });
-    const locate = await axios({
-      method: "post",
-      url: `${HOST}master/locate`,
-      data: { warehouse: warehouse, itemCode: itemCode },
+    const locate = await Locate.findAll({
+      where: {
+        warehouse: warehouse,
+        itemCode: itemCode.trim(),
+        coNo: 410,
+      },
     });
 
-    for (let i = 0; i < locate.data.length; i++) {
-      const location = locate.data[i].location.trim();
+    for (let i = 0; i < locate.length; i++) {
+      const location = locate[i].location.trim();
       locatearr.push({
         location: location,
-        lot: locate.data[i].lot,
-        itemOnHand: locate.data[i].itemOnHand,
-        itemallocated: locate.data[i].itemallocated,
+        lot: locate[i].lot,
+        itemOnHand: locate[i].itemOnHand,
+        itemallocated: locate[i].itemallocated,
       });
     }
     const stocks = BalanceData.map((stock) => {
@@ -143,8 +115,8 @@ exports.stock = async (req, res, next) => {
         lot: locatearr,
       };
     });
-    res.json(stocks);
+    return stocks;
   } catch (error) {
-    next(error);
+    throw errorEndpoint(currentFilePath, "fetchStockAll", error);
   }
 };

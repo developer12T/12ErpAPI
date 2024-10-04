@@ -1,13 +1,10 @@
 const Sale = require("../../models/sale");
-const { filterStringParentTH } = require("../../utils/filterString");
+const { filterStringParentTH } = require("../../utils/String");
 
-exports.index = async (req, res, next) => {
+exports.getSaleAll = async (req, res, next) => {
   try {
     // const { coNo, saleCode } = req.body;
     const saleDate = await Sale.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         coNo: "410",
         CTSTCO: "SMCD",
@@ -32,13 +29,10 @@ exports.index = async (req, res, next) => {
   }
 };
 
-exports.single = async (req, res, next) => {
+exports.getSale = async (req, res, next) => {
   try {
     const { saleCode } = req.body;
     const saleDate = await Sale.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         coNo: "410",
         CTSTCO: "SMCD",
@@ -56,7 +50,7 @@ exports.single = async (req, res, next) => {
         CTSTCO: CTSTCO,
       };
     });
-    res.json(sales);
+    res.json(sales[0]);
   } catch (error) {
     next(error);
   }

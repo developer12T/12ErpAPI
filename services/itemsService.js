@@ -6,12 +6,45 @@ const axios = require("axios");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
 
-exports.getItemDetails = async (itemCode) => {
+exports.fetchItemDetails = async (itemCode) => {
   try {
     const itemFacObj = {};
-    const itemUnitObj = {};
     let unitarr = [];
-    // let { itemCode } = data;
+    let minUnit = [];
+    let maxUnit = [];
+    const maxUnitfactor = await ItemUnit.max("factor", {
+      where: {
+        coNo: 410,
+        itemCode: itemCode,
+        facType: 1,
+      },
+    });
+    const maxUnitData = await ItemUnit.findOne({
+      where: {
+        coNo: 410,
+        itemCode: itemCode,
+        facType: 1,
+        factor: maxUnitfactor,
+      },
+    });
+    maxUnit.push(maxUnitData);
+    const minUnitfactor = await ItemUnit.min("factor", {
+      where: {
+        coNo: 410,
+        itemCode: itemCode,
+        facType: 1,
+      },
+    });
+
+    const minUnitData = await ItemUnit.findOne({
+      where: {
+        coNo: 410,
+        itemCode: itemCode,
+        facType: 1,
+        factor: minUnitfactor,
+      },
+    });
+    maxUnit.push(minUnitData);
 
     const itemData = await ItemMaster.findAll({
       where: {
@@ -77,6 +110,8 @@ exports.getItemDetails = async (itemCode) => {
         netWeight: item.netWeight,
         grossWeight: item.grossWeight,
         unit: unitarr,
+        maxUnit: maxUnit,
+        minUnit: minUnit,
       };
     });
 
@@ -87,7 +122,24 @@ exports.getItemDetails = async (itemCode) => {
   }
 };
 
-exports.getCalWeight = async (data) => {
+exports.fetchItemFactor = async (itemCode, unit) => {
+  try {
+    const itemData = await ItemUnit.findOne({
+      where: {
+        coNo: 410,
+        itemCode: itemCode,
+        unit: unit,
+        facType: 1,
+      },
+    });
+    return itemData;
+  } catch (error) {
+    // Enhanced error handling
+    throw errorEndpoint(currentFilePath, "fetchItemFactor", error);
+  }
+};
+
+exports.fetchCalWeight = async (data) => {
   try {
     const { itemCode, qty } = data;
     let itemData = await ItemMaster.findOne({
@@ -106,11 +158,11 @@ exports.getCalWeight = async (data) => {
     return itemData;
   } catch (error) {
     // Enhanced error handling
-    throw errorEndpoint(currentFilePath, "Calulate Weight:", error);
+    throw errorEndpoint(currentFilePath, "fetchCalWeight", error);
   }
 };
 
-exports.getCalCost = async (data) => {
+exports.fetchCalCost = async (data) => {
   try {
     const { itemCode, qty } = data;
     let itemData = await ItemFac.findOne({
@@ -128,6 +180,6 @@ exports.getCalCost = async (data) => {
     return itemData;
   } catch (error) {
     // Enhanced error handling
-    throw errorEndpoint(currentFilePath, "Calulate Cost:", error);
+    throw errorEndpoint(currentFilePath, "fetchCalCost", error);
   }
 };

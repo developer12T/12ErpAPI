@@ -11,128 +11,6 @@ const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
 
-
-exports.insertItem = async (req, res, next) => {
-  let transaction;
-  try {
-    const items = req.body.items;
-    const orderJson = getJsonData("order.json");
-    transaction = await sequelize.transaction();
-    // const jsonPathOrder = path.join(__dirname, "../../", "Jsons", "order.json");
-    // let orderJson = [];
-    // if (fs.existsSync(jsonPathOrder)) {
-    //   const jsonDataOrder = fs.readFileSync(jsonPathOrder, "utf-8");
-    //   orderJson = JSON.parse(jsonDataOrder);
-    // }
-
-    // res.json(fs.existsSync(jsonPath))
-    // let itemNo = 1;
-    for (let item of items) {
-      await OrderLine.create(
-        {
-          coNo: orderJson[0].LINE.OBCONO, //
-          OBDIVI: orderJson[0].LINE.OBDIVI, //
-          orderNo: item.orderNo,
-          itemNo: item.itemNo,
-          orderStatusLow: item.orderStatusLow,
-          OBFACI: orderJson[0].LINE.OBFACI,
-          warehouse: item.warehouse,
-          itemCode: item.itemCode,
-          OBITDS: item.OBITDS,
-          itemName: item.itemName,
-          qtyPCS: item.qtyPCS,
-          qtyCTN: item.qtyCTN,
-          OBRNQT: item.qtyPCS,
-          OBRNQA: item.qtyCTN,
-          // OBIVQT: item.qtyPCS,
-          // OBIVQA: item.qtyCTN,
-          unit: item.unit,
-          // OBDCCA
-          // OBOCFA
-          OBDMCF: orderJson[0].LINE.OBDMCF,
-          OBSPUN: item.OBSPUN,
-          OBPRMO: item.OBPRMO,
-          OBPCOF: orderJson[0].LINE.OBPCOF,
-          // OBDCCS
-          OBCOFS: item.OBCOFA,
-          OBDMCS: orderJson[0].LINE.OBDMCS,
-          price: item.price,
-          netPrice: item.netPrice,
-          discount: item.discount,
-          OBLNAM: item.total, // recheck
-          OBDIC1: item.OBDIC1,
-          OBDIC2: item.OBDIC2,
-          OBDIC3: item.OBDIC3,
-          OBDIC4: item.OBDIC4,
-          OBDIC5: item.OBDIC5,
-          OBDIC6: item.OBDIC6,
-          OBCMP5: item.OBCMP5,
-          OBDIBE: item.OBDIBE,
-          OBDIRE: item.OBDIRE,
-          OBDDSU: item.OBDDSU,
-          OBACRF: item.OBACRF,
-          OBDWDT: item.OBDWDT,
-          OBCODT: item.OBCODT,
-          OBCOHM: item.OBCOHM,
-          OBDWDZ: item.OBDWDZ,
-          OBCODZ: item.OBCODZ,
-          OBCOHZ: item.OBCOHZ,
-          OBTIZO: item.OBTIZO,
-          OBSTCD: item.OBSTCD,
-          OBCOCD: item.OBCOCD,
-          OBUCCD: item.OBUCCD,
-          OBVTCD: item.OBVTCD,
-          OBSMCD: item.OBSMCD,
-          OBCUNO: item.OBCUNO,
-          OBADID: item.OBADID,
-          OBROUT: item.OBROUT,
-          OBRODN: item.OBRODN,
-          OBDSDT: item.requestDate,
-          OBDSHM: item.OBDSHM,
-          OBFDED: item.requestDate,
-          OBLDED: item.requestDate,
-          OBCINA: item.OBCINA,
-          OBDECU: item.OBDECU,
-          OBTEPY: item.OBTEPY,
-          OBPMOR: item.OBPMOR,
-          OBUPAV: item.OBUPAV,
-          OBDIA5: 0,
-          total: item.total,
-          promotionCode: item.promotionCode,
-          OBATPR: orderJson[0].LINE.OBATPR,
-          OBMODL: orderJson[0].LINE.OBMODL,
-          OBTEDL: orderJson[0].LINE.OBTEDL,
-          OBRGDT: formatDate(),
-          OBRGTM: getCurrentTimeFormatted(),
-          OBLMDT: formatDate(),
-          OBCHNO: orderJson[0].LINE.OBCHNO,
-          OBCHID: orderJson[0].LINE.OBCHID,
-          OBLMTS: Date.now(),
-          OBPLDT: formatDate(),
-          OBPLHM: orderJson[0].LINE.OBPLHM,
-          OBPRIO: orderJson[0].LINE.OBPRIO,
-          OBUCOS: item.OBUCOS,
-          OBCOFA: item.OBCOFA,
-          OBORCO: item.OBORCO,
-
-          //OBPRIO
-        },
-        {
-          transaction,
-        }
-      );
-    }
-    res.status(201).json({
-      message: "Created",
-    });
-  } catch (error) {
-    if (transaction) {
-      await transaction.rollback();
-    }
-    next(error);
-  }
-};
-
 exports.orderLineInsert = async (itemData, transaction) => {
   // let transaction;
   try {
@@ -238,7 +116,7 @@ exports.orderLineInsert = async (itemData, transaction) => {
   }
 };
 
-exports.item = async (req, res, next) => {
+exports.getOrderItemAll = async (req, res, next) => {
   const { orderNo } = req.body;
   const orderLineData = {};
   const promotionData = {};
@@ -246,9 +124,6 @@ exports.item = async (req, res, next) => {
   promotionData[orderNo] = [];
 
   const OrderLineData = await OrderLine.findAll({
-    attributes: {
-      exclude: ["id"],
-    },
     where: { orderNo: orderNo },
   });
 
@@ -268,9 +143,6 @@ exports.item = async (req, res, next) => {
   }
 
   const OrderLineData2 = await OrderLine.findAll({
-    attributes: {
-      exclude: ["id"],
-    },
     where: {
       orderNo: orderNo,
       promotionCode: {
@@ -281,9 +153,6 @@ exports.item = async (req, res, next) => {
 
   for (let OrderLine2 of OrderLineData2) {
     const PromotionData = await Promotion.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         promotionCode: OrderLine2.promotionCode,
         FZCONO: "410",
@@ -304,7 +173,7 @@ exports.item = async (req, res, next) => {
     }
   }
 
-  const OrderLine = orderLineData[orderNo].map((OrderLine) => {
+  const response = orderLineData[orderNo].map((OrderLine) => {
     const itemCode = OrderLine.itemCode.trim();
     const promotionCode = OrderLine.promotionCode.trim();
     const promotion = promotionData[orderNo].find(
@@ -325,7 +194,7 @@ exports.item = async (req, res, next) => {
     };
   });
 
-  res.json(OrderLine);
+  res.json(response);
 };
 
 exports.deleteitem = async (req, res, next) => {
@@ -337,9 +206,7 @@ exports.deleteitem = async (req, res, next) => {
         coNo: -410,
       },
       {
-        attributes: {
-          exclude: ["id"],
-        },
+        
         where: {
           orderNo: item.orderNo,
           itemCode: item.itemCode,

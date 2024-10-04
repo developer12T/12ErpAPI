@@ -1,4 +1,4 @@
-const axiosInstance = require("./axios");
+const axiosInstance = require("../middleware/axios");
 
 async function insertAllocate(itemsData) {
   return makePostRequest("/allocate/insert", {

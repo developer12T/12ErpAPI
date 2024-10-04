@@ -57,6 +57,7 @@ const NumberSeriesInvoice = sequelize.define(
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       field: "C2CONO",
     },
     series: {

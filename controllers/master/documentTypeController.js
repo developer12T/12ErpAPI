@@ -1,6 +1,6 @@
 const DocumentType = require("../../models/documenttype");
 
-exports.indexdoc = async (req, res, next) => {
+exports.getDocumentTypeAll = async (req, res, next) => {
   try {
     const data = await DocumentType.findAll({
       where: {
@@ -13,7 +13,7 @@ exports.indexdoc = async (req, res, next) => {
   }
 };
 
-exports.singledoc = async (req, res, next) => {
+exports.getDocumentType = async (req, res, next) => {
   try {
     const { orderType } = req.body;
     const data = await DocumentType.findAll({

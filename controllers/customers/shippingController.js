@@ -1,8 +1,6 @@
 const Shipping = require("../../models/shipping");
-const { Sequelize, Op, where } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
-const { sequelize } = require("../../config/m3db");
 const {
   formatDate,
   getCurrentTimeFormatted,
@@ -11,15 +9,12 @@ const {
   filterStringEN,
   filterStringNumber,
   formatPhoneNumber,
-} = require("../../utils/filterString");
+} = require("../../utils/String");
 
-exports.index = async (req, res, next) => {
+exports.getShippingAll = async (req, res, next) => {
   try {
     const { customerNo, addressID } = req.body;
     const shippingData = await Shipping.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         customerNo,
         coNo: "410",
@@ -151,9 +146,7 @@ exports.insert = async (req, res, next) => {
 
     for (let shipping of shippings) {
       const shinppingData = await Shipping.findAll({
-        attributes: {
-          exclude: ["id"],
-        },
+
         where: {
           customerNo: shipping.customerNo,
           coNo: 410,
@@ -248,7 +241,7 @@ exports.deleted = async (req, res, next) => {
   }
 };
 
-exports.single = (io) => async (req, res, next) => {
+exports.getShipping = (io) => async (req, res, next) => {
   try {
     const { customerNo, addressID } = req.body;
     let shippingData = await Shipping.findOne({

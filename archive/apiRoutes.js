@@ -1,4 +1,4 @@
-const axiosInstance = require("./axios");
+const axiosInstance = require("../middleware/axios");
 
 async function fetchRoutes(shippingRoute) {
   try {

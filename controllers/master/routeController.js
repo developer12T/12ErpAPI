@@ -2,7 +2,7 @@ const { DRODPR, DROUDI, DROUTE } = require("../../models/route");
 const { HOST } = require("../../config/index");
 const axios = require("axios");
 
-exports.index = async (req, res, next) => {
+exports.getRouteAll = async (req, res, next) => {
   try {
     const udiObj = {};
     const uteObj = {};
@@ -15,6 +15,7 @@ exports.index = async (req, res, next) => {
         coNo: 410,
       },
     });
+
     for (let i = 0; i < RouteData.length; i++) {
       const udiData = await axios({
         method: "post",
@@ -65,81 +66,20 @@ exports.index = async (req, res, next) => {
   }
 };
 
-exports.udi = async (req, res, next) => {
+exports.getRoute = async (req, res, next) => {
   try {
-    const { routeCode } = req.body;
-    const RouteData = await DROUDI.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
-      where: {
-        routeCode: routeCode,
-        coNo: 410,
-      },
-    });
-    const result = RouteData.map((data) => {
-      return {
-        routeCode: data.routeCode,
-        DSRODN: data.DSRODN,
-        method: data.method,
-        departureTime: `${data.DSDETH}${data.DSDETM}`,
-      };
-    });
-
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.dpr = async (req, res, next) => {
-  try {
-    const { routeCode } = req.body;
-    const RouteData = await DRODPR.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
-      where: {
-        routeCode: routeCode,
-      },
-    });
-    res.json(RouteData);
-  } catch (error) {
-    next(error);
-  }
-};
-exports.ute = async (req, res, next) => {
-  try {
-    const { routeCode } = req.body;
-    const RouteData = await DROUTE.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
-      where: {
-        routeCode: routeCode,
-        coNo: 410,
-      },
-    });
-    res.json(RouteData);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.single = async (req, res, next) => {
-  try {
+    
     const { shippingRoute } = req.body;
     const udiObj = {};
     const uteObj = {};
+
     let RouteData = await DRODPR.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         DOOBV1: shippingRoute,
         coNo: 410,
       },
     });
+    
     const udiData = await axios({
       method: "post",
       url: `${HOST}route/udi`,
@@ -189,7 +129,7 @@ exports.single = async (req, res, next) => {
   }
 };
 
-exports.routecode = async (req, res, next) => {
+exports.getRouteCode = async (req, res, next) => {
   try {
     const { routeCode } = req.body;
     const udiObj = {};
