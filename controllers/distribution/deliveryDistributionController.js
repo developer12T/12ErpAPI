@@ -3,14 +3,8 @@ const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
-const { validationResult } = require("express-validator");
 const { getJsonData } = require("../../utils/getJsonData");
 // const { fetchShipping, fetchCustomer } = require("../../archive/apiCustomer");
-// const {
-//   fetchPolicyDistribution,
-//   fetchPolicy,
-//   fetchRouteDetail,
-// } = require("../../archive/apiMaster");
 const { fetchRouteCode } = require("../../services/routeService");
 const { fetchDistributionPolicy } = require("../../services/policyService");
 
@@ -37,6 +31,7 @@ exports.distributionDeliveryHead = async (data, transaction) => {
     const route = await fetchRouteCode(routeCode);
     const policy = await fetchDistributionPolicy(orderType);
 
+    // res.status(200).json(route)
     let deliveryobj = {
       coNo: coNo,
       OQDLIX: runningNumberH,
@@ -106,7 +101,6 @@ exports.distributionDeliveryHead = async (data, transaction) => {
       OQSCES: deliveryData[0].DELIVERY_HEAD.OQSCES, //90
       OQLMTS: Date.now(),
     };
-
     switch (orderType.slice(0, 1)) {
       case "T":
         await DeliveryHead.create(deliveryobj, {

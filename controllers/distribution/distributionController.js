@@ -19,13 +19,8 @@ const {
   fetchCalWeight,
   fetchItemDetails,
 } = require("../../services/itemsService");
-
 const { getJsonData } = require("../../utils/getJsonData");
-
-const {
-  insert,
-  distributionAllocate,
-} = require("./allocateDistributionController");
+const { distributionAllocate } = require("./allocateDistributionController");
 const {
   distributionDeliveryHead,
   distributionDeliveryLine,
@@ -61,7 +56,7 @@ exports.insertHead = async (req, res, next) => {
         MGNUGL,
         MGDEPT,
         routeCode,
-        addressCode
+        addressCode,
       } = distribution;
       const items = distribution.items;
       let { orderNo } = distribution;
@@ -238,16 +233,20 @@ exports.insertHead = async (req, res, next) => {
         routeCode: routeCode,
       };
 
-      await distributionDeliveryLine(itemsData, transaction);
-      await distributionAllocate(itemsData, orderType, transaction);
-      // await distributionDeliveryHead(deliveryHead, transaction);
-      await insertLine(itemsData, transaction);
-      await insertMGDADR(orderNo, addressCode, transaction);
+      // await distributionDeliveryLine(itemsData, transaction);
+      // await distributionAllocate(itemsData, orderType, transaction);
+      await distributionDeliveryHead(deliveryHead, transaction);
+
+      // await insertLine(itemsData, transaction);
+      // await insertMGDADR(orderNo, addressCode, transaction);
+      // const route = await fetchRouteCode(routeCode);
+      
 
       await transaction.commit();
       res.status(201).json({
         orderNo: orderNo,
-        // item: itemsData,
+        // items: itemsData,
+        // route: route,
         // deliveryHead: deliveryHead,
         message: "Created",
       });
