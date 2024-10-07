@@ -52,10 +52,10 @@ router.post("/policy/distribution/single", getDistributionpolicy);
 
 //================================== Calulate ==================================
 //http://localhost:3000/master/getCalCost
-router.post("/getCalCost", getCalCost);
+router.post("/calcost", getCalCost);
 
 //http://localhost:3000/master/getCalWeight
-router.post("/getCalWeight", getCalWeight);
+router.post("/calWeight", getCalWeight);
 
 
 //=============================== Number Running ===============================
