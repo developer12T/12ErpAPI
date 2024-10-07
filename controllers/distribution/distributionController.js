@@ -3,24 +3,14 @@ const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
-
-// const {
-//   fetchRunningNumber,
-//   fetchStock,
-//   fetchItemDetail,
-//   fetchRouteDetail,
-//   fetchPolicyDistribution,
-// } = require("../../archive/apiMaster");
-
 const { fetchStock } = require("../../services/stockService");
-
 const {
   fetchCalCost,
   fetchCalWeight,
   fetchItemDetails,
 } = require("../../services/itemsService");
 const { getJsonData } = require("../../utils/getJsonData");
-const { distributionAllocate } = require("./allocateDistributionController");
+const { fetchDistributionAddress } = require("../../services/addressService");
 const {
   distributionDeliveryHead,
   distributionDeliveryLine,
@@ -34,8 +24,8 @@ const {
 const { sequelize } = require("../../config/m3db");
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
-const { distributionAddress } = require("./addressDistributionController");
 const currentFilePath = path.basename(__filename);
+const { distributionAllocate } = require("./allocateDistributionController");
 
 exports.insertHead = async (req, res, next) => {
   let transaction;
@@ -233,16 +223,12 @@ exports.insertHead = async (req, res, next) => {
         routeCode: routeCode,
       };
 
-      // await distributionDeliveryLine(itemsData, transaction);
-      // await distributionAllocate(itemsData, orderType, transaction);
+      await distributionDeliveryLine(itemsData, transaction);
+      await distributionAllocate(itemsData, orderType, transaction);
       await distributionDeliveryHead(deliveryHead, transaction);
-
-      // await insertLine(itemsData, transaction);
-      // await insertMGDADR(orderNo, addressCode, transaction);
+      await insertLine(itemsData, transaction);
+      await insertMGDADR(orderNo, addressCode, transaction);
       // const route = await fetchRouteCode(routeCode);
-      
-
-      await transaction.commit();
       res.status(201).json({
         orderNo: orderNo,
         // items: itemsData,
@@ -250,6 +236,7 @@ exports.insertHead = async (req, res, next) => {
         // deliveryHead: deliveryHead,
         message: "Created",
       });
+      await transaction.commit();
       // res.json(data);
     }
   } catch (error) {
@@ -305,19 +292,18 @@ insertLine = async (data, transaction) => {
       );
     }
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "Distribution Line:", error);
+    throw errorEndpoint(currentFilePath, "Distribution Line", error);
   }
 };
 
 insertMGDADR = async (orderNo, addressCode, transaction) => {
   try {
-    const address = await distributionAddress(addressCode);
+    const address = await fetchDistributionAddress(addressCode);
     await MGDADR.create(
       {
         coNo: 410,
         orderNo: orderNo,
         MAADK1: addressCode,
-        MAADK2: address.OAADK2,
         MASUNO: "",
         MAADID: "",
         MACONM: address.OACONM,
@@ -342,6 +328,6 @@ insertMGDADR = async (orderNo, addressCode, transaction) => {
       { transaction }
     );
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "Distribution Address:", error);
+    throw error;
   }
 };

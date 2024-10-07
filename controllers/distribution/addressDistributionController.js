@@ -1,5 +1,8 @@
 const { CIADDR } = require("../../models/distribution");
 const { trimObjectStrings } = require("../../utils/String");
+const path = require("path");
+const currentFilePath = path.basename(__filename);
+const errorEndpoint = require("../../middleware/errorEndpoint");
 
 exports.getAddress = async (req, res, next) => {
   try {
@@ -19,11 +22,11 @@ exports.getAddress = async (req, res, next) => {
       throw error;
     }
   } catch (error) {
-    next(error);
+    throw errorEndpoint(currentFilePath, "fetchAddress", error);
   }
 };
 
-exports.distributionAddress = async (addressCode) => {
+exports.getDistributionAddress = async (addressCode) => {
   try {
     const address = await CIADDR.findOne({
       where: {
@@ -40,6 +43,6 @@ exports.distributionAddress = async (addressCode) => {
       throw error;
     }
   } catch (error) {
-    next(error);
+    throw errorEndpoint(currentFilePath, "fetchDistributionAddress", error);
   }
 };

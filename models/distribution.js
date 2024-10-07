@@ -345,7 +345,7 @@ const MGDADR = sequelize.define(
   "MGDADR",
   {
     coNo: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.STRING,
       allowNull: true,
       field: "MACONO",
     },
@@ -361,12 +361,7 @@ const MGDADR = sequelize.define(
       primaryKey: true,
       field: "MAADK1",
     },
-    MAADK2: {
-      type: DataTypes.NUMBER,
-      allowNull: true,
-      primaryKey: true,
-      field: "MAADK2",
-    },
+
     MASUNO: {
       type: DataTypes.NUMBER,
       allowNull: true,
@@ -473,7 +468,6 @@ const MGDADR = sequelize.define(
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
   }
 );
 
@@ -548,7 +542,6 @@ const CIADDR = sequelize.define(
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
   }
 );
 
