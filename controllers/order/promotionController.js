@@ -13,7 +13,6 @@ exports.update = async (req, res, next) => {
   const { promotionCode } = req.body;
   const updateFields = {};
   const update = await Promotion.update(updateFields, {
-    attributes: { exclude: ["id"] },
     where: {
       customerNo: customerNo,
       // customerStatus: "20",

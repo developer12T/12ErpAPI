@@ -70,6 +70,7 @@ exports.getOrderAll = async (req, res, next) => {
         orderLineData[orderData[i].orderNo].push({
           productNumber: OrderLineData[j].productNumber,
           itemCode: OrderLineData[j].itemCode,
+          itemNo: OrderLineData[j].itemNo,
           itemName: OrderLineData[j].itemName,
           qtyCTN: OrderLineData[j].qtyCTN,
           unit: OrderLineData[j].unit,
@@ -131,6 +132,7 @@ exports.getOrderAll = async (req, res, next) => {
         return {
           productNumber: OrderLine.productNumber,
           itemCode: itemCode,
+          itemNo: OrderLine.itemNo,
           itemName: itemName,
           qtyCTN: OrderLine.qtyCTN,
           unit: OrderLine.unit,
@@ -186,6 +188,7 @@ exports.getOrder = async (req, res, next) => {
         OrderLinearr.push({
           productNumber: OrderLineData[i].productNumber,
           itemCode: OrderLineData[i].itemCode,
+          itemNo: OrderLineData[i].itemNo,
           itemName: OrderLineData[i].itemName,
           qtyCTN: OrderLineData[i].qtyCTN,
           unit: OrderLineData[i].unit,
@@ -260,6 +263,7 @@ exports.getOrder = async (req, res, next) => {
       return {
         productNumber: OrderLine.productNumber,
         itemCode: itemCode,
+        itemNo: OrderLine.itemNo,
         itemName: OrderLine.itemName,
         qtyCTN: OrderLine.qtyCTN,
         unit: OrderLine.unit,
