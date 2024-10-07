@@ -84,11 +84,19 @@ exports.fetchRouteCode = async (routeCode) => {
       },
     });
 
-    const udiData = await DROUDI.findAll({
+    const udiDatas = await DROUDI.findAll({
       where: {
         routeCode: RouteData[0].routeCode,
         coNo: 410,
       },
+    });
+    const udiData = udiDatas.map((data) => {
+      return {
+        routeCode: data.routeCode,
+        DSRODN: data.DSRODN,
+        method: data.method,
+        departureTime: `${data.DSDETH}${data.DSDETM}`,
+      };
     });
 
     const uteData = await DROUTE.findAll({
@@ -111,7 +119,7 @@ exports.fetchRouteCode = async (routeCode) => {
 
     const routes = RouteData.map((route) => {
       const method = udiObj[route.routeCode].method || "";
-      const departureTime = udiObj[route.routeCode].departureTime || "";
+      const departureTime = udiObj[route.routeCode].departureTime || 0;
       const routeName = uteObj[route.routeCode] || "";
       const forwarding = route.forwarding.trim();
       const place = route.place.trim();
@@ -125,7 +133,7 @@ exports.fetchRouteCode = async (routeCode) => {
         transportation: transportation,
         routeDeparture: route.routeDeparture,
         departureDay: route.departureDay,
-        departureTime: departureTime,
+        departureTime: parseInt(departureTime),
       };
     });
     return routes;
