@@ -1,31 +1,36 @@
+// Models
 const { MGHEAD, MGLINE, MGDADR } = require("../../models/distribution");
-const {
-  formatDate,
-  getCurrentTimeFormatted,
-} = require("../../utils/getDateTime");
-const { fetchStock } = require("../../services/stockService");
-const {
-  fetchCalCost,
-  fetchCalWeight,
-  fetchItemDetails,
-} = require("../../services/itemsService");
-const { getJsonData } = require("../../utils/getJsonData");
-const { fetchDistributionAddress } = require("../../services/addressService");
+const { sequelize } = require("../../config/m3db");
+// Controller
 const {
   distributionDeliveryHead,
   distributionDeliveryLine,
 } = require("./deliveryDistributionController");
-const distributionJson = getJsonData("distribution.json");
-const runningJson = getJsonData("runnigNumber.json");
+const { distributionAllocate } = require("./allocateDistributionController");
+// Service
+const { fetchStock } = require("../../services/stockService");
+const {
+  fetchCalWeight,
+  fetchItemDetails,
+} = require("../../services/itemsService");
 const {
   runningNumber,
   updateRunningNumber,
 } = require("../../services/runningNumberService");
-const { sequelize } = require("../../config/m3db");
+const { fetchDistributionAddress } = require("../../services/addressService");
+// Utils
+const {
+  formatDate,
+  getCurrentTimeFormatted,
+} = require("../../utils/getDateTime");
+const { getJsonData } = require("../../utils/getJsonData");
+// Json
+const distributionJson = getJsonData("distribution.json");
+const runningJson = getJsonData("runnigNumber.json");
+// Middleware
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
-const { distributionAllocate } = require("./allocateDistributionController");
 
 exports.insertHead = async (req, res, next) => {
   let transaction;
@@ -227,7 +232,7 @@ exports.insertHead = async (req, res, next) => {
       await distributionAllocate(itemsData, orderType, transaction);
       await distributionDeliveryHead(deliveryHead, transaction);
       await insertLine(itemsData, transaction);
-      await insertMGDADR(orderNo, addressCode, transaction);
+      await insertAddress(orderNo, addressCode, transaction);
       // const route = await fetchRouteCode(routeCode);
       res.status(201).json({
         orderNo: orderNo,
@@ -296,7 +301,7 @@ insertLine = async (data, transaction) => {
   }
 };
 
-insertMGDADR = async (orderNo, addressCode, transaction) => {
+insertAddress = async (orderNo, addressCode, transaction) => {
   try {
     const address = await fetchDistributionAddress(addressCode);
     await MGDADR.create(
@@ -328,6 +333,6 @@ insertMGDADR = async (orderNo, addressCode, transaction) => {
       { transaction }
     );
   } catch (error) {
-    throw error;
+    throw errorEndpoint(currentFilePath, "Distribution Delivery Head:", error);
   }
 };

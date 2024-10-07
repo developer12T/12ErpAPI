@@ -1,6 +1,6 @@
 const { sequelize, DataTypes } = require("../config/m3db");
 
-const allocate = sequelize.define(
+const Allocate = sequelize.define(
   "MITPLO",
   {
     coNo: {
@@ -232,4 +232,4 @@ const allocate = sequelize.define(
   }
 );
 
-module.exports = allocate;
+module.exports = Allocate;

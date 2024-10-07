@@ -1,5 +1,8 @@
+// Models
 const { CIADDR } = require("../../models/distribution");
+// Utils
 const { trimObjectStrings } = require("../../utils/String");
+// Middleware
 const path = require("path");
 const currentFilePath = path.basename(__filename);
 const errorEndpoint = require("../../middleware/errorEndpoint");

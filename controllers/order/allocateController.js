@@ -1,4 +1,4 @@
-const allocate = require("../../models/allocate");
+const Allocate = require("../../models/allocate");
 const { getJsonData } = require("../../utils/getJsonData");
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
@@ -38,7 +38,7 @@ exports.allocateInsert = async (items, transaction) => {
 exports.getAllocate = async (req, res, next) => {
   try {
     const { orderNo } = req.body;
-    const allocateData = await allocate.findAll({
+    const allocateData = await Allocate.findAll({
       where: {
         orderNo: orderNo,
       },

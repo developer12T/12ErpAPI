@@ -1,14 +1,17 @@
+// Models
 const { DeliveryHead, DeliveryLine } = require("../../models/delivery");
+// Service
+const { fetchRouteCode } = require("../../services/routeService");
+const { fetchDistributionPolicy } = require("../../services/policyService");
+// Utils
 const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
 const { getJsonData } = require("../../utils/getJsonData");
-// const { fetchShipping, fetchCustomer } = require("../../archive/apiCustomer");
-const { fetchRouteCode } = require("../../services/routeService");
-const { fetchDistributionPolicy } = require("../../services/policyService");
-
+// Json
 const deliveryData = getJsonData("distribution.json");
+// Middleware
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);

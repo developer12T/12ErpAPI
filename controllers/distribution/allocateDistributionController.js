@@ -1,12 +1,14 @@
-const allocate = require("../../models/allocate");
+
+// Models
+const Allocate = require("../../models/allocate");
+// Utils
 const { getJsonData } = require("../../utils/getJsonData");
 const { formatDate } = require("../../utils/getDateTime");
 const { getCurrentTimeFormatted } = require("../../utils/getDateTime");
+// Middleware
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
-
-exports.index = async (req, res, next) => {};
 
 exports.distributionAllocate = async (data, orderType, transaction) => {
   try {
@@ -16,7 +18,7 @@ exports.distributionAllocate = async (data, orderType, transaction) => {
     switch (orderType.slice(0, 1)) {
       case "T":
         for (let item of items) {
-          await allocate.create(
+          await Allocate.create(
             {
               coNo: item.coNo,
               warehouse: item.towarehouse,
@@ -40,7 +42,7 @@ exports.distributionAllocate = async (data, orderType, transaction) => {
             }
           );
 
-          await allocate.create(
+          await Allocate.create(
             {
               coNo: item.coNo,
               warehouse: item.warehouse,
@@ -67,7 +69,7 @@ exports.distributionAllocate = async (data, orderType, transaction) => {
         break;
       case "I":
         for (let item of items) {
-          await allocate.create(
+          await Allocate.create(
             {
               coNo: item.coNo,
               warehouse: item.warehouse,
