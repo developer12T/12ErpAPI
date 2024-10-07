@@ -1,7 +1,7 @@
+// Models
 const { Balance, Locate } = require("../../models/master");
+// Sequelize "OR"
 const { Op } = require("sequelize");
-
-exports.index = async (req, res, next) => {};
 
 exports.getStockAll = async (req, res, next) => {
   try {
@@ -64,7 +64,6 @@ exports.getStockAll = async (req, res, next) => {
     next(error);
   }
 };
-
 exports.getStockDetail = async (req, res, next) => {
   try {
     let locatearr = [];
@@ -106,7 +105,7 @@ exports.getStockDetail = async (req, res, next) => {
         lot: locatearr,
       };
     });
-    res.json(stocks);
+    res.json(stocks[0]);
   } catch (error) {
     next(error);
   }

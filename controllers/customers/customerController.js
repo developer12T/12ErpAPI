@@ -17,9 +17,6 @@ exports.index = async (req, res, next) => {
   try {
     const { customerChannel, customerNo, OKCFC1 } = req.body;
     const customersData = await Customer.findAll({
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         [Op.or]: [
           {
@@ -116,10 +113,6 @@ exports.single = async (req, res, next) => {
   try {
     const { customerNo } = req.body;
     const customersData = await Customer.findAll({
-      //   limit: 10,
-      attributes: {
-        exclude: ["id"],
-      },
       where: {
         customerStatus: 20,
         coNo: 410,
@@ -179,7 +172,6 @@ exports.single = async (req, res, next) => {
         const saleName = sale.saleName.trim();
         return {
           saleCode: OKSMCD,
-
           saleName: filterStringParentTH(saleName),
         };
       });

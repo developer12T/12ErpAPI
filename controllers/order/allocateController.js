@@ -1,5 +1,8 @@
+// Models
 const Allocate = require("../../models/allocate");
+// Utils
 const { getJsonData } = require("../../utils/getJsonData");
+// Middleware
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
@@ -34,7 +37,6 @@ exports.allocateInsert = async (items, transaction) => {
     throw errorEndpoint(currentFilePath, "allocateInsert", error);
   }
 };
-
 exports.getAllocate = async (req, res, next) => {
   try {
     const { orderNo } = req.body;

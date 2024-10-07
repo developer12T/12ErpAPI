@@ -1,3 +1,4 @@
+// Models
 const Promotion = require("../../models/promotion");
 
 exports.index = async (req, res, next) => {

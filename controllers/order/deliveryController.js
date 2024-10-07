@@ -1,19 +1,22 @@
+// Models
 const { DeliveryHead, DeliveryLine } = require("../../models/delivery");
+// Service
+const {
+  fetchShipping,
+  fetchCustomer,
+} = require("../../services/customerService");
+const { fetchPolicy } = require("../../services/policyService");
+const { fetchRoute } = require("../../services/routeService");
+// Utils
+const { trimObjectStrings } = require("../../utils/String");
 const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
 const { getJsonData } = require("../../utils/getJsonData");
-const {
-  fetchShipping,
-  fetchCustomer,
-} = require("../../services/customerService");
-// const { fetchPolicy } = require("../../archive/apiMaster");
-const { fetchPolicy } = require("../../services/policyService");
-const { fetchRoute } = require("../../services/routeService");
-const { trimObjectStrings } = require("../../utils/String");
-
+// Json
 const deliveryData = getJsonData("delivery.json");
+// Middleware
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
@@ -31,7 +34,7 @@ exports.getDeliveryHead = async (req, res, next) => {
     });
     if (headData) {
       const response = trimObjectStrings(headData.toJSON());
-      res.status(200).json(response);;
+      res.status(200).json(response);
     } else {
       const error = new Error("Not Found Address");
       error.statusCode = 404;
@@ -52,7 +55,7 @@ exports.getDeliveryLine = async (req, res, next) => {
       },
     });
     const response = lineData.map((item) => trimObjectStrings(item.toJSON()));
-    res.status(200).json(response);;
+    res.status(200).json(response);
   } catch (error) {
     next(error);
   }

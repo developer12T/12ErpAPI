@@ -1,4 +1,6 @@
+// Models
 const { DRODPR, DROUDI, DROUTE } = require("../../models/route");
+// Sequelize "OR"
 const { Op } = require("sequelize");
 
 exports.getRouteAll = async (req, res, next) => {
@@ -78,7 +80,6 @@ exports.getRouteAll = async (req, res, next) => {
     next(error);
   }
 };
-
 exports.getRoute = async (req, res, next) => {
   try {
     const { shippingRoute } = req.body;
@@ -150,7 +151,6 @@ exports.getRoute = async (req, res, next) => {
     next(error);
   }
 };
-
 exports.getRouteCode = async (req, res, next) => {
   try {
     const { routeCode } = req.body;

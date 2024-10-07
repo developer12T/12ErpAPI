@@ -1,15 +1,18 @@
+// Models
 const { OrderLine } = require("../../models/order");
 const Promotion = require("../../models/promotion");
-const { Op } = require("sequelize");
+// Utils
 const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
 const { getJsonData } = require("../../utils/getJsonData");
-const { sequelize } = require("../../config/m3db");
-const errorEndpoint = require("../../middleware/errorEndpoint");
+// Middleware
 const path = require("path");
 const currentFilePath = path.basename(__filename);
+const errorEndpoint = require("../../middleware/errorEndpoint");
+// Squelize "OR"
+const { Op } = require("sequelize");
 
 exports.orderLineInsert = async (itemData, transaction) => {
   // let transaction;

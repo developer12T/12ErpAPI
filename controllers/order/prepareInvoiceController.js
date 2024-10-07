@@ -1,15 +1,17 @@
+// Models
+const { PrepareInvoA, PrepareInvoB } = require("../../models/prepareinvoice");
+// Utils
 const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
-const { PrepareInvoA, PrepareInvoB } = require("../../models/prepareinvoice");
 const { nonVat } = require("../../utils/calVat");
 const { getJsonData } = require("../../utils/getJsonData");
+const { trimObjectStrings } = require("../../utils/String");
+// Middleware
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
-const { trimObjectStrings } = require("../../utils/String");
-
 exports.index = async (req, res, next) => {
   try {
     const { orderNo } = req.body;
@@ -25,7 +27,6 @@ exports.index = async (req, res, next) => {
     next(error);
   }
 };
-
 exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
   // let transaction;
   try {

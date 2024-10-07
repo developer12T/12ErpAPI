@@ -1,3 +1,4 @@
+// Models
 const DocumentType = require("../../models/documenttype");
 
 exports.getDocumentTypeAll = async (req, res, next) => {

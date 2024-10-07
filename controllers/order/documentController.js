@@ -1,17 +1,17 @@
+// Models
 const Document = require("../../models/document");
+// Service
+const { getDocumentType } = require("../../services/orderService");
+// Utils
 const { getJsonData } = require("../../utils/getJsonData");
 const {
   formatDate,
   getCurrentTimeFormatted,
 } = require("../../utils/getDateTime");
-const { getDocumentType } = require("../../services/orderService");
+// Middleware
 const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
-
-exports.index = async (req, res, next) => {};
-
-
 exports.documentInsert = async (data, transaction) => {
   // let transaction;
   try {
@@ -47,3 +47,5 @@ exports.documentInsert = async (data, transaction) => {
     throw errorEndpoint(currentFilePath, "Document:", error);
   }
 };
+
+

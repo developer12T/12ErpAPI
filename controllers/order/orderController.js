@@ -1,25 +1,18 @@
+// Models
 const { OrderLine, Order } = require("../../models/order");
 const Promotion = require("../../models/promotion");
-const axios = require("axios");
-const { HOST } = require("../../config/index");
-const { Op } = require("sequelize");
-const { sequelize } = require("../../config/m3db");
-const {
-  formatDate,
-  getCurrentTimeFormatted,
-} = require("../../utils/getDateTime");
 const Shipping = require("../../models/shipping");
-const { getJsonData } = require("../../utils/getJsonData");
-const { nonVat } = require("../../utils/calVat");
-const { getCurrentYearMonth } = require("../../utils/getDateTime");
+const { sequelize } = require("../../config/m3db");
+// Controller
+const { orderLineInsert } = require("./orderItemController");
+const { prepareInvoiceInsertA } = require("./prepareInvoiceController");
+const { documentInsert } = require("./documentController");
 const { allocateInsert } = require("./allocateController");
 const {
   deliveryHeadInsert,
   deliveryLineInsert,
 } = require("./deliveryController");
-const { orderLineInsert } = require("./orderItemController");
-const { prepareInvoiceInsertA } = require("./prepareInvoiceController");
-const { documentInsert } = require("./documentController");
+// Service
 const {
   runningNumber,
   updateRunningNumber,
@@ -36,7 +29,21 @@ const {
   fetchShipping,
 } = require("../../services/customerService");
 const { fetchRoute } = require("../../services/routeService");
+// Utils
 const { formatPhoneNumber } = require("../../utils/String");
+const { getJsonData } = require("../../utils/getJsonData");
+const { nonVat } = require("../../utils/calVat");
+const { getCurrentYearMonth } = require("../../utils/getDateTime");
+const {
+  formatDate,
+  getCurrentTimeFormatted,
+} = require("../../utils/getDateTime");
+// Sequelize "OR"
+const { Op } = require("sequelize");
+// Json
+const orderJson = getJsonData("order.json");
+const runningJson = getJsonData("runnigNumber.json");
+
 
 exports.getOrderAll = async (req, res, next) => {
   try {
@@ -230,7 +237,6 @@ exports.getOrder = async (req, res, next) => {
 
     for (let OrderLine2 of OrderLineData2) {
       const PromotionData = await Promotion.findAll({
-        
         where: {
           promotionCode: OrderLine2.promotionCode,
           FZCONO: "410",
@@ -329,8 +335,6 @@ exports.insert = async (req, res, next) => {
       const items = order.item;
       const calWeights = [];
       const calCosts = [];
-      const orderJson = getJsonData("order.json");
-      const runningJson = getJsonData("runnigNumber.json");
 
       if (Hcase === 0) {
         if (orderNo === "") {
@@ -671,7 +675,6 @@ exports.deleted = async (req, res, next) => {
         coNo: coNo,
       },
       {
-        attributes: { exclude: ["id"] },
         where: {
           orderNo: orderNo,
           coNo: 410,
@@ -686,13 +689,20 @@ exports.deleted = async (req, res, next) => {
         itemNo: item.itemNo,
       };
     });
-
-    await axios({
-      method: "post",
-      url: `${HOST}order/deleteitem`,
-      data: itemsData,
-    });
-
+    for (let item of items) {
+      await OrderLine.update(
+        {
+          coNo: -410,
+        },
+        {
+          where: {
+            orderNo: item.orderNo,
+            itemCode: item.itemCode,
+            itemNo: item.itemNo,
+          },
+        }
+      );
+    }
     if (deleted[0] === 1) {
       res.status(202).json({
         message: "Deleted",
