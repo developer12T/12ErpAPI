@@ -25,7 +25,7 @@ exports.allocateInsert = async (items, transaction) => {
           itemNo: item.itemNo,
           MORFTX: item.OKALCU + "    " + item.customerNo,
           MORPRT: allocateJson.MORPRT,
-          MOTRQT: item.qtyPCS * -1,
+          MOTRQT: item.qtyQT * -1,
           MOALMT: allocateJson.MOALMT,
           MOCALI: allocateJson.MOCALI,
           MOLMTS: Date.now(),

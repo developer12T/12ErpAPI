@@ -14,7 +14,6 @@ exports.distributionAllocate = async (data, orderType, transaction) => {
   try {
     const items = data;
     const allocateJson = getJsonData("distribution.json");
-    // console.log(items.qtyPCS);
     switch (orderType.slice(0, 1)) {
       case "T":
         for (let item of items) {

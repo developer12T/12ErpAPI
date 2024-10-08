@@ -47,7 +47,7 @@ const Allocate = sequelize.define(
       field: "MOPLDT",
       validate: {
         isNumeric: {
-          msg: "Request Date must contain only numbers", // Ensure the value is numeric
+          msg: "MOPLDT must contain only numbers", // Ensure the value is numeric
         },
 
         isLenghtRequired(value) {
@@ -64,7 +64,7 @@ const Allocate = sequelize.define(
       field: "MOTIHM",
       validate: {
         isNumeric: {
-          msg: "Request Date must contain only numbers", // Ensure the value is numeric
+          msg: "MOTIHM must contain only numbers", // Ensure the value is numeric
         },
         isLenghtRequired(value) {
           // Custom validator to ensure exactly 8 digits
@@ -93,7 +93,7 @@ const Allocate = sequelize.define(
       field: "MOPRIO",
       validate: {
         isNumeric: {
-          msg: "Request Date must contain only numbers", // Ensure the value is numeric
+          msg: "MOPRIO must contain only numbers", // Ensure the value is numeric
         },
         isLenghtRequired(value) {
           // Custom validator to ensure exactly 8 digits
@@ -133,7 +133,7 @@ const Allocate = sequelize.define(
       primaryKey: true,
       validate: {
         isNumeric: {
-          msg: "Request Date must contain only numbers", // Ensure the value is numeric
+          msg: "itemNo must contain only numbers", // Ensure the value is numeric
         },
         len: {
           args: [0, 6],
@@ -152,13 +152,13 @@ const Allocate = sequelize.define(
         },
       },
     },
-    MORPRT: {
+    itemNo: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "MORPRT",
       validate: {
         isNumeric: {
-          msg: "Request Date must contain only numbers", // Ensure the value is numeric
+          msg: "itemNo must contain only numbers", // Ensure the value is numeric
         },
         len: {
           args: [0, 1],
@@ -171,9 +171,9 @@ const Allocate = sequelize.define(
       allowNull: true,
       field: "MOTRQT",
       validate: {
-        isNumeric: {
-          msg: "Request Date must contain only numbers", // Ensure the value is numeric
-        },
+        // isNumeric: {
+        //   msg: "MOTRQT must contain only numbers", // Ensure the value is numeric
+        // },
         len: {
           args: [0, 15],
           msg: "MOTRQT must be 0-15 digits long",
@@ -186,7 +186,7 @@ const Allocate = sequelize.define(
       field: "MOALMT",
       validate: {
         isNumeric: {
-          msg: "Request Date must contain only numbers", // Ensure the value is numeric
+          msg: "MOALMT must contain only numbers", // Ensure the value is numeric
         },
         len: {
           args: [0, 1],
@@ -200,7 +200,7 @@ const Allocate = sequelize.define(
       field: "MOCALI",
       validate: {
         isNumeric: {
-          msg: "Request Date must contain only numbers", // Ensure the value is numeric
+          msg: "MOCALI must contain only numbers", // Ensure the value is numeric
         },
         len: {
           args: [0, 1],
@@ -214,7 +214,7 @@ const Allocate = sequelize.define(
       field: "MOLMTS",
       validate: {
         isNumeric: {
-          msg: "Request Date must contain only numbers", // Ensure the value is numeric
+          msg: "MOLMTS must contain only numbers", // Ensure the value is numeric
         },
         len: {
           args: [0, 18],

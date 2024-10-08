@@ -61,28 +61,28 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
           itemType: item.itemType,
           OUITCL: item.OUITCL,
           OUORST: item.orderStatusLow,
-          OUORQT: item.qtyPCS, // OrderLine QT = PCS
-          OUORQA: item.qtyCTN,
+          OUORQT: item.qtyQT, // OrderLine QT = PCS
+          OUORQA: item.qty,
           unit: item.unit,
           OUCOFA: item.OBCOFA, // OrderLine
           OUDMCF: prepareJson[0].HEAD.OUDMCF, // 1
           OUSPUN: item.OBSPUN, // Bigest
-          OUORQS: item.qtyCTN, // OrderLine CTN
+          OUORQS: item.qty, // OrderLine CTN
           OUSTUN: item.OUSTUN, // ** smallest
           grossWeight: item.grossWeight, // OrderLine
           netWeight: item.netWeight, // OrderLine
           OUDCCD: prepareJson[0].HEAD.OUDCCD, // 2
           OUSAPR: nonVat(item.price), //non vat OrderLine.OBSAPR
-          OUGRPR: nonVat(item.price * item.qtyCTN), //non vat OrderLine OBNEPR
-          OUSAAM: nonVat(item.netPrice * item.qtyCTN), //OrderLine OBLNAM
+          OUGRPR: nonVat(item.price * item.qty), //non vat OrderLine OBNEPR
+          OUSAAM: nonVat(item.netPrice * item.qty), //OrderLine OBLNAM
           OUPRMO: prepareJson[0].HEAD.OUPRMO, // 8
           OUDISY: prepareJson[0].HEAD.OUDISY, //OOHEAD
           // add OrderLine OBDIC 1-6 use 2,5 other defult 1
           // OUDIA2  OrderLine non vat OBDIA2 * OBORQA
           // OUOFRA  OrderLine non vat OBDIA2 * OBORQA
           // OrderLine non vat OBDIA2 * OBORQA
-          OUDIA2: nonVat(item.discount * item.qtyCTN), //OrderLine non vat OBDIA2 * OBORQA
-          OUOFRA: nonVat(item.discount * item.qtyCTN),
+          OUDIA2: nonVat(item.discount * item.qty), //OrderLine non vat OBDIA2 * OBORQA
+          OUOFRA: nonVat(item.discount * item.qty),
           OUDWDT: item.requestDate, //OOHEAD OARLDT
           OUCODT: item.requestDate, //OOHEAD OARLDT
           OUUCOS: item.costPCS.toFixed(2), //OrderLine OBUCOS * OBORQT
@@ -124,7 +124,7 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
 //         url: `${HOST}master/calWeight`,
 //         data: {
 //           itemCode: item.itemCode,
-//           qtyCTN: item.qtyCTN,
+//           qty: item.qty,
 //         },
 //       });
 //       let calCost = await axios({
@@ -132,7 +132,7 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
 //         url: `${HOST}master/calcost`,
 //         data: {
 //           itemCode: item.itemCode,
-//           qtyCTN: item.qtyCTN,
+//           qty: item.qty,
 //         },
 //       });
 //       let itemData = await axios({
@@ -217,7 +217,7 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
 //         UCDDF4: 1,
 //         UCTDEL: 1,
 //         UCTORL: 1,
-//         UCRqtyCTN: 1,
+//         UCRqty: 1,
 //         UCMPRO: 1,
 //         UCINRC: 100000001,
 //         UCROUT: "NKP007",

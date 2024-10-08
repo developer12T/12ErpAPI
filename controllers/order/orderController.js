@@ -40,6 +40,7 @@ const {
 } = require("../../utils/getDateTime");
 // Sequelize "OR"
 const { Op } = require("sequelize");
+const { de } = require("date-fns/locale");
 // Json
 const orderJson = getJsonData("order.json");
 const runningJson = getJsonData("runnigNumber.json");
@@ -77,7 +78,7 @@ exports.getOrderAll = async (req, res, next) => {
           itemCode: OrderLineData[j].itemCode,
           itemNo: OrderLineData[j].itemNo,
           itemName: OrderLineData[j].itemName,
-          qtyCTN: OrderLineData[j].qtyCTN,
+          qty: OrderLineData[j].qty,
           unit: OrderLineData[j].unit,
           price: OrderLineData[j].price,
           discount: OrderLineData[j].discount,
@@ -139,7 +140,7 @@ exports.getOrderAll = async (req, res, next) => {
           itemCode: itemCode,
           itemNo: OrderLine.itemNo,
           itemName: itemName,
-          qtyCTN: OrderLine.qtyCTN,
+          qty: OrderLine.qty,
           unit: OrderLine.unit,
           price: OrderLine.price,
           discount: OrderLine.discount,
@@ -195,7 +196,7 @@ exports.getOrder = async (req, res, next) => {
           itemCode: OrderLineData[i].itemCode,
           itemNo: OrderLineData[i].itemNo,
           itemName: OrderLineData[i].itemName,
-          qtyCTN: OrderLineData[i].qtyCTN,
+          qty: OrderLineData[i].qty,
           unit: OrderLineData[i].unit,
           price: OrderLineData[i].price,
           discount: OrderLineData[i].discount,
@@ -269,7 +270,7 @@ exports.getOrder = async (req, res, next) => {
         itemCode: itemCode,
         itemNo: OrderLine.itemNo,
         itemName: OrderLine.itemName,
-        qtyCTN: OrderLine.qtyCTN,
+        qty: OrderLine.qty,
         unit: OrderLine.unit,
         price: OrderLine.price,
         discount: OrderLine.discount,
@@ -388,14 +389,15 @@ exports.insert = async (req, res, next) => {
       );
 
       for (let item of items) {
+        const itemFactor = await fetchItemFactor(item.itemCode, item.unit);
         const Weight = await fetchCalWeight({
           itemCode: item.itemCode,
-          qty: item.qtyPCS,
+          qty: itemFactor.factor * item.qty,
         });
 
         const Cost = await fetchCalCost({
           itemCode: item.itemCode,
-          qty: item.qtyPCS,
+          qty: itemFactor.factor * item.qty,
         });
         calWeights.push(Weight);
         calCosts.push(Cost);
@@ -431,6 +433,7 @@ exports.insert = async (req, res, next) => {
       let itemsData = await Promise.all(
         items.map(async (item) => {
           const itemDetail = await fetchItemDetails(item.itemCode);
+          const itemFactor = await fetchItemFactor(item.itemCode, item.unit);
           const shinpping = await fetchShipping({
             customerNo: customerNo,
             addressID: addressID,
@@ -439,22 +442,20 @@ exports.insert = async (req, res, next) => {
           const customer = await fetchCustomer(customerNo);
           const WeightAll = await fetchCalWeight({
             itemCode: item.itemCode,
-            qty: item.qtyPCS,
+            qty: itemFactor.factor * item.qty,
           });
           const Weight = await fetchCalWeight({
             itemCode: item.itemCode,
             qty: 1,
           });
-          const itemFactor = await fetchItemFactor(item.itemCode, item.unit);
-          console.log(itemFactor);
-
+          console.log("itemFactor" + itemFactor.factor * item.qty);
           const Cost = await fetchCalCost({
             itemCode: item.itemCode,
             qty: 1,
           });
           const CostAll = await fetchCalCost({
             itemCode: item.itemCode,
-            qty: item.qtyPCS,
+            qty: itemFactor.factor * item.qty,
           });
           return {
             coNo: orderJson[0].LINE.OBCONO,
@@ -475,8 +476,8 @@ exports.insert = async (req, res, next) => {
             itemNo: item.itemNo,
             itemName: itemDetail[0].itemName,
             OBITDS: itemDetail[0].itemDescription,
-            qtyPCS: item.qtyPCS,
-            qtyCTN: item.qtyCTN,
+            qtyQT: itemFactor.factor * item.qty * -1,
+            qty: item.qty,
             unit: item.unit,
             price: item.price,
             discount: item.discount,
@@ -642,16 +643,24 @@ exports.insert = async (req, res, next) => {
           transaction
         );
       }
+      res.status(201).json({
+        message: "Created",
+        orderNo: orderNo,
+        delivery: deliveryObj,
+        itemsData: itemsData,
+      });
       await allocateInsert(itemsData, transaction);
       await deliveryHeadInsert(deliveryObj, transaction);
       await deliveryLineInsert(itemsData, transaction);
       await orderLineInsert(itemsData, transaction);
       await prepareInvoiceInsertA(itemsData, transaction);
+
+      // res.status(201).json({
+      //   message: "Created",
+      //   orderNo: orderNo,
+      //   delivery: deliveryObj,
+      // });
       await transaction.commit();
-      res.status(201).json({
-        message: "Created",
-        orderNo: orderNo,
-      });
     }
   } catch (error) {
     if (transaction) await transaction.rollback();

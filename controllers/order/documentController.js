@@ -13,12 +13,9 @@ const errorEndpoint = require("../../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
 exports.documentInsert = async (data, transaction) => {
-  // let transaction;
   try {
-    // transaction = await sequelize.transaction();
     const { orderType, orderNo, coNo } = data;
     const documentTypes = await getDocumentType(orderType);
-
     const documentJson = getJsonData("document.json");
 
     for (let documentType of documentTypes) {
@@ -44,7 +41,7 @@ exports.documentInsert = async (data, transaction) => {
       );
     }
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "Document:", error);
+    throw errorEndpoint(currentFilePath, "Document", error);
   }
 };
 

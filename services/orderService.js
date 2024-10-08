@@ -14,11 +14,7 @@ exports.getDocumentType = async (orderType) => {
     });
     return response;
   } catch (error) {
-    throw errorEndpoint(
-      currentFilePath,
-      "getDocumentType",
-      error
-    );
+    throw errorEndpoint(currentFilePath, "getDocumentType", error);
   }
 };
 

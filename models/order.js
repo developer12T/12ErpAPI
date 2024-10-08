@@ -806,7 +806,7 @@ const OrderLine = sequelize.define(
         }
       }
     },
-    qtyCTN: {
+    qty: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: 'OBORQA',
@@ -817,7 +817,7 @@ const OrderLine = sequelize.define(
         }
       }
     },
-    qtyPCS: {
+    qtyQT: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: 'OBORQT',

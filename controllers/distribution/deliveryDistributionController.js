@@ -142,7 +142,7 @@ exports.distributionDeliveryLine = async (data, transaction) => {
           URRIDL: item.itemNo,
           URITNO: item.itemCode,
           URFACI: deliveryData[0].DELIVERY_LINE.URFACI, // json
-          URTRQT: item.itemQty, // OrderLine qtyCTN (pcs)
+          URTRQT: item.itemQty, // OrderLine qty (pcs)
           URSTCD: deliveryData[0].DELIVERY_LINE.URSTCD, // 1
           grossWeight: item.MRGRWE, // OrderLine
           netWeight: item.MRNEWE, // OrderLine
