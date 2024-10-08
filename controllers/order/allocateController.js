@@ -51,6 +51,7 @@ exports.getAllocate = async (req, res, next) => {
         coNo: item.coNo,
         warehouse: item.warehouse,
         itemCode: itemCode,
+        
         MOPLDT: item.MOPLDT,
         MOTIHM: item.MOTIHM,
         MOSTAT: item.MOSTAT,

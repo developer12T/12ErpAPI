@@ -152,7 +152,7 @@ const Allocate = sequelize.define(
         },
       },
     },
-    itemNo: {
+    MORPRT: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "MORPRT",
