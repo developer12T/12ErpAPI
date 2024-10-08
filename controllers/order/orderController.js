@@ -476,7 +476,7 @@ exports.insert = async (req, res, next) => {
             itemNo: item.itemNo,
             itemName: itemDetail[0].itemName,
             OBITDS: itemDetail[0].itemDescription,
-            qtyQT: itemFactor.factor * item.qty * -1,
+            qtyQT: itemFactor.factor * item.qty ,
             qty: item.qty,
             unit: item.unit,
             price: item.price,
