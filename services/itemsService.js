@@ -132,7 +132,11 @@ exports.fetchItemFactor = async (itemCode, unit) => {
         facType: 1,
       },
     });
-    return itemData;
+    if (itemData) {
+      return itemData;
+    } else {
+      return { factor: 1 };
+    }
   } catch (error) {
     // Enhanced error handling
     throw errorEndpoint(currentFilePath, "fetchItemFactor", error);
