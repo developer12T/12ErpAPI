@@ -11,7 +11,7 @@ exports.allocateInsert = async (items, transaction) => {
   try {
     const allocateJson = getJsonData("allocate.json");
     for (let item of items) {
-      await allocate.create(
+      await Allocate.create(
         {
           coNo: item.coNo,
           warehouse: item.warehouse,

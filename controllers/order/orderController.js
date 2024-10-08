@@ -43,8 +43,6 @@ const { Op } = require("sequelize");
 // Json
 const orderJson = getJsonData("order.json");
 const runningJson = getJsonData("runnigNumber.json");
-
-
 exports.getOrderAll = async (req, res, next) => {
   try {
     const { orderType } = req.body;
@@ -528,15 +526,12 @@ exports.insert = async (req, res, next) => {
             OBADID: addressID, // Address ID
             OBROUT: route.routeCode, // Route
             OBRODN: route.routeDeparture,
-            OBDSDT: 1, // Check Data ?
             OBDSHM: route.departureTime,
-            OBFDED: 1, // Check Data ?
-            OBLDED: 1, // Check Data ?
-            OBCINA: 1, // Check Data ?
+            OBCINA: orderJson[0].LINE.OBCINA, // Check Data ?
             OBDECU: customerNo,
             OBTEPY: customer.creditTerm,
-            OBPMOR: 1, // Check Data ?
-            OBUPAV: 1, // Check Data ?
+            OBPMOR: orderJson[0].LINE.OBPMOR, // Check Data ?
+            OBUPAV: orderJson[0].LINE.OBUPAV, // Check Data ?
             customerChannel: customer.customerChannel,
             OUSTUN: itemDetail[0].basicUnit,
             OUITGR: itemDetail[0].MMITGR,
@@ -586,7 +581,6 @@ exports.insert = async (req, res, next) => {
             warehouse: warehouse, // OAWHLO
             orderStatusLow: orderStatusLow, // OAORSL
             orderStatusHigh: orderStatusHigh, // OAORST
-            // OAORSL: orderStatusLow, // OAORSL
             customerNo: customerNo, // OACUNO
             orderDate: orderDate, // OAORDT
             OACUDT: orderDate, // OACUDT

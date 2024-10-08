@@ -1,7 +1,7 @@
 // Models
 const Promotion = require("../../models/promotion");
 
-exports.index = async (req, res, next) => {
+exports.all = async (req, res, next) => {
   const promotionData = await Promotion.findAll({
     where: {
       FZCONO: "410",
