@@ -646,8 +646,8 @@ exports.insert = async (req, res, next) => {
       res.status(201).json({
         message: "Created",
         orderNo: orderNo,
-        delivery: deliveryObj,
-        itemsData: itemsData,
+        // delivery: deliveryObj,
+        // itemsData: itemsData,
       });
       await allocateInsert(itemsData, transaction);
       await deliveryHeadInsert(deliveryObj, transaction);
