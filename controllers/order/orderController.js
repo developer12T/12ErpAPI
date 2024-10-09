@@ -335,12 +335,78 @@ exports.insert = async (req, res, next) => {
       const calWeights = [];
       const calCosts = [];
 
+      for (let item of items) {
+        const itemFactor = await fetchItemFactor(item.itemCode, item.unit);
+        const Weight = await fetchCalWeight({
+          itemCode: item.itemCode,
+          qty: itemFactor.factor * item.qty,
+        });
+
+        const Cost = await fetchCalCost({
+          itemCode: item.itemCode,
+          qty: itemFactor.factor * item.qty,
+        });
+        calWeights.push(Weight);
+        calCosts.push(Cost);
+      }
+      const totalCost = calCosts.reduce((accumulator, calCost) => {
+        return accumulator + calCost.cost;
+      }, 0);
+
+      const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
+        return accumulator + calWeight.grossWeight;
+      }, 0);
+
+      const totalnetWeight = calWeights.reduce((accumulator, calWeight) => {
+        return accumulator + calWeight.netWeight;
+      }, 0);
+
       if (Hcase === 0) {
+        const checkOrderNo = await Order.findOne({
+          where: {
+            orderNo: orderNo,
+          },
+        });
         if (orderNo === "") {
           const error = new Error("Order No is required");
           error.statusCode = 422;
           throw error;
         }
+        if (!checkOrderNo) {
+          const error = new Error("Order No is incorrect or not found");
+          error.statusCode = 422;
+          throw error;
+        }
+        const oldOrder = await Order.findOne({
+          where: {
+            orderNo: orderNo,
+          },
+        });
+        const newTotalNet = parseInt(oldOrder.totalNet + totalNet);
+        const newTotal = parseInt(oldOrder.total + total);
+        const newtotalCost = parseInt(oldOrder.OACOAM + totalCost);
+        const newGrossWeight = parseInt(
+          oldOrder.grossWeight + totalgrossWeight
+        );
+        const newNetWeight = parseInt(oldOrder.netWeight + totalnetWeight);
+        await Order.update(
+          {
+            grossWeight: newGrossWeight.toFixed(3),
+            netWeight: newNetWeight.toFixed(3),
+            OACOAM: newtotalCost.toFixed(3),
+            total: newTotal, // OABRLA
+            OANTAM: newTotalNet, // Ne Order Value
+            totalNet: newTotalNet, // OANTLA
+            OABRAM: newTotal, // OANTLA
+            OABLRO: nonVat(newTotalNet),
+          },
+          {
+            where: {
+              orderNo: orderNo,
+            },
+            transaction,
+          }
+        );
       }
 
       const series = await getSeries(orderType);
@@ -387,32 +453,6 @@ exports.insert = async (req, res, next) => {
         },
         transaction
       );
-
-      for (let item of items) {
-        const itemFactor = await fetchItemFactor(item.itemCode, item.unit);
-        const Weight = await fetchCalWeight({
-          itemCode: item.itemCode,
-          qty: itemFactor.factor * item.qty,
-        });
-
-        const Cost = await fetchCalCost({
-          itemCode: item.itemCode,
-          qty: itemFactor.factor * item.qty,
-        });
-        calWeights.push(Weight);
-        calCosts.push(Cost);
-      }
-      const totalCost = calCosts.reduce((accumulator, calCost) => {
-        return accumulator + calCost.cost;
-      }, 0);
-
-      const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
-        return accumulator + calWeight.grossWeight;
-      }, 0);
-
-      const totalnetWeight = calWeights.reduce((accumulator, calWeight) => {
-        return accumulator + calWeight.netWeight;
-      }, 0);
 
       const deliveryObj = {
         warehouse: warehouse,
@@ -476,7 +516,7 @@ exports.insert = async (req, res, next) => {
             itemNo: item.itemNo,
             itemName: itemDetail[0].itemName,
             OBITDS: itemDetail[0].itemDescription,
-            qtyQT: itemFactor.factor * item.qty ,
+            qtyQT: itemFactor.factor * item.qty,
             qty: item.qty,
             unit: item.unit,
             price: item.price,
@@ -558,6 +598,7 @@ exports.insert = async (req, res, next) => {
         },
         order: [["itemNo", "DESC"]],
       });
+
       if (itemNoData != null) {
         itemNo = itemNoData.itemNo + 1;
         itemsData = itemsData.map((item) => {
@@ -615,7 +656,7 @@ exports.insert = async (req, res, next) => {
             netWeight: totalnetWeight.toFixed(3),
             OACOAM: totalCost.toFixed(3),
             total: total, // OABRLA
-            OANTAM: totalNet,
+            OANTAM: totalNet, // Ne Order Value
             totalNet: totalNet, // OANTLA
             OABRAM: total, // OANTLA
             OAFDED: requestDate,
@@ -643,23 +684,23 @@ exports.insert = async (req, res, next) => {
           transaction
         );
       }
-      res.status(201).json({
-        message: "Created",
-        orderNo: orderNo,
-        // delivery: deliveryObj,
-        // itemsData: itemsData,
-      });
+      if (Hcase === 1) {
+        res.status(201).json({
+          message: "Order Created",
+          orderNo: orderNo,
+        });
+      } else {
+        res.status(201).json({
+          message: "Order Updated",
+          orderNo: orderNo,
+        });
+      }
+
       await allocateInsert(itemsData, transaction);
       await deliveryHeadInsert(deliveryObj, transaction);
       await deliveryLineInsert(itemsData, transaction);
       await orderLineInsert(itemsData, transaction);
       await prepareInvoiceInsertA(itemsData, transaction);
-
-      // res.status(201).json({
-      //   message: "Created",
-      //   orderNo: orderNo,
-      //   delivery: deliveryObj,
-      // });
       await transaction.commit();
     }
   } catch (error) {

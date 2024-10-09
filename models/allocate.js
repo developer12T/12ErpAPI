@@ -158,7 +158,7 @@ const Allocate = sequelize.define(
       field: "MORPRT",
       validate: {
         isNumeric: {
-          msg: "itemNo must contain only numbers", // Ensure the value is numeric
+          msg: "MORPRT must contain only numbers", // Ensure the value is numeric
         },
         len: {
           args: [0, 1],

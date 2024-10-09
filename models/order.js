@@ -1101,7 +1101,7 @@ const OrderLine = sequelize.define(
       field: 'OBLNAM',
       validate: {
         isNumeric: {
-          msg: 'requestDate must contain only numbers' // Ensure the value is numeric
+          msg: 'OBLNAM must contain only numbers' // Ensure the value is numeric
         },
         len: {
           args: [0, 15],
@@ -1115,7 +1115,7 @@ const OrderLine = sequelize.define(
       field: 'OBUCOS',
       validate: {
         isNumeric: {
-          msg: 'requestDate must contain only numbers' // Ensure the value is numeric
+          msg: 'OBUCOS must contain only numbers' // Ensure the value is numeric
         },
         len: {
           args: [0, 17],
