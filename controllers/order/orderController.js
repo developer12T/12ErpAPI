@@ -40,7 +40,6 @@ const {
 } = require("../../utils/getDateTime");
 // Sequelize "OR"
 const { Op } = require("sequelize");
-const { de } = require("date-fns/locale");
 // Json
 const orderJson = getJsonData("order.json");
 const runningJson = getJsonData("runnigNumber.json");
@@ -310,9 +309,10 @@ exports.getOrder = async (req, res, next) => {
 exports.insert = async (req, res, next) => {
   let transaction;
   try {
-    transaction = await sequelize.transaction();
     const orders = req.body;
+    const responses = [];
     for (let order of orders) {
+      transaction = await sequelize.transaction();
       const {
         Hcase,
         orderDate,
@@ -349,6 +349,7 @@ exports.insert = async (req, res, next) => {
         calWeights.push(Weight);
         calCosts.push(Cost);
       }
+
       const totalCost = calCosts.reduce((accumulator, calCost) => {
         return accumulator + calCost.cost;
       }, 0);
@@ -434,25 +435,6 @@ exports.insert = async (req, res, next) => {
       });
 
       const runningNumberH = parseInt(running.lastNo) + 1;
-
-      await updateRunningNumber(
-        {
-          coNo: runningJson[0].CO.coNo,
-          series: series.OOOT05,
-          seriesType: runningJson[0].CO.seriesType,
-          lastNo: orderNo,
-        },
-        transaction
-      );
-      await updateRunningNumber(
-        {
-          coNo: runningJson[0].DELIVERY.coNo,
-          series: series.OOSPIC,
-          seriesType: runningJson[0].DELIVERY.seriesType,
-          lastNo: runningNumberH,
-        },
-        transaction
-      );
 
       const deliveryObj = {
         warehouse: warehouse,
@@ -610,8 +592,28 @@ exports.insert = async (req, res, next) => {
           return result;
         });
       }
+      console.log("orderNo_test" + orderNo);
+      await updateRunningNumber(
+        {
+          coNo: runningJson[0].DELIVERY.coNo,
+          series: series.OOSPIC,
+          seriesType: runningJson[0].DELIVERY.seriesType,
+          lastNo: runningNumberH,
+        },
+        transaction
+      );
 
       if (Hcase === 1) {
+        await updateRunningNumber(
+          {
+            coNo: runningJson[0].CO.coNo,
+            series: series.OOOT05,
+            seriesType: runningJson[0].CO.seriesType,
+            lastNo: orderNo,
+          },
+          transaction
+        );
+       
         const customer = await fetchCustomer(customerNo);
         await Order.create(
           {
@@ -684,25 +686,22 @@ exports.insert = async (req, res, next) => {
           transaction
         );
       }
-      if (Hcase === 1) {
-        res.status(201).json({
-          message: "Order Created",
-          orderNo: orderNo,
-        });
-      } else {
-        res.status(201).json({
-          message: "Order Updated",
-          orderNo: orderNo,
-        });
-      }
-
       await allocateInsert(itemsData, transaction);
       await deliveryHeadInsert(deliveryObj, transaction);
       await deliveryLineInsert(itemsData, transaction);
       await orderLineInsert(itemsData, transaction);
       await prepareInvoiceInsertA(itemsData, transaction);
       await transaction.commit();
+      responses.push({
+        orderNo: orderNo,
+        status: Hcase === 1 ? "Order Created" : "Order Updated",
+      });
     }
+
+    res.status(201).json({
+      message: "Success",
+      orders: responses,
+    });
   } catch (error) {
     if (transaction) await transaction.rollback();
     next(error);
