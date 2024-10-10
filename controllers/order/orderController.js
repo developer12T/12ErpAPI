@@ -311,8 +311,8 @@ exports.insert = async (req, res, next) => {
   try {
     const orders = req.body;
     const responses = [];
+    const failedOrders = [];
     for (let order of orders) {
-      transaction = await sequelize.transaction();
       const {
         Hcase,
         orderDate,
@@ -334,255 +334,238 @@ exports.insert = async (req, res, next) => {
       const items = order.item;
       const calWeights = [];
       const calCosts = [];
+      try {
+        transaction = await sequelize.transaction();
+        for (let item of items) {
+          const itemFactor = await fetchItemFactor(item.itemCode, item.unit);
+          const Weight = await fetchCalWeight({
+            itemCode: item.itemCode,
+            qty: itemFactor.factor * item.qty,
+          });
 
-      for (let item of items) {
-        const itemFactor = await fetchItemFactor(item.itemCode, item.unit);
-        const Weight = await fetchCalWeight({
-          itemCode: item.itemCode,
-          qty: itemFactor.factor * item.qty,
-        });
-
-        const Cost = await fetchCalCost({
-          itemCode: item.itemCode,
-          qty: itemFactor.factor * item.qty,
-        });
-        calWeights.push(Weight);
-        calCosts.push(Cost);
-      }
-
-      const totalCost = calCosts.reduce((accumulator, calCost) => {
-        return accumulator + calCost.cost;
-      }, 0);
-
-      const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
-        return accumulator + calWeight.grossWeight;
-      }, 0);
-
-      const totalnetWeight = calWeights.reduce((accumulator, calWeight) => {
-        return accumulator + calWeight.netWeight;
-      }, 0);
-
-      if (Hcase === 0) {
-        const checkOrderNo = await Order.findOne({
-          where: {
-            orderNo: orderNo,
-          },
-        });
-        if (orderNo === "") {
-          const error = new Error("Order No is required");
-          error.statusCode = 422;
-          throw error;
+          const Cost = await fetchCalCost({
+            itemCode: item.itemCode,
+            qty: itemFactor.factor * item.qty,
+          });
+          calWeights.push(Weight);
+          calCosts.push(Cost);
         }
-        if (!checkOrderNo) {
-          const error = new Error("Order No is incorrect or not found");
-          error.statusCode = 422;
-          throw error;
-        }
-        const oldOrder = await Order.findOne({
-          where: {
-            orderNo: orderNo,
-          },
-        });
-        const newTotalNet = parseInt(oldOrder.totalNet + totalNet);
-        const newTotal = parseInt(oldOrder.total + total);
-        const newtotalCost = parseInt(oldOrder.OACOAM + totalCost);
-        const newGrossWeight = parseInt(
-          oldOrder.grossWeight + totalgrossWeight
-        );
-        const newNetWeight = parseInt(oldOrder.netWeight + totalnetWeight);
-        await Order.update(
-          {
-            grossWeight: newGrossWeight.toFixed(3),
-            netWeight: newNetWeight.toFixed(3),
-            OACOAM: newtotalCost.toFixed(3),
-            total: newTotal, // OABRLA
-            OANTAM: newTotalNet, // Ne Order Value
-            totalNet: newTotalNet, // OANTLA
-            OABRAM: newTotal, // OANTLA
-            OABLRO: nonVat(newTotalNet),
-          },
-          {
+
+        const totalCost = calCosts.reduce((accumulator, calCost) => {
+          return accumulator + calCost.cost;
+        }, 0);
+
+        const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
+          return accumulator + calWeight.grossWeight;
+        }, 0);
+
+        const totalnetWeight = calWeights.reduce((accumulator, calWeight) => {
+          return accumulator + calWeight.netWeight;
+        }, 0);
+
+        if (Hcase === 0) {
+          const checkOrderNo = await Order.findOne({
             where: {
               orderNo: orderNo,
             },
-            transaction,
+          });
+          if (orderNo === "") {
+            const error = new Error("Order No is required");
+            error.statusCode = 422;
+            throw error;
           }
-        );
-      }
+          if (!checkOrderNo) {
+            const error = new Error("Order No is incorrect or not found");
+            error.statusCode = 422;
+            throw error;
+          }
+          const oldOrder = await Order.findOne({
+            where: {
+              orderNo: orderNo,
+            },
+          });
+          const newTotalNet = parseInt(oldOrder.totalNet + totalNet);
+          const newTotal = parseInt(oldOrder.total + total);
+          const newtotalCost = parseInt(oldOrder.OACOAM + totalCost);
+          const newGrossWeight = parseInt(
+            oldOrder.grossWeight + totalgrossWeight
+          );
+          const newNetWeight = parseInt(oldOrder.netWeight + totalnetWeight);
+          await Order.update(
+            {
+              grossWeight: newGrossWeight.toFixed(3),
+              netWeight: newNetWeight.toFixed(3),
+              OACOAM: newtotalCost.toFixed(3),
+              total: newTotal, // OABRLA
+              OANTAM: newTotalNet, // Ne Order Value
+              totalNet: newTotalNet, // OANTLA
+              OABRAM: newTotal, // OANTLA
+              OABLRO: nonVat(newTotalNet),
+            },
+            {
+              where: {
+                orderNo: orderNo,
+              },
+              transaction,
+            }
+          );
+        }
 
-      const series = await getSeries(orderType);
-      if (series == null) {
-        const error = new Error("Order Type is incorrect or not found");
-        error.statusCode = 422;
-        throw error;
-      }
+        const series = await getSeries(orderType);
+        if (series == null) {
+          const error = new Error("Order Type is incorrect or not found");
+          error.statusCode = 422;
+          throw error;
+        }
 
-      if (orderNo == "") {
-        orderNo = "";
-        const orderNoRunning = await runningNumber({
-          coNo: runningJson[0].CO.coNo,
-          series: series.OOOT05,
-          seriesType: runningJson[0].CO.seriesType,
+        if (orderNo == "") {
+          orderNo = "";
+          const orderNoRunning = await runningNumber({
+            coNo: runningJson[0].CO.coNo,
+            series: series.OOOT05,
+            seriesType: runningJson[0].CO.seriesType,
+          });
+          orderNo = parseInt(orderNoRunning.lastNo) + 1;
+          orderNo = orderNo.toString();
+        }
+
+        const running = await runningNumber({
+          coNo: runningJson[0].DELIVERY.coNo,
+          series: series.OOSPIC,
+          seriesType: runningJson[0].DELIVERY.seriesType,
         });
-        orderNo = parseInt(orderNoRunning.lastNo) + 1;
-        orderNo = orderNo.toString();
-      }
 
-      const running = await runningNumber({
-        coNo: runningJson[0].DELIVERY.coNo,
-        series: series.OOSPIC,
-        seriesType: runningJson[0].DELIVERY.seriesType,
-      });
+        const runningNumberH = parseInt(running.lastNo) + 1;
 
-      const runningNumberH = parseInt(running.lastNo) + 1;
-
-      const deliveryObj = {
-        warehouse: warehouse,
-        coNo: 410,
-        runningNumberH: runningNumberH,
-        orderNo: orderNo,
-        orderType: orderType,
-        addressID: addressID,
-        customerNo: customerNo,
-        orderDate: orderDate,
-        requestDate: requestDate,
-        OARGTM: getCurrentTimeFormatted(),
-        OATIZO: orderJson[0].HEAD.OATIZO,
-        grossWeight: totalgrossWeight.toFixed(3),
-        netWeight: totalnetWeight.toFixed(3),
-      };
-
-      let itemsData = await Promise.all(
-        items.map(async (item) => {
-          const itemDetail = await fetchItemDetails(item.itemCode);
-          const itemFactor = await fetchItemFactor(item.itemCode, item.unit);
-          const shinpping = await fetchShipping({
-            customerNo: customerNo,
-            addressID: addressID,
-          });
-          const route = await fetchRoute(shinpping.shippingRoute);
-          const customer = await fetchCustomer(customerNo);
-          const WeightAll = await fetchCalWeight({
-            itemCode: item.itemCode,
-            qty: itemFactor.factor * item.qty,
-          });
-          const Weight = await fetchCalWeight({
-            itemCode: item.itemCode,
-            qty: 1,
-          });
-          console.log("itemFactor" + itemFactor.factor * item.qty);
-          const Cost = await fetchCalCost({
-            itemCode: item.itemCode,
-            qty: 1,
-          });
-          const CostAll = await fetchCalCost({
-            itemCode: item.itemCode,
-            qty: itemFactor.factor * item.qty,
-          });
-          return {
-            coNo: orderJson[0].LINE.OBCONO,
-            OACUCD: customer.OKCUCD,
-            zone: customer.zone,
-            OBDIVI: orderJson[0].LINE.OBDIVI,
-            OBORCO: orderJson[0].LINE.OBORCO,
-            orderNo: orderNo, //OAORNO
-            OKALCU: customer.OKALCU,
-            runningNumberH: runningNumberH, //OQDLIX
-            orderType: orderType, //OAORTP
-            orderStatusLow: orderStatusLow, //OAORSL
-            orderDate: orderDate, //OAORDT
-            requestDate: requestDate, //OARLDT
-            OAFRE1: OAFRE1,
-            payer: payer,
-            itemCode: item.itemCode,
-            itemNo: item.itemNo,
-            itemName: itemDetail[0].itemName,
-            OBITDS: itemDetail[0].itemDescription,
-            qtyQT: itemFactor.factor * item.qty,
-            qty: item.qty,
-            unit: item.unit,
-            price: item.price,
-            discount: item.discount,
-            netPrice: item.netPrice,
-            total: item.total,
-            netWeight: WeightAll.netWeight,
-            grossWeight: WeightAll.grossWeight,
-            promotionCode: item.promotionCode,
-            warehouse: warehouse,
-            customerNo: customerNo,
-            // customerChannel: customerChannel,
-            addressID: addressID,
-            MOPLDT: formatDate(),
-            MOTIHM: orderJson[0].LINE.OBPLHM,
-            MOPRIO: orderJson[0].LINE.OBPRIO,
-            OBCOFA: itemFactor.factor,
-            OBUCOS: Cost.cost,
-            costPCS: CostAll.cost,
-            OBLNAM: item.total,
-            grossWeightSingle: Weight.grossWeight,
-            netWeightSingle: Weight.netWeight,
-            OBSPUN: item.unit,
-            OBPRMO: orderJson[0].LINE.OBPRMO,
-            OBDIC1: orderJson[0].LINE.OBDIC1,
-            OBDIC2: item.discount !== 0 ? 8 : 1,
-            OBDIC3: orderJson[0].LINE.OBDIC3,
-            OBDIC4: orderJson[0].LINE.OBDIC4,
-            OBDIC5: item.promotionCode === "" ? 1 : 6,
-            OBDIC6: orderJson[0].LINE.OBDIC6,
-            OBCMP5: item.promotionCode,
-            OBDIBE: item.promotionCode !== "" ? 4 : "",
-            OBDIRE: item.promotionCode !== "" ? 0 : "",
-            OBDDSU: item.promotionCode !== "" ? 1 : 0,
-            OBACRF: item.promotionCode !== "" ? 0 : "",
-            OBDWDT: requestDate,
-            OBCODT: requestDate,
-            OBCOHM: route.departureTime,
-            OBDWDZ: requestDate,
-            OBCODZ: requestDate,
-            OBTIZO: orderJson[0].LINE.OBTIZO, // Check Data ?
-            OBSTCD: orderJson[0].LINE.OBSTCD,
-            OBCOCD: itemFactor.factor,
-            OBUCCD: orderJson[0].LINE.OBUCCD,
-            OBVTCD: orderJson[0].LINE.OBVTCD,
-            OBSMCD: customer.saleCode, // SaleCode
-            OBCUNO: customerNo, // Customer Code
-            OBADID: addressID, // Address ID
-            OBROUT: route.routeCode, // Route
-            OBRODN: route.routeDeparture,
-            OBDSHM: route.departureTime,
-            OBCINA: orderJson[0].LINE.OBCINA, // Check Data ?
-            OBDECU: customerNo,
-            OBTEPY: customer.creditTerm,
-            OBPMOR: orderJson[0].LINE.OBPMOR, // Check Data ?
-            OBUPAV: orderJson[0].LINE.OBUPAV, // Check Data ?
-            customerChannel: customer.customerChannel,
-            OUSTUN: itemDetail[0].basicUnit,
-            OUITGR: itemDetail[0].MMITGR,
-            itemType: itemDetail[0].itemType,
-            OUITCL: itemDetail[0].itemClass,
-          };
-        })
-      );
-
-      let itemNo = 1;
-      itemsData = itemsData.map((item) => {
-        const result = {
-          ...item, // Spread the properties of the original item
-          itemNo: itemNo, // Add the itemNo property
-        };
-        itemNo++;
-        return result;
-      });
-
-      let itemNoData = await OrderLine.findOne({
-        where: {
+        const deliveryObj = {
+          warehouse: warehouse,
+          coNo: 410,
+          runningNumberH: runningNumberH,
           orderNo: orderNo,
-        },
-        order: [["itemNo", "DESC"]],
-      });
+          orderType: orderType,
+          addressID: addressID,
+          customerNo: customerNo,
+          orderDate: orderDate,
+          requestDate: requestDate,
+          OARGTM: getCurrentTimeFormatted(),
+          OATIZO: orderJson[0].HEAD.OATIZO,
+          grossWeight: totalgrossWeight.toFixed(3),
+          netWeight: totalnetWeight.toFixed(3),
+        };
 
-      if (itemNoData != null) {
-        itemNo = itemNoData.itemNo + 1;
+        let itemsData = await Promise.all(
+          items.map(async (item) => {
+            const itemDetail = await fetchItemDetails(item.itemCode);
+            const itemFactor = await fetchItemFactor(item.itemCode, item.unit);
+            const shinpping = await fetchShipping({
+              customerNo: customerNo,
+              addressID: addressID,
+            });
+            const route = await fetchRoute(shinpping.shippingRoute);
+            const customer = await fetchCustomer(customerNo);
+            const WeightAll = await fetchCalWeight({
+              itemCode: item.itemCode,
+              qty: itemFactor.factor * item.qty,
+            });
+            const Weight = await fetchCalWeight({
+              itemCode: item.itemCode,
+              qty: 1,
+            });
+            console.log("itemFactor" + itemFactor.factor * item.qty);
+            const Cost = await fetchCalCost({
+              itemCode: item.itemCode,
+              qty: 1,
+            });
+            const CostAll = await fetchCalCost({
+              itemCode: item.itemCode,
+              qty: itemFactor.factor * item.qty,
+            });
+            return {
+              coNo: orderJson[0].LINE.OBCONO,
+              OACUCD: customer.OKCUCD,
+              zone: customer.zone,
+              OBDIVI: orderJson[0].LINE.OBDIVI,
+              OBORCO: orderJson[0].LINE.OBORCO,
+              orderNo: orderNo, //OAORNO
+              OKALCU: customer.OKALCU,
+              runningNumberH: runningNumberH, //OQDLIX
+              orderType: orderType, //OAORTP
+              orderStatusLow: orderStatusLow, //OAORSL
+              orderDate: orderDate, //OAORDT
+              requestDate: requestDate, //OARLDT
+              OAFRE1: OAFRE1,
+              payer: payer,
+              itemCode: item.itemCode,
+              itemNo: item.itemNo,
+              itemName: itemDetail[0].itemName,
+              OBITDS: itemDetail[0].itemDescription,
+              qtyQT: itemFactor.factor * item.qty,
+              qty: item.qty,
+              unit: item.unit,
+              price: item.price,
+              discount: item.discount,
+              netPrice: item.netPrice,
+              total: item.total,
+              netWeight: WeightAll.netWeight,
+              grossWeight: WeightAll.grossWeight,
+              promotionCode: item.promotionCode,
+              warehouse: warehouse,
+              customerNo: customerNo,
+              // customerChannel: customerChannel,
+              addressID: addressID,
+              MOPLDT: formatDate(),
+              MOTIHM: orderJson[0].LINE.OBPLHM,
+              MOPRIO: orderJson[0].LINE.OBPRIO,
+              OBCOFA: itemFactor.factor,
+              OBUCOS: Cost.cost,
+              costPCS: CostAll.cost,
+              OBLNAM: item.total,
+              grossWeightSingle: Weight.grossWeight,
+              netWeightSingle: Weight.netWeight,
+              OBSPUN: item.unit,
+              OBPRMO: orderJson[0].LINE.OBPRMO,
+              OBDIC1: orderJson[0].LINE.OBDIC1,
+              OBDIC2: item.discount !== 0 ? 8 : 1,
+              OBDIC3: orderJson[0].LINE.OBDIC3,
+              OBDIC4: orderJson[0].LINE.OBDIC4,
+              OBDIC5: item.promotionCode === "" ? 1 : 6,
+              OBDIC6: orderJson[0].LINE.OBDIC6,
+              OBCMP5: item.promotionCode,
+              OBDIBE: item.promotionCode !== "" ? 4 : "",
+              OBDIRE: item.promotionCode !== "" ? 0 : "",
+              OBDDSU: item.promotionCode !== "" ? 1 : 0,
+              OBACRF: item.promotionCode !== "" ? 0 : "",
+              OBDWDT: requestDate,
+              OBCODT: requestDate,
+              OBCOHM: route.departureTime,
+              OBDWDZ: requestDate,
+              OBCODZ: requestDate,
+              OBTIZO: orderJson[0].LINE.OBTIZO, // Check Data ?
+              OBSTCD: orderJson[0].LINE.OBSTCD,
+              OBCOCD: itemFactor.factor,
+              OBUCCD: orderJson[0].LINE.OBUCCD,
+              OBVTCD: orderJson[0].LINE.OBVTCD,
+              OBSMCD: customer.saleCode, // SaleCode
+              OBCUNO: customerNo, // Customer Code
+              OBADID: addressID, // Address ID
+              OBROUT: route.routeCode, // Route
+              OBRODN: route.routeDeparture,
+              OBDSHM: route.departureTime,
+              OBCINA: orderJson[0].LINE.OBCINA, // Check Data ?
+              OBDECU: customerNo,
+              OBTEPY: customer.creditTerm,
+              OBPMOR: orderJson[0].LINE.OBPMOR, // Check Data ?
+              OBUPAV: orderJson[0].LINE.OBUPAV, // Check Data ?
+              customerChannel: customer.customerChannel,
+              OUSTUN: itemDetail[0].basicUnit,
+              OUITGR: itemDetail[0].MMITGR,
+              itemType: itemDetail[0].itemType,
+              OUITCL: itemDetail[0].itemClass,
+            };
+          })
+        );
+
+        let itemNo = 1;
         itemsData = itemsData.map((item) => {
           const result = {
             ...item, // Spread the properties of the original item
@@ -591,119 +574,147 @@ exports.insert = async (req, res, next) => {
           itemNo++;
           return result;
         });
-      }
-      console.log("orderNo_test" + orderNo);
-      await updateRunningNumber(
-        {
-          coNo: runningJson[0].DELIVERY.coNo,
-          series: series.OOSPIC,
-          seriesType: runningJson[0].DELIVERY.seriesType,
-          lastNo: runningNumberH,
-        },
-        transaction
-      );
 
-      if (Hcase === 1) {
-        await updateRunningNumber(
-          {
-            coNo: runningJson[0].CO.coNo,
-            series: series.OOOT05,
-            seriesType: runningJson[0].CO.seriesType,
-            lastNo: orderNo,
-          },
-          transaction
-        );
-       
-        const customer = await fetchCustomer(customerNo);
-        await Order.create(
-          {
-            coNo: orderJson[0].HEAD.OACONO, // OACONO,
-            OADIVI: orderJson[0].HEAD.OADIVI, // OADIVI
-            orderNo: orderNo, // OAORNO
-            orderType: orderType, // OAORTP
-            OAFACI: customer.OKFACI, // OAFACI
-            warehouse: warehouse, // OAWHLO
-            orderStatusLow: orderStatusLow, // OAORSL
-            orderStatusHigh: orderStatusHigh, // OAORST
-            customerNo: customerNo, // OACUNO
-            orderDate: orderDate, // OAORDT
-            OACUDT: orderDate, // OACUDT
-            requestDate: requestDate, // OARLDT
-            OARLDZ: requestDate,
-            OATIZO: orderJson[0].HEAD.OATIZO, // OATIZO
-            OAOPRI: orderJson[0].HEAD.OAOPRI, // OAOPRI
-            OAAICD: orderJson[0].HEAD.OAAICD,
-            OAOT38: orderJson[0].HEAD.OAOT38,
-            OALNCD: orderJson[0].HEAD.OALNCD,
-            OATEPY: customer.creditTerm, // OATEPY
-            OAMODL: customer.OKMODL, // OAMODL
-            OATEDL: customer.OKTEDL, // OATEDL
-            addressID: addressID, // OAADID
-            OASMCD: customer.saleCode,
-            OAOREF: ref,
-            OAYREF: note,
-            OAVRCD: orderJson[0].HEAD.OAVRCD,
-            OAFRE1: OAFRE1,
-            OAPYNO: customer.salePayer,
-            OAINRC: customer.salePayer,
-            OAPYCD: customer.OKPYCD,
-            OADISY: orderJson[0].HEAD.OADISY, // *** Conditional
-            OATINC: orderJson[0].HEAD.OATINC,
-            OALOCD: customer.OKCUCD,
-            OACUCD: customer.OKCUCD, // OACUCD
-            OADCCD: orderJson[0].HEAD.OADCCD, // OADCCD
-            OACRTP: 1, // *** Conditional
-            OADMCU: orderJson[0].HEAD.OADMCU,
-            grossWeight: totalgrossWeight.toFixed(3),
-            netWeight: totalnetWeight.toFixed(3),
-            OACOAM: totalCost.toFixed(3),
-            total: total, // OABRLA
-            OANTAM: totalNet, // Ne Order Value
-            totalNet: totalNet, // OANTLA
-            OABRAM: total, // OANTLA
-            OAFDED: requestDate,
-            OALDED: requestDate,
-            OARESP: orderJson[0].HEAD.OACHID,
-            OABLRO: nonVat(totalNet),
-            OATXAP: orderJson[0].HEAD.OATXAP,
-            OARLDZ: formatDate(), // OARLDZ
-            OARGDT: formatDate(), // OARGDT
-            OARGTM: getCurrentTimeFormatted(), // OARGTM
-            OALMDT: formatDate(), // OALMDT
-            OACHID: orderJson[0].HEAD.OACHID, // OACHID
-            OACHNO: orderJson[0].HEAD.OACHNO, // OACHID
-            OALMTS: Date.now(), // OALMTS
-            OADECU: customerNo,
-          },
-          { transaction }
-        );
-        await documentInsert(
-          {
-            coNo: orderJson[0].HEAD.OACONO,
-            orderType: orderType,
+        let itemNoData = await OrderLine.findOne({
+          where: {
             orderNo: orderNo,
           },
+          order: [["itemNo", "DESC"]],
+        });
+
+        if (itemNoData != null) {
+          itemNo = itemNoData.itemNo + 1;
+          itemsData = itemsData.map((item) => {
+            const result = {
+              ...item, // Spread the properties of the original item
+              itemNo: itemNo, // Add the itemNo property
+            };
+            itemNo++;
+            return result;
+          });
+        }
+        console.log("orderNo_test" + orderNo);
+        await updateRunningNumber(
+          {
+            coNo: runningJson[0].DELIVERY.coNo,
+            series: series.OOSPIC,
+            seriesType: runningJson[0].DELIVERY.seriesType,
+            lastNo: runningNumberH,
+          },
           transaction
         );
+
+        if (Hcase === 1) {
+          await updateRunningNumber(
+            {
+              coNo: runningJson[0].CO.coNo,
+              series: series.OOOT05,
+              seriesType: runningJson[0].CO.seriesType,
+              lastNo: orderNo,
+            },
+            transaction
+          );
+
+          const customer = await fetchCustomer(customerNo);
+          await Order.create(
+            {
+              coNo: orderJson[0].HEAD.OACONO, // OACONO,
+              OADIVI: orderJson[0].HEAD.OADIVI, // OADIVI
+              orderNo: orderNo, // OAORNO
+              orderType: orderType, // OAORTP
+              OAFACI: customer.OKFACI, // OAFACI
+              warehouse: warehouse, // OAWHLO
+              orderStatusLow: orderStatusLow, // OAORSL
+              orderStatusHigh: orderStatusHigh, // OAORST
+              customerNo: customerNo, // OACUNO
+              orderDate: orderDate, // OAORDT
+              OACUDT: orderDate, // OACUDT
+              requestDate: requestDate, // OARLDT
+              OARLDZ: requestDate,
+              OATIZO: orderJson[0].HEAD.OATIZO, // OATIZO
+              OAOPRI: orderJson[0].HEAD.OAOPRI, // OAOPRI
+              OAAICD: orderJson[0].HEAD.OAAICD,
+              OAOT38: orderJson[0].HEAD.OAOT38,
+              OALNCD: orderJson[0].HEAD.OALNCD,
+              OATEPY: customer.creditTerm, // OATEPY
+              OAMODL: customer.OKMODL, // OAMODL
+              OATEDL: customer.OKTEDL, // OATEDL
+              addressID: addressID, // OAADID
+              OASMCD: customer.saleCode,
+              OAOREF: ref,
+              OAYREF: note,
+              OAVRCD: orderJson[0].HEAD.OAVRCD,
+              OAFRE1: OAFRE1,
+              OAPYNO: customer.salePayer,
+              OAINRC: customer.salePayer,
+              OAPYCD: customer.OKPYCD,
+              OADISY: orderJson[0].HEAD.OADISY, // *** Conditional
+              OATINC: orderJson[0].HEAD.OATINC,
+              OALOCD: customer.OKCUCD,
+              OACUCD: customer.OKCUCD, // OACUCD
+              OADCCD: orderJson[0].HEAD.OADCCD, // OADCCD
+              OACRTP: 1, // *** Conditional
+              OADMCU: orderJson[0].HEAD.OADMCU,
+              grossWeight: totalgrossWeight.toFixed(3),
+              netWeight: totalnetWeight.toFixed(3),
+              OACOAM: totalCost.toFixed(3),
+              total: total, // OABRLA
+              OANTAM: totalNet, // Ne Order Value
+              totalNet: totalNet, // OANTLA
+              OABRAM: total, // OANTLA
+              OAFDED: requestDate,
+              OALDED: requestDate,
+              OARESP: orderJson[0].HEAD.OACHID,
+              OABLRO: nonVat(totalNet),
+              OATXAP: orderJson[0].HEAD.OATXAP,
+              OARLDZ: formatDate(), // OARLDZ
+              OARGDT: formatDate(), // OARGDT
+              OARGTM: getCurrentTimeFormatted(), // OARGTM
+              OALMDT: formatDate(), // OALMDT
+              OACHID: orderJson[0].HEAD.OACHID, // OACHID
+              OACHNO: orderJson[0].HEAD.OACHNO, // OACHID
+              OALMTS: Date.now(), // OALMTS
+              OADECU: customerNo,
+            },
+            { transaction }
+          );
+          await documentInsert(
+            {
+              coNo: orderJson[0].HEAD.OACONO,
+              orderType: orderType,
+              orderNo: orderNo,
+            },
+            transaction
+          );
+        }
+        await allocateInsert(itemsData, transaction);
+        await deliveryHeadInsert(deliveryObj, transaction);
+        await deliveryLineInsert(itemsData, transaction);
+        await orderLineInsert(itemsData, transaction);
+        await prepareInvoiceInsertA(itemsData, transaction);
+        await transaction.commit();
+        responses.push({
+          orderNo: orderNo,
+          status: Hcase === 1 ? "Order Created" : "Order Updated",
+        });
+      } catch (orderError) {
+        // Rollback for this particular order, log the error
+        await transaction.rollback();
+        failedOrders.push({
+          orderNo: orderNo,
+          error: orderError.message,
+        });
       }
-      await allocateInsert(itemsData, transaction);
-      await deliveryHeadInsert(deliveryObj, transaction);
-      await deliveryLineInsert(itemsData, transaction);
-      await orderLineInsert(itemsData, transaction);
-      await prepareInvoiceInsertA(itemsData, transaction);
-      await transaction.commit();
-      responses.push({
-        orderNo: orderNo,
-        status: Hcase === 1 ? "Order Created" : "Order Updated",
-      });
     }
 
-    res.status(201).json({
-      message: "Success",
-      orders: responses,
+    // Send a combined response
+    res.status(207).json({
+      message: "Partial Success",
+      successfulOrders: responses,
+      failedOrders: failedOrders,
     });
   } catch (error) {
-    if (transaction) await transaction.rollback();
+    // if (transaction) await transaction.rollback();
     next(error);
   }
 };
