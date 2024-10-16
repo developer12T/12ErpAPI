@@ -1,5 +1,6 @@
 // Models
 const { OrderLine, Order } = require('../../models/order')
+const { OODFLT } = require('../../models/master')
 const Promotion = require('../../models/promotion')
 const Shipping = require('../../models/shipping')
 const { sequelize } = require('../../config/m3db')
@@ -40,6 +41,7 @@ const {
 } = require('../../utils/getDateTime')
 // Sequelize "OR"
 const { Op } = require('sequelize')
+const { fetchCotype } = require('../../services/coTypeService')
 // Json
 const orderJson = getJsonData('order.json')
 const runningJson = getJsonData('runnigNumber.json')
@@ -618,7 +620,7 @@ exports.insert = async (req, res, next) => {
           },
           transaction
         )
-
+        const coType = await fetchCotype(orderType);
         if (Hcase === 1) {
           const customer = await fetchCustomer(customerNo)
           await Order.create(
@@ -649,11 +651,12 @@ exports.insert = async (req, res, next) => {
               OAOREF: ref,
               OAYREF: note,
               OAVRCD: orderJson[0].HEAD.OAVRCD,
-              OAFRE1: OAFRE1,
+              OAFRE1: customer.OKFRE1,
+              OAPLTB: coType.UJPLTB,
               OAPYNO: customer.salePayer,
               OAINRC: customer.salePayer,
               OAPYCD: customer.OKPYCD,
-              OADISY: orderJson[0].HEAD.OADISY, // *** Conditional
+              OADISY: coType.UJDISY, // *** Conditional
               OATINC: orderJson[0].HEAD.OATINC,
               OALOCD: customer.OKCUCD,
               OACUCD: customer.OKCUCD, // OACUCD

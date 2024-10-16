@@ -1,7 +1,5 @@
 const { ItemFac, ItemMaster, ItemUnit } = require("../models/master");
 const errorEndpoint = require("../middleware/errorEndpoint");
-const { HOST } = require("../config/index");
-const axios = require("axios");
 
 const path = require("path");
 const currentFilePath = path.basename(__filename);

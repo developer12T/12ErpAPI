@@ -71,6 +71,7 @@ exports.fetchCustomer = async (customerNo) => {
       saleCode: customersData.saleCode.trim(),
       salePayer: customersData.salePayer.trim(),
       OKCFC1: customersData.OKCFC1.trim(),
+      OKFRE1: customersData.OKFRE1,
       OKCFC3: customersData.OKCFC3.trim(),
       OKCFC6: customersData.OKCFC6.trim(),
       creditLimit: customersData.creditLimit,

@@ -683,6 +683,11 @@ const Order = sequelize.define(
           throw new Error('OACUDT must be exactly 8 digits')
         }
       }
+    },
+    OAPLTB: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: 'OAPLTB'
     }
   },
   {

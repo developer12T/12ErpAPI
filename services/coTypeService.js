@@ -4,18 +4,17 @@ const path = require('path')
 const currentFilePath = path.basename(__filename)
 const errorEndpoint = require('../middleware/errorEndpoint')
 
-exports.fetchCotype = async (req, res, next) => {
+exports.fetchCotype = async orderType => {
   try {
-    const { orderType } = req.body
-    const cotype = await OODFLT.findOne({
+    const coType = await OODFLT.findOne({
       where: {
         coNo: 410,
         orderType: orderType
       }
     })
-    if (cotype) {
-      const response = trimObjectStrings(address.toJSON())
-      res.status(200).json(response)
+    if (coType) {
+      const response = trimObjectStrings(coType.toJSON())
+      return response
     } else {
       const error = new Error('Not Found Order Type')
       error.statusCode = 404
