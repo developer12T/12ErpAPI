@@ -600,7 +600,7 @@ exports.insert = async (req, res, next) => {
             return result
           })
         }
-   
+
         await updateRunningNumber(
           {
             coNo: runningJson[0].DELIVERY.coNo,
@@ -706,6 +706,11 @@ exports.insert = async (req, res, next) => {
 
     // Send a combined response
     res.status(207).json({
+      message: 'Partial Success',
+      successfulOrders: responses,
+      failedOrders: failedOrders
+    })
+    console.log({
       message: 'Partial Success',
       successfulOrders: responses,
       failedOrders: failedOrders
