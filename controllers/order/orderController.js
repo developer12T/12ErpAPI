@@ -418,11 +418,14 @@ exports.insert = async (req, res, next) => {
 
         if (orderNo == '') {
           orderNo = ''
-          const orderNoRunning = await runningNumber({
-            coNo: runningJson[0].CO.coNo,
-            series: series.OOOT05,
-            seriesType: runningJson[0].CO.seriesType
-          }, transaction)
+          const orderNoRunning = await runningNumber(
+            {
+              coNo: runningJson[0].CO.coNo,
+              series: series.OOOT05,
+              seriesType: runningJson[0].CO.seriesType
+            },
+            transaction
+          )
           orderNo = parseInt(orderNoRunning.lastNo) + 1
           orderNo = orderNo.toString()
 
@@ -437,11 +440,14 @@ exports.insert = async (req, res, next) => {
           )
         }
 
-        const running = await runningNumber({
-          coNo: runningJson[0].DELIVERY.coNo,
-          series: series.OOSPIC,
-          seriesType: runningJson[0].DELIVERY.seriesType
-        }, transaction)
+        const running = await runningNumber(
+          {
+            coNo: runningJson[0].DELIVERY.coNo,
+            series: series.OOSPIC,
+            seriesType: runningJson[0].DELIVERY.seriesType
+          },
+          transaction
+        )
 
         const runningNumberH = parseInt(running.lastNo) + 1
 
@@ -568,7 +574,8 @@ exports.insert = async (req, res, next) => {
               OUSTUN: itemDetail[0].basicUnit,
               OUITGR: itemDetail[0].MMITGR,
               itemType: itemDetail[0].itemType,
-              OUITCL: itemDetail[0].itemClass
+              OUITCL: itemDetail[0].itemClass,
+              itemLot: item.itemLot
             }
           })
         )

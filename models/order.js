@@ -1541,6 +1541,17 @@ const OrderLine = sequelize.define(
         }
       }
     },
+    OBBANO: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'OBBANO',
+      validate: {
+        len: {
+          args: [0, 20],
+          msg: 'OBBANO must be 0-15 digits long'
+        }
+      }
+    },
     OBPCOF: {
       type: DataTypes.INTEGER,
       allowNull: true,

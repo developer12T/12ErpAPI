@@ -106,6 +106,7 @@ exports.orderLineInsert = async (itemData, transaction) => {
           OBUCOS: item.OBUCOS,
           OBCOFA: item.OBCOFA,
           OBORCO: item.OBORCO,
+          OBBANO: item.itemLot,
 
           //OBPRIO
         },
