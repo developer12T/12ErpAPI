@@ -951,6 +951,17 @@ const DeliveryHead = sequelize.define(
       //   },
       // },
     },
+    OQCUCL: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OQCUCL",
+      // validate: {
+      //   len: {
+      //     args: [0, 6],
+      //     msg: "OQSROT must be 0-6 digits long",
+      //   },
+      // },
+    },
   },
   {
     freezeTableName: true,

@@ -1,6 +1,5 @@
 // Models
 const { OrderLine, Order } = require('../../models/order')
-const { OODFLT } = require('../../models/master')
 const Promotion = require('../../models/promotion')
 const Shipping = require('../../models/shipping')
 const { sequelize } = require('../../config/m3db')
@@ -652,11 +651,11 @@ exports.insert = async (req, res, next) => {
               OAYREF: note,
               OAVRCD: orderJson[0].HEAD.OAVRCD,
               OAFRE1: customer.OKFRE1,
-              OAPLTB: coType.UJPLTB,
+              OAPLTB: coType.UJPLTB == '*CUS' ? '' : coType.UJPLTB,
               OAPYNO: customer.salePayer,
               OAINRC: customer.salePayer,
               OAPYCD: customer.OKPYCD,
-              OADISY: coType.UJDISY, // *** Conditional
+              OADISY: coType.UJDISY == '*CUS' ? '' : coType.UJDISY, // *** Conditional
               OATINC: orderJson[0].HEAD.OATINC,
               OALOCD: customer.OKCUCD,
               OACUCD: customer.OKCUCD, // OACUCD

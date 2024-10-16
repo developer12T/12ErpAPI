@@ -1,65 +1,65 @@
 // Models
-const { DeliveryHead, DeliveryLine } = require("../../models/delivery");
+const { DeliveryHead, DeliveryLine } = require('../../models/delivery')
 // Service
 const {
   fetchShipping,
-  fetchCustomer,
-} = require("../../services/customerService");
-const { fetchPolicy } = require("../../services/policyService");
-const { fetchRoute } = require("../../services/routeService");
+  fetchCustomer
+} = require('../../services/customerService')
+const { fetchPolicy } = require('../../services/policyService')
+const { fetchRoute } = require('../../services/routeService')
 // Utils
-const { trimObjectStrings } = require("../../utils/String");
+const { trimObjectStrings } = require('../../utils/String')
 const {
   formatDate,
-  getCurrentTimeFormatted,
-} = require("../../utils/getDateTime");
-const { getJsonData } = require("../../utils/getJsonData");
+  getCurrentTimeFormatted
+} = require('../../utils/getDateTime')
+const { getJsonData } = require('../../utils/getJsonData')
 // Json
-const deliveryData = getJsonData("delivery.json");
+const deliveryData = getJsonData('delivery.json')
 // Middleware
-const errorEndpoint = require("../../middleware/errorEndpoint");
-const path = require("path");
-const currentFilePath = path.basename(__filename);
+const errorEndpoint = require('../../middleware/errorEndpoint')
+const path = require('path')
+const currentFilePath = path.basename(__filename)
 
-exports.index = async (req, res, next) => {};
+exports.index = async (req, res, next) => {}
 
 exports.getDeliveryHead = async (req, res, next) => {
   try {
-    const { orderNo } = req.body;
+    const { orderNo } = req.body
     const headData = await DeliveryHead.findOne({
       where: {
         coNo: 410,
-        OQRIDN: orderNo,
-      },
-    });
+        OQRIDN: orderNo
+      }
+    })
     if (headData) {
-      const response = trimObjectStrings(headData.toJSON());
-      res.status(200).json(response);
+      const response = trimObjectStrings(headData.toJSON())
+      res.status(200).json(response)
     } else {
-      const error = new Error("Not Found Address");
-      error.statusCode = 404;
-      throw error;
+      const error = new Error('Not Found Address')
+      error.statusCode = 404
+      throw error
     }
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 exports.getDeliveryLine = async (req, res, next) => {
   try {
-    const { orderNo } = req.body;
+    const { orderNo } = req.body
     const lineData = await DeliveryLine.findAll({
       where: {
         coNo: 410,
-        URRIDN: orderNo,
-      },
-    });
-    const response = lineData.map((item) => trimObjectStrings(item.toJSON()));
-    res.status(200).json(response);
+        URRIDN: orderNo
+      }
+    })
+    const response = lineData.map(item => trimObjectStrings(item.toJSON()))
+    res.status(200).json(response)
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 exports.deliveryHeadInsert = async (data, transaction) => {
   try {
@@ -75,17 +75,18 @@ exports.deliveryHeadInsert = async (data, transaction) => {
       grossWeight,
       netWeight,
       orderDate,
-      requestDate,
-    } = data;
-    const policy = await fetchPolicy(orderType);
-    console.log("runningNumberH " + runningNumberH);
-    // const policy = 'W23';
-    const customer = await fetchCustomer(customerNo);
+      requestDate
+    } = data
+    const policy = await fetchPolicy(orderType)
+    const customer = await fetchCustomer(customerNo)
     const shinpping = await fetchShipping({
       customerNo: customerNo,
-      addressID: addressID,
-    });
-    const route = await fetchRoute(shinpping.shippingRoute);
+      addressID: addressID
+    })
+
+    console.log('Customer_DAWD' + customer.customerChannel)
+
+    const route = await fetchRoute(shinpping.shippingRoute)
     await DeliveryHead.create(
       {
         coNo: coNo,
@@ -150,22 +151,22 @@ exports.deliveryHeadInsert = async (data, transaction) => {
         OQCHNO: deliveryData[0].HEAD.OQCHNO,
         OQCHID: deliveryData[0].HEAD.OQCHID,
         OQSCES: deliveryData[0].HEAD.OQSCES, //90
-        OQLMTS: Date.now(),
+        OQLMTS: Date.now()
       },
       {
-        transaction,
+        transaction
       }
-    );
+    )
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "deliveryHeadInsert", error);
+    throw errorEndpoint(currentFilePath, 'deliveryHeadInsert', error)
   }
-};
+}
 
 exports.deliveryLineInsert = async (itemData, transaction) => {
   // let transaction;
   try {
     // transaction = await sequelize.transaction();
-    const items = itemData;
+    const items = itemData
 
     for (let item of items) {
       await DeliveryLine.create(
@@ -189,16 +190,16 @@ exports.deliveryLineInsert = async (itemData, transaction) => {
           URCHNO: deliveryData[0].LINE.URCHNO,
           URCHID: deliveryData[0].LINE.URCHID,
           URLMTS: Date.now(),
-          URSCES: deliveryData[0].HEAD.OQSCES, // MHDISH
+          URSCES: deliveryData[0].HEAD.OQSCES // MHDISH
         },
         {
-          transaction,
+          transaction
         }
-      );
+      )
     }
     // res.status(201).json({ message: "Created" });
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "deliveryLineInsert", error);
+    throw errorEndpoint(currentFilePath, 'deliveryLineInsert', error)
     // next(error);
   }
-};
+}
