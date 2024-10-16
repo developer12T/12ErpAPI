@@ -1,439 +1,473 @@
-const { sequelize, DataTypes } = require("../config/m3db");
+const { sequelize, DataTypes } = require('../config/m3db')
 
 const ItemFac = sequelize.define(
-  "MITFAC",
+  'MITFAC',
   {
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "M9CONO",
+      field: 'M9CONO'
     },
     M9FACI: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      field: "M9FACI",
+      field: 'M9FACI'
     },
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "M9ITNO",
+      field: 'M9ITNO'
     },
     cost: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "M9APPR",
-    },
+      field: 'M9APPR'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
 
 const ItemMaster = sequelize.define(
-  "MITMAS",
+  'MITMAS',
   {
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      field: "MMCONO",
+      field: 'MMCONO'
     },
     status: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MMSTAT",
+      field: 'MMSTAT'
     },
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "MMITNO",
+      field: 'MMITNO'
     },
     itemDescription: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MMITDS",
+      field: 'MMITDS'
     },
     itemName: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MMFUDS",
+      field: 'MMFUDS'
     },
     itemType: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "MMITTY",
+      field: 'MMITTY'
     },
     MMITGR: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MMITGR",
+      field: 'MMITGR'
     },
     itemClass: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MMITCL",
+      field: 'MMITCL'
     },
     itemGroup: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MMCFI3",
+      field: 'MMCFI3'
     },
     netWeight: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MMNEWE",
+      field: 'MMNEWE'
     },
     grossWeight: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MMGRWE",
+      field: 'MMGRWE'
     },
-    MMUNMS:{
+    MMUNMS: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MMUNMS",
-    },
+      field: 'MMUNMS'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
 
 const ItemUnit = sequelize.define(
-  "MITAUN",
+  'MITAUN',
   {
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      field: "MUCONO",
+      field: 'MUCONO'
     },
     facType: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "MUAUTP",
+      field: 'MUAUTP'
     },
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey:true,
-      field: "MUITNO",
+      primaryKey: true,
+      field: 'MUITNO'
     },
     unit: {
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey:true,
-      field: "MUALUN",
+      primaryKey: true,
+      field: 'MUALUN'
     },
     factor: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "MUCOFA",
-    },
+      field: 'MUCOFA'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
 
 const Warehouse = sequelize.define(
-  "MITWHL",
+  'MITWHL',
   {
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      field: "MWCONO",
+      field: 'MWCONO'
     },
     warehouse: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      field: "MWWHLO",
+      field: 'MWWHLO'
     },
     warehouseName: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MWWHNM",
-    },
+      field: 'MWWHNM'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
 const Locate = sequelize.define(
-  "MITLOC",
+  'MITLOC',
   {
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      field: "MLCONO",
+      field: 'MLCONO'
     },
     warehouse: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "MLWHLO",
+      field: 'MLWHLO'
     },
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "MLITNO",
+      field: 'MLITNO'
     },
     location: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MLWHSL",
+      field: 'MLWHSL'
     },
     lot: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MLBANO",
+      field: 'MLBANO'
     },
     itemOnHand: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "MLSTQT",
+      field: 'MLSTQT'
     },
     itemallocated: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "MLALQT",
-    },
+      field: 'MLALQT'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
 
 const Balance = sequelize.define(
-  "MITBAL",
+  'MITBAL',
   {
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      field: "MBCONO",
+      field: 'MBCONO'
     },
     warehouse: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "MBWHLO",
+      field: 'MBWHLO'
     },
     itemCode: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "MBITNO",
+      field: 'MBITNO'
     },
     itemPcs: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MBSTQT",
+      field: 'MBSTQT'
     },
     allocateMethod: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MBALMT",
+      field: 'MBALMT'
     },
     itemallocated: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "MBALQT",
+      field: 'MBALQT'
     },
     itemAllowcatable: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "MBAVAL",
-    },
+      field: 'MBAVAL'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
 
 const Policy = sequelize.define(
-  "MHDIPO",
+  'MHDIPO',
   {
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      field: "EDCONO",
+      field: 'EDCONO'
     },
     EDDPOL: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      field: "EDDPOL",
+      field: 'EDDPOL'
     },
     EDDNID: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      field: "EDDNID",
+      field: 'EDDNID'
     },
     EDTX40: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "EDTX40",
+      field: 'EDTX40'
     },
     EDTX15: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "EDTX15",
+      field: 'EDTX15'
     },
     EDTRLV: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "EDTRLV",
-    },
+      field: 'EDTRLV'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
 
 const OOTYPE = sequelize.define(
-  "OOTYPE",
+  'OOTYPE',
   {
     OOCONO: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "OOCONO",
+      field: 'OOCONO'
     },
     OOORTP: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "OOORTP",
+      field: 'OOORTP'
     },
     OOOT05: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OOOT05",
+      field: 'OOOT05'
     },
     OOOT34: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OOOT34",
+      field: 'OOOT34'
     },
     OOSPIC: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OOSPIC",
+      field: 'OOSPIC'
     },
     OODPOL: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OODPOL",
-    },
+      field: 'OODPOL'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
 
 const MGTYPE = sequelize.define(
-  "MGTYPE",
+  'MGTYPE',
   {
     YXCONO: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "YXCONO",
+      field: 'YXCONO'
     },
     YXTRTP: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "YXTRTP",
+      field: 'YXTRTP'
     },
     YXDPOL: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      field: "YXDPOL",
+      field: 'YXDPOL'
     },
     YXTX40: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "YXTX40",
+      field: 'YXTX40'
     },
     YXTTYP: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "YXTTYP",
+      field: 'YXTTYP'
     },
     YXTTID: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "YXTTID",
+      field: 'YXTTID'
     },
     YXTTSI: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "YXTTSI",
+      field: 'YXTTSI'
     },
     YXNBID: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "YXNBID",
+      field: 'YXNBID'
     },
     YXFSQ3: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "YXFSQ3",
-    },
+      field: 'YXFSQ3'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
+
+const OODFLT = sequelize.define(
+  'OODFLT',
+  {
+    coNo: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      field: 'UJCONO'
+    },
+    orderType: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'UJORTP'
+    },
+    UJPLTB: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'UJPLTB'
+    },
+    UJDISY: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'UJDISY'
+    }
+  },
+  {
+    freezeTableName: true,
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+    primaryKey: false
+  }
+)
 
 module.exports = {
   ItemFac,
@@ -444,5 +478,6 @@ module.exports = {
   Balance,
   Policy,
   OOTYPE,
-  MGTYPE
-};
+  MGTYPE,
+  OODFLT
+}

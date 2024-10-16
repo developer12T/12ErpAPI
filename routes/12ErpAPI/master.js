@@ -13,6 +13,7 @@ const {
   getDistributionpolicy,
   getItemAll,
   getItemDetails,
+  getCoType,
 } = require("../../controllers/master/masterContorller");
 const {
   getStockAll,
@@ -48,6 +49,9 @@ router.post("/policy/single", getPolicy);
 
 //http://localhost:3000/master/policy/distribution/single
 router.post("/policy/distribution/single", getDistributionpolicy);
+
+//http://localhost:3000/master/policy/distribution/single
+router.post("/cotype", getCoType);
 
 
 //================================== Calulate ==================================
