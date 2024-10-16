@@ -7,7 +7,7 @@ const errorEndpoint = require("../middleware/errorEndpoint");
 const path = require("path");
 const currentFilePath = path.basename(__filename);
 
-exports.runningNumber = async (data) => {
+exports.runningNumber = async (data,transaction) => {
   try {
     const { series, seriesType, coNo } = data;
     const response = await NumberSeries.findOne({
@@ -16,6 +16,7 @@ exports.runningNumber = async (data) => {
         series: series,
         seriesType: seriesType,
       },
+      transaction,
     });
     return response;
   } catch (error) {

@@ -422,9 +422,10 @@ exports.insert = async (req, res, next) => {
             coNo: runningJson[0].CO.coNo,
             series: series.OOOT05,
             seriesType: runningJson[0].CO.seriesType
-          })
+          }, transaction)
           orderNo = parseInt(orderNoRunning.lastNo) + 1
           orderNo = orderNo.toString()
+
           await updateRunningNumber(
             {
               coNo: runningJson[0].CO.coNo,
@@ -440,7 +441,7 @@ exports.insert = async (req, res, next) => {
           coNo: runningJson[0].DELIVERY.coNo,
           series: series.OOSPIC,
           seriesType: runningJson[0].DELIVERY.seriesType
-        })
+        }, transaction)
 
         const runningNumberH = parseInt(running.lastNo) + 1
 
