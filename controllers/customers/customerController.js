@@ -232,6 +232,7 @@ exports.single = async (req, res, next) => {
         OKCSCD: OKCSCD,
         OKECAR: customer.OKECAR,
         OKFACI: OKFACI,
+        OKFRE1: customer.OKFRE1,
         OKINRC: OKINRC,
         OKCUCD: OKCUCD,
         OKALCU: OKALCU,

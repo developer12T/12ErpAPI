@@ -226,6 +226,11 @@ const Customer = sequelize.define(
       allowNull: true,
       field: "OKTEDL",
     },
+    OKFRE1: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "OKFRE1",
+    },
   },
   {
     freezeTableName: true,
