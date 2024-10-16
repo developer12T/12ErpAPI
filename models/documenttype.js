@@ -75,6 +75,11 @@ const DocumentType = sequelize.define(
       allowNull: false,
       field: "UODOTP",
     },
+    UODOVA: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "UODOVA",
+    },
   },
   {
     freezeTableName: true,

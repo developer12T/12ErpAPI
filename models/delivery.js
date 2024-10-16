@@ -944,23 +944,11 @@ const DeliveryHead = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "OQDTHM",
-      // validate: {
-      //   len: {
-      //     args: [0, 6],
-      //     msg: "OQSROT must be 0-6 digits long",
-      //   },
-      // },
     },
     OQCUCL: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
+      type: DataTypes.STRING,
+      allowNull: false,
       field: "OQCUCL",
-      // validate: {
-      //   len: {
-      //     args: [0, 6],
-      //     msg: "OQSROT must be 0-6 digits long",
-      //   },
-      // },
     },
   },
   {

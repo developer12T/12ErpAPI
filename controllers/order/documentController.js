@@ -24,6 +24,7 @@ exports.documentInsert = async (data, transaction) => {
           coNo: coNo,
           orderNo: orderNo,
           OFDONR: documentType.UODONR,
+          OFDOVA: documentType.UODOVA,
           OFDOTP: documentType.UODOTP,
           OFNOEX: documentType.UONOEX,
           OFDOCD: documentType.UODOCD,

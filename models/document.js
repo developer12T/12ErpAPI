@@ -181,6 +181,11 @@ const Document = sequelize.define(
         },
       },
     },
+    OFDOVA: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OFDOVA",
+    },
   },
   {
     freezeTableName: true,
