@@ -314,10 +314,20 @@ const Policy = sequelize.define(
       allowNull: false,
       field: 'EDTX15'
     },
-    EDTRLV: {
+    EDRLFA: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'EDTRLV'
+      field: 'EDRLFA'
+    },
+    EDRLTD: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'EDRLTD'
+    },
+    EDSEEQ: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'EDSEEQ'
     }
   },
   {

@@ -950,6 +950,16 @@ const DeliveryHead = sequelize.define(
       allowNull: false,
       field: "OQCUCL",
     },
+    OQRLFA: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OQRLFA",
+    },
+    OQRLTD: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OQRLTD",
+    },
   },
   {
     freezeTableName: true,

@@ -41,6 +41,7 @@ const {
 // Sequelize "OR"
 const { Op } = require('sequelize')
 const { fetchCotype } = require('../../services/coTypeService')
+const { fetchPolicy } = require('../../services/policyService')
 // Json
 const orderJson = getJsonData('order.json')
 const runningJson = getJsonData('runnigNumber.json')
@@ -334,6 +335,9 @@ exports.insert = async (req, res, next) => {
       const calCosts = []
       try {
         transaction = await sequelize.transaction()
+      
+        // const policy = await fetchPolicy(orderType)
+        // res.json(policy)
         for (let item of items) {
           const itemFactor = await fetchItemFactor(item.itemCode, item.unit)
           const Weight = await fetchCalWeight({
@@ -617,7 +621,7 @@ exports.insert = async (req, res, next) => {
           },
           transaction
         )
-        const coType = await fetchCotype(orderType);
+        const coType = await fetchCotype(orderType)
         if (Hcase === 1) {
           const customer = await fetchCustomer(customerNo)
           await Order.create(
