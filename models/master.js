@@ -328,6 +328,11 @@ const Policy = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       field: 'EDSEEQ'
+    },
+    EDDOCR: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'EDDOCR'
     }
   },
   {

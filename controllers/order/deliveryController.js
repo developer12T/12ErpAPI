@@ -135,7 +135,7 @@ exports.deliveryHeadInsert = async (data, transaction) => {
         OQTIZO: deliveryData[0].HEAD.OQTIZO, // OOHEAD.OATIZO
         OQDTDT: requestDate, // OOHEAD requestDate
         OQDTHM: route.departureTime, // departureTime
-        OQDOCR: deliveryData[0].HEAD.OQDOCR, // 1
+        OQDOCR: policy.EDDOCR, // 1
         OQDOCE: deliveryData[0].HEAD.OQDOCE, // 1 ** 1 digit in Database TST
         OQDEWD: deliveryData[0].HEAD.OQDEWD, // 0
         OQSEEQ: policy.EDSEEQ, // 50
