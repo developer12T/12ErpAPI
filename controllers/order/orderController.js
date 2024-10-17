@@ -325,7 +325,6 @@ exports.insert = async (req, res, next) => {
         totalNet,
         addressID,
         payer,
-        OAFRE1,
         ref,
         note
       } = order
@@ -463,7 +462,6 @@ exports.insert = async (req, res, next) => {
           orderDate: orderDate,
           requestDate: requestDate,
           OARGTM: getCurrentTimeFormatted(),
-          OATIZO: orderJson[0].HEAD.OATIZO,
           grossWeight: totalgrossWeight.toFixed(3),
           netWeight: totalnetWeight.toFixed(3)
         }
@@ -508,7 +506,7 @@ exports.insert = async (req, res, next) => {
               orderStatusLow: orderStatusLow, //OAORSL
               orderDate: orderDate, //OAORDT
               requestDate: requestDate, //OARLDT
-              OAFRE1: OAFRE1,
+              OAFRE1: customer.OKFRE1,
               payer: payer,
               itemCode: item.itemCode,
               itemNo: item.itemNo,

@@ -80,7 +80,7 @@ exports.distributionDeliveryHead = async (data, transaction) => {
       OQNEWE: netWeight, // netWeight, // OrderLine SUM
       OQDTDT: tranferDate, //requestDate,
       OQGRWE: grossWeight, // OrderLine SUM
-      OQTIZO: deliveryData[0].DELIVERY_HEAD.OQTIZO, //OATIZO, // OOHEAD.OATIZO
+      OQTIZO: deliveryData[0].DELIVERY_HEAD.OQTIZO, 
       OQDTDT: tranferDate, //requestDate, // OOHEAD requestDate
       OQDTHM: route[0].departureTime, //route.departureTime, // departureTime
       OQDOCR: deliveryData[0].DELIVERY_HEAD.OQDOCR, // 1

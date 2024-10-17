@@ -71,7 +71,6 @@ exports.deliveryHeadInsert = async (data, transaction) => {
       orderType,
       customerNo,
       addressID,
-      OATIZO,
       grossWeight,
       netWeight,
       orderDate,
@@ -133,7 +132,7 @@ exports.deliveryHeadInsert = async (data, transaction) => {
         //OQPLSX
         OQNEWE: netWeight, // OrderLine SUM
         OQGRWE: grossWeight, // OrderLine SUM
-        OQTIZO: OATIZO, // OOHEAD.OATIZO
+        OQTIZO: deliveryData[0].HEAD.OQTIZO, // OOHEAD.OATIZO
         OQDTDT: requestDate, // OOHEAD requestDate
         OQDTHM: route.departureTime, // departureTime
         OQDOCR: deliveryData[0].HEAD.OQDOCR, // 1
