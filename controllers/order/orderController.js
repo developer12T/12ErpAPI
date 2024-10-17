@@ -61,34 +61,34 @@ exports.getOrderAll = async (req, res, next) => {
       }
     })
 
-    // Object to hold OrderLinearr for each orderNo
-    const orderLineData = {}
-    const promotionData = {}
+    // Object to hold orderLineArr for each orderNo
+    const orderLineObj = {}
+    const promotionObj = {}
 
     for (let i = 0; i < orderData.length; i++) {
-      const OrderLineData = await OrderLine.findAll({
+      const orderLineData = await OrderLine.findAll({
         where: { orderNo: orderData[i].orderNo }
       })
       // Initialize the array for current orderNo
-      orderLineData[orderData[i].orderNo] = []
+      orderLineObj[orderData[i].orderNo] = []
 
-      for (let j = 0; j < OrderLineData.length; j++) {
-        orderLineData[orderData[i].orderNo].push({
-          productNumber: OrderLineData[j].productNumber,
-          itemCode: OrderLineData[j].itemCode,
-          itemNo: OrderLineData[j].itemNo,
-          itemName: OrderLineData[j].itemName,
-          qty: OrderLineData[j].qty,
-          unit: OrderLineData[j].unit,
-          price: OrderLineData[j].price,
-          discount: OrderLineData[j].discount,
-          netPrice: OrderLineData[j].netPrice,
-          total: OrderLineData[j].total,
-          promotionCode: OrderLineData[j].promotionCode
+      for (let j = 0; j < orderLineData.length; j++) {
+        orderLineObj[orderData[i].orderNo].push({
+          productNumber: orderLineData[j].productNumber,
+          itemCode: orderLineData[j].itemCode,
+          itemNo: orderLineData[j].itemNo,
+          itemName: orderLineData[j].itemName,
+          qty: orderLineData[j].qty,
+          unit: orderLineData[j].unit,
+          price: orderLineData[j].price,
+          discount: orderLineData[j].discount,
+          netPrice: orderLineData[j].netPrice,
+          total: orderLineData[j].total,
+          promotionCode: orderLineData[j].promotionCode
         })
       }
 
-      const OrderLineData2 = await OrderLine.findAll({
+      const orderLineData2 = await OrderLine.findAll({
         where: {
           orderNo: orderData[i].orderNo,
           promotionCode: {
@@ -97,25 +97,25 @@ exports.getOrderAll = async (req, res, next) => {
         }
       })
 
-      promotionData[orderData[i].orderNo] = []
+      promotionObj[orderData[i].orderNo] = []
 
-      for (let OrderLine2 of OrderLineData2) {
-        const PromotionData = await Promotion.findAll({
+      for (let orderLine2 of orderLineData2) {
+        const promotionData = await Promotion.findAll({
           where: {
-            promotionCode: OrderLine2.promotionCode,
+            promotionCode: orderLine2.promotionCode,
             FZCONO: '410'
           }
         })
 
-        if (PromotionData.length > 0) {
-          promotionData[orderData[i].orderNo].push({
-            promotionCode: OrderLine2.promotionCode,
-            promotionName: PromotionData[0].promotionName // Assuming promotionName is a property of PromotionData
+        if (promotionData.length > 0) {
+          promotionObj[orderData[i].orderNo].push({
+            promotionCode: orderLine2.promotionCode,
+            promotionName: promotionData[0].promotionName // Assuming promotionName is a property of promotionData
           })
         } else {
-          console.log(`No promotion data found for ${OrderLine2.promotionCode}`)
-          promotionData[orderData[i].orderNo].push({
-            promotionCode: OrderLine2.promotionCode,
+          console.log(`No promotion data found for ${orderLine2.promotionCode}`)
+          promotionObj[orderData[i].orderNo].push({
+            promotionCode: orderLine2.promotionCode,
             promotionName: null // Or handle as needed if no data is found
           })
         }
@@ -125,25 +125,25 @@ exports.getOrderAll = async (req, res, next) => {
     const orders = orderData.map(order => {
       const orderNo = order.orderNo.trim()
       const customerNo = order.customerNo.trim()
-      const OrderLinearr = orderLineData[orderNo] || []
-      const OrderLine = OrderLinearr.map(OrderLine => {
-        const promotion = promotionData[orderNo].find(
-          promo => promo.promotionCode === OrderLine.promotionCode
+      const orderLineArr = orderLineObj[orderNo] || []
+      const orderLines = orderLineArr.map(orderLine => {
+        const promotion = promotionObj[orderNo].find(
+          promo => promo.promotionCode === orderLine.promotionCode
         )
-        const itemName = OrderLine.itemName.trim()
-        const itemCode = OrderLine.itemCode.trim()
-        const promotionCode = OrderLine.promotionCode.trim()
+        const itemName = orderLine.itemName.trim()
+        const itemCode = orderLine.itemCode.trim()
+        const promotionCode = orderLine.promotionCode.trim()
         return {
-          productNumber: OrderLine.productNumber,
+          productNumber: orderLine.productNumber,
           itemCode: itemCode,
-          itemNo: OrderLine.itemNo,
+          itemNo: orderLine.itemNo,
           itemName: itemName,
-          qty: OrderLine.qty,
-          unit: OrderLine.unit,
-          price: OrderLine.price,
-          discount: OrderLine.discount,
-          netPrice: OrderLine.netPrice,
-          total: OrderLine.total,
+          qty: orderLine.qty,
+          unit: orderLine.unit,
+          price: orderLine.price,
+          discount: orderLine.discount,
+          netPrice: orderLine.netPrice,
+          total: orderLine.total,
           promotionCode: promotionCode,
           promotionName: promotion ? promotion.promotionName : ''
         }
@@ -162,7 +162,7 @@ exports.getOrderAll = async (req, res, next) => {
         totalVat: order.totalVat,
         totalNonVat: order.totalNonVat,
         totalDiscount: order.totalDiscount,
-        item: OrderLine
+        item: orderLines
       }
     })
     res.json(orders)
@@ -174,7 +174,7 @@ exports.getOrderAll = async (req, res, next) => {
 exports.getOrder = async (req, res, next) => {
   try {
     const { orderNo } = req.body
-    let OrderLinearr = []
+    let orderLineArr = []
     let promotionArr = []
     let shippingarr = []
     const orderData = await Order.findAll({
@@ -184,23 +184,23 @@ exports.getOrder = async (req, res, next) => {
     })
 
     for (let i = 0; i < orderData.length; i++) {
-      const OrderLineData = await OrderLine.findAll({
+      const orderLineData = await OrderLine.findAll({
         where: { orderNo: orderNo }
       })
 
-      for (let i = 0; i < OrderLineData.length; i++) {
-        OrderLinearr.push({
-          productNumber: OrderLineData[i].productNumber,
-          itemCode: OrderLineData[i].itemCode,
-          itemNo: OrderLineData[i].itemNo,
-          itemName: OrderLineData[i].itemName,
-          qty: OrderLineData[i].qty,
-          unit: OrderLineData[i].unit,
-          price: OrderLineData[i].price,
-          discount: OrderLineData[i].discount,
-          netPrice: OrderLineData[i].netPrice,
-          total: OrderLineData[i].total,
-          promotionCode: OrderLineData[i].promotionCode
+      for (let i = 0; i < orderLineData.length; i++) {
+        orderLineArr.push({
+          productNumber: orderLineData[i].productNumber,
+          itemCode: orderLineData[i].itemCode,
+          itemNo: orderLineData[i].itemNo,
+          itemName: orderLineData[i].itemName,
+          qty: orderLineData[i].qty,
+          unit: orderLineData[i].unit,
+          price: orderLineData[i].price,
+          discount: orderLineData[i].discount,
+          netPrice: orderLineData[i].netPrice,
+          total: orderLineData[i].total,
+          promotionCode: orderLineData[i].promotionCode
         })
       }
 
@@ -223,7 +223,7 @@ exports.getOrder = async (req, res, next) => {
         })
       }
     }
-    const OrderLineData2 = await OrderLine.findAll({
+    const orderLineData2 = await OrderLine.findAll({
       where: {
         orderNo: orderNo,
         promotionCode: {
@@ -232,29 +232,29 @@ exports.getOrder = async (req, res, next) => {
       }
     })
 
-    for (let OrderLine2 of OrderLineData2) {
-      const PromotionData = await Promotion.findAll({
+    for (let orderLine2 of orderLineData2) {
+      const promotionData = await Promotion.findAll({
         where: {
-          promotionCode: OrderLine2.promotionCode,
+          promotionCode: orderLine2.promotionCode,
           FZCONO: '410'
         }
       })
 
-      if (PromotionData.length > 0) {
+      if (promotionData.length > 0) {
         promotionArr.push({
-          promotionCode: OrderLine2.promotionCode,
-          promotionName: PromotionData[0].promotionName // Assuming promotionName is a property of PromotionData
+          promotionCode: orderLine2.promotionCode,
+          promotionName: promotionData[0].promotionName // Assuming promotionName is a property of promotionData
         })
       } else {
-        console.log(`No promotion data found for ${OrderLine2.promotionCode}`)
+        console.log(`No promotion data found for ${orderLine2.promotionCode}`)
         promotionArr.push({
-          promotionCode: OrderLine2.promotionCode,
+          promotionCode: orderLine2.promotionCode,
           promotionName: null // Or handle as needed if no data is found
         })
       }
     }
 
-    const OrderLineData = OrderLinearr.map(OrderLine => {
+    const orderLineData = orderLineArr.map(OrderLine => {
       let promotionNameC = ''
       for (let i = 0; i < promotionArr.length; i++) {
         if (OrderLine.promotionCode == promotionArr[i].promotionCode) {
@@ -295,7 +295,7 @@ exports.getOrder = async (req, res, next) => {
         totalVat: order.totalVat,
         totalNonVat: order.totalNonVat,
         totalDiscount: order.totalDiscount,
-        item: OrderLineData,
+        item: orderLineData,
         shipping: shippingarr
       }
     })
