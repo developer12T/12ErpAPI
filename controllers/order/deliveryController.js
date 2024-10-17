@@ -84,7 +84,6 @@ exports.deliveryHeadInsert = async (data, transaction) => {
     })
 
     // console.log('Customer_DAWD' + policy)
-    
 
     const route = await fetchRoute(shinpping.shippingRoute)
     await DeliveryHead.create(
@@ -112,8 +111,8 @@ exports.deliveryHeadInsert = async (data, transaction) => {
         OQTEDL: customer.OKTEDL,
         OQTEDF: customer.OKTEDL,
         OQRORC: deliveryData[0].HEAD.OQRORC, // 3
-        // OQTTYP
         OQTTYP: deliveryData[0].HEAD.OQTTYP,
+        OQAGKY: `                                        ${deliveryData[0].HEAD.OQINOU}${deliveryData[0].HEAD.OQRORC}${warehouse}${policy.EDDPOL}${customer.OKMODL}${customer.OKTEDL}${route.routeCode}`,
         OQRIDN: orderNo,
         OQEDES: route.place, // ROUTE PLACE
         //OQPUTP
@@ -144,7 +143,6 @@ exports.deliveryHeadInsert = async (data, transaction) => {
         OQPRIO: deliveryData[0].HEAD.OQPRIO, // 5
         OQCUCL: customer.customerChannel, // OCUSMA
         OQCSCD: customer.OKCSCD, // OCUSMA
-        OQAGKY: deliveryData[0].HEAD.OQAGKY, // emthy
         OQRGDT: formatDate(),
         OQRGTM: getCurrentTimeFormatted(),
         OQLMDT: formatDate(),
