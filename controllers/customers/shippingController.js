@@ -1,27 +1,27 @@
-const Shipping = require("../../models/shipping");
-const fs = require("fs");
-const path = require("path");
+const Shipping = require('../../models/shipping')
+const fs = require('fs')
+const path = require('path')
 const {
   formatDate,
-  getCurrentTimeFormatted,
-} = require("../../utils/getDateTime");
+  getCurrentTimeFormatted
+} = require('../../utils/getDateTime')
 const {
   filterStringEN,
   filterStringNumber,
-  formatPhoneNumber,
-} = require("../../utils/String");
+  formatPhoneNumber
+} = require('../../utils/String')
 
 exports.getShippingAll = async (req, res, next) => {
   try {
-    const { customerNo, addressID } = req.body;
+    const { customerNo, addressID } = req.body
     const shippingData = await Shipping.findAll({
       where: {
         customerNo,
-        coNo: "410",
-      },
-    });
+        coNo: '410'
+      }
+    })
 
-    const shippings = shippingData.map((shipping) => ({
+    const shippings = shippingData.map(shipping => ({
       coNo: shipping.coNo,
       customerNo: shipping.customerNo.trim(),
       addressID: shipping.addressID,
@@ -31,17 +31,22 @@ exports.getShippingAll = async (req, res, next) => {
       shippingAddress3: shipping.shippingAddress3,
       shippingPoscode: shipping.shippingPoscode.trim(),
       shippingPhone: shipping.shippingPhone.trim(),
-    }));
+      shippingRoute: shipping.shippingRoute,
+      OPTXID: shipping.OPTXID,
+      OPECAR: shipping.OPECAR.trim(),
+      OPMODL: shipping.OPMODL,
+      OPTEDL: shipping.OPTEDL
+    }))
 
-    res.json(shippings);
+    res.json(shippings)
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 exports.update = async (req, res, next) => {
   try {
-    const updateFields = {};
+    const updateFields = {}
     const {
       customerNo,
       addressID,
@@ -50,18 +55,18 @@ exports.update = async (req, res, next) => {
       shippingAddress2,
       shippingAddress3,
       shippingPoscode,
-      shippingPhone,
-    } = req.body;
+      shippingPhone
+    } = req.body
     const shippingData = await Shipping.findAll({
       attributes: {
-        exclude: ["id"],
+        exclude: ['id']
       },
-      where: { customerNo: customerNo, addressID: addressID, coNo: "410" },
-    });
-    const shippings = shippingData.map((shipping) => {
-      const customerNo = shipping.customerNo.trim();
-      const shippingPoscode = shipping.shippingPoscode.trim();
-      const shippingPhone = shipping.shippingPhone.trim();
+      where: { customerNo: customerNo, addressID: addressID, coNo: '410' }
+    })
+    const shippings = shippingData.map(shipping => {
+      const customerNo = shipping.customerNo.trim()
+      const shippingPoscode = shipping.shippingPoscode.trim()
+      const shippingPhone = shipping.shippingPhone.trim()
       return {
         coNo: shipping.coNo,
         customerNo: customerNo,
@@ -71,58 +76,58 @@ exports.update = async (req, res, next) => {
         shippingAddress2: shipping.shippingAddress2,
         shippingAddress3: shipping.shippingAddress3,
         shippingPoscode: shippingPoscode,
-        shippingPhone: formatPhoneNumber(shippingPhone),
-      };
-    });
+        shippingPhone: formatPhoneNumber(shippingPhone)
+      }
+    })
     if (shippings[0].customerNo !== customerNo) {
-      updateFields.customerNo = customerNo;
+      updateFields.customerNo = customerNo
     }
     if (shippings[0].customerName !== customerName) {
-      updateFields.customerName = customerName;
+      updateFields.customerName = customerName
     }
     if (shippings[0].addressID !== addressID) {
-      updateFields.addressID = addressID;
+      updateFields.addressID = addressID
     }
     if (shippings[0].shippingAddress1 !== shippingAddress1) {
-      updateFields.shippingAddress1 = shippingAddress1;
+      updateFields.shippingAddress1 = shippingAddress1
     }
     if (shippings[0].shippingAddress2 !== shippingAddress2) {
-      updateFields.shippingAddress2 = shippingAddress2;
+      updateFields.shippingAddress2 = shippingAddress2
     }
     if (shippings[0].shippingAddress3 !== shippingAddress3) {
-      updateFields.shippingAddress3 = shippingAddress3;
+      updateFields.shippingAddress3 = shippingAddress3
     }
     if (shippings[0].shippingPoscode !== shippingPoscode) {
-      updateFields.shippingPoscode = shippingPoscode;
+      updateFields.shippingPoscode = shippingPoscode
     }
     if (shippings[0].shippingPhone !== shippingPhone) {
-      updateFields.shippingPhone = shippingPhone;
+      updateFields.shippingPhone = shippingPhone
     }
     const [update] = await Shipping.update(updateFields, {
-      attributes: { exclude: ["id"] },
+      attributes: { exclude: ['id'] },
       where: {
         customerNo: customerNo,
         addressID: addressID,
-        coNo: "410",
-      },
-    });
+        coNo: '410'
+      }
+    })
     if (update === 0) {
-      const error = new Error("Not Found Update");
-      error.statusCode = 404;
-      throw error;
+      const error = new Error('Not Found Update')
+      error.statusCode = 404
+      throw error
     } else {
       res.status(200).json({
-        message: "Update Success",
-      });
+        message: 'Update Success'
+      })
     }
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 exports.insert = async (req, res, next) => {
   try {
-    const shippings = req.body.shippings;
+    const shippings = req.body.shippings
     // console.log(shippings);
 
     // const {
@@ -137,41 +142,40 @@ exports.insert = async (req, res, next) => {
     //   shippingRoute,
     // } = req.body;
 
-    const jsonPath = path.join(__dirname, "../../", "Jsons", "shipping.json");
-    let existingData = [];
+    const jsonPath = path.join(__dirname, '../../', 'Jsons', 'shipping.json')
+    let existingData = []
     if (fs.existsSync(jsonPath)) {
-      const jsonData = fs.readFileSync(jsonPath, "utf-8");
-      existingData = JSON.parse(jsonData);
+      const jsonData = fs.readFileSync(jsonPath, 'utf-8')
+      existingData = JSON.parse(jsonData)
     }
 
     for (let shipping of shippings) {
       const shinppingData = await Shipping.findAll({
-
         where: {
           customerNo: shipping.customerNo,
-          coNo: 410,
-        },
-      });
+          coNo: 410
+        }
+      })
 
-      let checkShipping = "SHIP";
-      let shinppingNum = 0;
-      let addressID = "";
+      let checkShipping = 'SHIP'
+      let shinppingNum = 0
+      let addressID = ''
 
       if (shinppingData.length > 0) {
         for (let shinpping of shinppingData) {
-          if (filterStringEN(shinpping.addressID) === "SHIP") {
-            checkShipping = "SHIP";
+          if (filterStringEN(shinpping.addressID) === 'SHIP') {
+            checkShipping = 'SHIP'
             if (
               shinppingNum < parseInt(filterStringNumber(shinpping.addressID))
             ) {
-              shinppingNum = parseInt(filterStringNumber(shinpping.addressID));
+              shinppingNum = parseInt(filterStringNumber(shinpping.addressID))
             }
           } else {
-            checkShipping = "SHIP";
+            checkShipping = 'SHIP'
           }
         }
       }
-      addressID = `${checkShipping}${shinppingNum + 1}`;
+      addressID = `${checkShipping}${shinppingNum + 1}`
 
       await Shipping.create({
         coNo: existingData.OPCONO, // OPCONO,
@@ -205,20 +209,20 @@ exports.insert = async (req, res, next) => {
         OPLMDT: formatDate(), // OPLMDT
         OPCHNO: existingData.OPCHNO, // OPCHNO
         OPCHID: existingData.OPCHID, // OPCHID
-        OPLMTS: Date.now(), // OPLMTS
-      });
+        OPLMTS: Date.now() // OPLMTS
+      })
     }
     res.status(201).json({
-      message: "Insert Success",
-    });
+      message: 'Insert Success'
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 exports.deleted = async (req, res, next) => {
   try {
-    const { customerNo, addressID, coNo } = req.body;
+    const { customerNo, addressID, coNo } = req.body
 
     const deleted = await Shipping.update(
       { coNo: `${coNo * -1}` },
@@ -226,32 +230,31 @@ exports.deleted = async (req, res, next) => {
         where: {
           coNo,
           customerNo,
-          addressID,
-        },
+          addressID
+        }
       }
-    );
+    )
 
     if (deleted[0] === 1) {
-      res.status(202).json({ message: "Deleted" });
+      res.status(202).json({ message: 'Deleted' })
     } else {
-      res.status(304).json({ message: "Not Modified" });
+      res.status(304).json({ message: 'Not Modified' })
     }
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
-
-exports.getShipping = (io) => async (req, res, next) => {
+exports.getShipping = io => async (req, res, next) => {
   try {
-    const { customerNo, addressID } = req.body;
+    const { customerNo, addressID } = req.body
     let shippingData = await Shipping.findOne({
       where: {
         coNo: 410,
         customerNo,
-        addressID,
-      },
-    });
+        addressID
+      }
+    })
 
     shippingData = {
       coNo: shippingData.coNo,
@@ -263,12 +266,12 @@ exports.getShipping = (io) => async (req, res, next) => {
       shippingAddress2: shippingData.shippingAddress2,
       shippingAddress3: shippingData.shippingAddress3,
       shippingPoscode: shippingData.shippingPoscode.trim(),
-      shippingPhone: formatPhoneNumber(shippingData.shippingPhone),
-    };
+      shippingPhone: formatPhoneNumber(shippingData.shippingPhone)
+    }
 
-    io.emit("shippingData", shippingData);
-    res.json(shippingData);
+    io.emit('shippingData', shippingData)
+    res.json(shippingData)
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}

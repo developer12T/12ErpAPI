@@ -146,6 +146,16 @@ const Shipping = sequelize.define(
       allowNull: false,
       field: "OPLMTS",
     },
+    OPTXID: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPTXID",
+    },
+    OPECAR: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OPECAR",
+    },
   },
   {
     freezeTableName: true,
