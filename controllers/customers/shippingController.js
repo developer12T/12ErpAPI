@@ -266,7 +266,7 @@ exports.getShipping = (io) => async (req, res, next) => {
       shippingPhone: formatPhoneNumber(shippingData.shippingPhone),
     };
 
-    // io.emit("shippingData", shippingData);
+    io.emit("shippingData", shippingData);
     res.json(shippingData);
   } catch (error) {
     next(error);

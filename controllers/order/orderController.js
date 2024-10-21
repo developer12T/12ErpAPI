@@ -335,9 +335,6 @@ exports.insert = async (req, res, next) => {
       const calCosts = []
       try {
         transaction = await sequelize.transaction()
-      
-        // const policy = await fetchPolicy(orderType)
-        // res.json(policy)
         for (let item of items) {
           const itemFactor = await fetchItemFactor(item.itemCode, item.unit)
           const Weight = await fetchCalWeight({
@@ -454,21 +451,6 @@ exports.insert = async (req, res, next) => {
         )
 
         const runningNumberH = parseInt(running.lastNo) + 1
-
-        const deliveryObj = {
-          warehouse: warehouse,
-          coNo: 410,
-          runningNumberH: runningNumberH,
-          orderNo: orderNo,
-          orderType: orderType,
-          addressID: addressID,
-          customerNo: customerNo,
-          orderDate: orderDate,
-          requestDate: requestDate,
-          OARGTM: getCurrentTimeFormatted(),
-          grossWeight: totalgrossWeight.toFixed(3),
-          netWeight: totalnetWeight.toFixed(3)
-        }
 
         let itemsData = await Promise.all(
           items.map(async item => {
@@ -695,6 +677,20 @@ exports.insert = async (req, res, next) => {
             },
             transaction
           )
+        }
+        const deliveryObj = {
+          warehouse: warehouse,
+          coNo: 410,
+          runningNumberH: runningNumberH,
+          orderNo: orderNo,
+          orderType: orderType,
+          addressID: addressID,
+          customerNo: customerNo,
+          orderDate: orderDate,
+          requestDate: requestDate,
+          OARGTM: getCurrentTimeFormatted(),
+          grossWeight: totalgrossWeight.toFixed(3),
+          netWeight: totalnetWeight.toFixed(3)
         }
         await allocateInsert(itemsData, transaction)
         await deliveryHeadInsert(deliveryObj, transaction)

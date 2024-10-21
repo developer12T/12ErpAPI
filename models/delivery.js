@@ -947,17 +947,17 @@ const DeliveryHead = sequelize.define(
     },
     OQCUCL: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "OQCUCL",
     },
     OQRLFA: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "OQRLFA",
     },
     OQRLTD: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "OQRLTD",
     },
   },

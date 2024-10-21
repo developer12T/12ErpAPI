@@ -95,7 +95,7 @@ exports.distributionDeliveryHead = async (data, transaction) => {
         deliveryData[0].DELIVERY_HEAD.OQINOU
       }${String(policy.YXTTYP).slice(0, 1)}${warehouse}${policy.YXDPOL}${
         route[0].method
-      }   ${routeCode}`, // emthy
+      }   ${routeCode}`, 
       OQRGDT: formatDate(),
       OQRGTM: getCurrentTimeFormatted(),
       OQLMDT: formatDate(),
