@@ -10,7 +10,7 @@ const {
 } = require("../../utils/getDateTime");
 const fs = require("fs");
 const path = require("path");
-const { filterStringParentTH } = require("../../utils/String");
+const { filterStringParentTH, trimObjectStrings } = require("../../utils/String");
 const { decryptData, encryptData } = require("../../utils/hashData");
 
 exports.index = async (req, res, next) => {
@@ -104,6 +104,22 @@ exports.index = async (req, res, next) => {
     }
 
     res.status(200).json(customers);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.selectTopOnehundred = async (req, res, next) => {
+  try {
+    const customersData = await Customer.findAll({
+      where: {
+        customerStatus: 20,
+        coNo: 410,
+      },
+      limit: 100,
+    });
+    const response = customersData.map(item => trimObjectStrings(item.toJSON()))
+    res.status(200).json(response);
   } catch (error) {
     next(error);
   }
