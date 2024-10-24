@@ -550,14 +550,14 @@ exports.insert = (io) => {
       // Insert Shipping
       await axios({
         method: "post",
-        url: `${HOST}shinpping/insert`,
+        url: `${HOST}erp/shinpping/insert`,
         data: {
           shippings: shippingData,
         },
       });
 
-      io.emit("shippingData", shippingData);
-      io.emit("customerData", customer);
+      // io.emit("shippingData", shippingData);
+      // io.emit("customerData", customer);
       res.status(201).json({
         message: "Created",
       });

@@ -148,12 +148,12 @@ const Shipping = sequelize.define(
     },
     OPTXID: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "OPTXID",
     },
     OPECAR: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       field: "OPECAR",
     },
   },
