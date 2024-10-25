@@ -31,6 +31,11 @@ const Customer = sequelize.define(
       primaryKey: true,
       field: "OKCONO",
     },
+    addressID: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: "OKADID",
+    },
     customerAddress1: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -66,7 +71,7 @@ const Customer = sequelize.define(
       allowNull: false,
       field: "OKTEPY",
     },
-    orderType: {
+    customerCoType: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "OKORTP",

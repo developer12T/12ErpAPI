@@ -128,19 +128,6 @@ exports.update = async (req, res, next) => {
 exports.insert = async (req, res, next) => {
   try {
     const shippings = req.body.shippings
-    // console.log(shippings);
-
-    // const {
-    //   customerNo,
-    //   customerName,
-    //   shippingAddress1,
-    //   shippingAddress2,
-    //   shippingAddress3,
-    //   shippingAddress4,
-    //   shippingPhone,
-    //   shippingPoscode,
-    //   shippingRoute,
-    // } = req.body;
 
     const jsonPath = path.join(__dirname, '../../', 'Jsons', 'shipping.json')
     let existingData = []
@@ -189,13 +176,16 @@ exports.insert = async (req, res, next) => {
         shippingAddress4: shipping.shippingAddress4, // OKCUA4
         shippingPoscode: shipping.shippingPoscode, // OPPONO
         // OPEALO: existingData.OPEALO, // OPEALO
-        // OPECAR: '', // OPECAR
+        OPECAR: shipping.shippingPoscode.slice(0, 2), // OPECAR
+        // OPECAR: shipping.shippingPoscode.slice(0, 2), // OPECAR
         // OPRONO: '', // OPRONO
         OPMODL: existingData.OPMODL, // OPMODL
         OPTEDL: existingData.OPTEDL, // OPTEDL
         shippingPhone: shipping.shippingPhone, // OPPHNO
         OPCSCD: existingData.OPCSCD, // OPCSCD
         OPEDES: existingData.OPEDES, // OPEDES
+        OPGEOX: shipping.OPGEOX, // OPGEOX
+        OPGEOY: shipping.OPGEOY, // OPGEOY
         // OPRODN: '', // OPRODN
         shippingRoute: shipping.shippingRoute, // OPULZO
         OPGEOC: existingData.OPGEOC, // OPGEOC

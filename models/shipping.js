@@ -156,6 +156,16 @@ const Shipping = sequelize.define(
       allowNull: true,
       field: "OPECAR",
     },
+    OPGEOX: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OPGEOX",
+    },
+    OPGEOY: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OPGEOY",
+    },
   },
   {
     freezeTableName: true,
