@@ -480,7 +480,7 @@ exports.insert = io => {
         customerAddress2: customerAddress2, // OKCUA2
         customerAddress3: customerAddress3, // OKCUA3
         customerAddress4: customerAddress4, // OKCUA4
-        addressID: 'SHIP1', // OKADID
+        addressID: existingData.OKADID, // OKADID
         customerPhone: customerPhone, // OKPHNO
         // OKTREF
         customerPoscode: customerPoscode, // OKPONO
