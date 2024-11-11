@@ -119,7 +119,8 @@ exports.selectTopOnehundred = async (req, res, next) => {
         customerStatus: 20,
         coNo: 410
       },
-      limit: 100
+      limit: 100,
+      order: [['customerNo', 'DESC']]
     })
     const response = customersData.map(item => trimObjectStrings(item.toJSON()))
     res.status(200).json(response)
@@ -424,6 +425,7 @@ exports.update = async (req, res, next) => {
 }
 
 exports.insert = io => {
+  
   return async (req, res, next) => {
     try {
       const {
@@ -562,12 +564,12 @@ exports.insert = io => {
           shippingPoscode: shipping.shippingPoscode,
           shippingPhone: shipping.shippingPhone,
           shippingRoute: shipping.shippingRoute,
-          shippingRoute: shipping.shippingRoute,
           OPGEOX: shipping.OPGEOX,
           OPGEOY: shipping.OPGEOY,
         }
       })
       // Insert Shipping
+
       await axios({
         method: 'post',
         url: `${HOST}erp/shinpping/insert`,

@@ -1,179 +1,190 @@
-const { sequelize, DataTypes } = require("../config/m3db");
+const { sequelize, DataTypes } = require('../config/m3db')
 
 const Shipping = sequelize.define(
-  "OCUSAD",
+  'OCUSAD',
   {
     coNo: {
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey:true,
-      field: "OPCONO",
+      primaryKey: true,
+      field: 'OPCONO'
     },
     customerNo: {
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey:true,
-      field: "OPCUNO",
+      primaryKey: true,
+      field: 'OPCUNO'
     },
     addressID: {
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey:true,
-      field: "OPADID",
+      primaryKey: true,
+      field: 'OPADID'
     },
     customerName: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPCUNM",
+      field: 'OPCUNM'
     },
     shippingAddress1: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPCUA1",
+      field: 'OPCUA1'
     },
     shippingAddress2: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPCUA2",
+      field: 'OPCUA2'
     },
     shippingAddress3: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPCUA3",
+      field: 'OPCUA3'
     },
     shippingAddress4: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPCUA4",
+      field: 'OPCUA4'
     },
     shippingPoscode: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPPONO",
+      field: 'OPPONO'
     },
     shippingPhone: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPPHNO",
+      field: 'OPPHNO'
     },
     shippingRoute: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPULZO",
+      field: 'OPULZO',
+      validate: {
+        isNumeric: {
+          msg: 'shippingRoute must contain only numbers' // Ensure the value is numeric
+        },
+        isLenghtRequired (value) {
+          // Custom validator to ensure exactly 8 digits
+          if (value.toString().length !== 3) {
+            throw new Error('shippingRoute must be exactly 3 digits')
+          }
+        }
+      }
     },
     OPADRT: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPADRT",
+      field: 'OPADRT'
     },
     OPMODL: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPMODL",
+      field: 'OPMODL'
     },
     OPTEDL: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPTEDL",
+      field: 'OPTEDL'
     },
     OPCSCD: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPCSCD",
+      field: 'OPCSCD'
     },
     OPEDES: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPEDES",
+      field: 'OPEDES'
     },
     OPGEOC: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPGEOC",
+      field: 'OPGEOC'
     },
     OPFVDT: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPFVDT",
+      field: 'OPFVDT'
     },
     OPLVDT: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPLVDT",
+      field: 'OPLVDT'
     },
     OPDTID: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPDTID",
+      field: 'OPDTID'
     },
     OPBCKO: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPBCKO",
+      field: 'OPBCKO'
     },
     OPPADL: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPPADL",
+      field: 'OPPADL'
     },
     OPRGDT: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPRGDT",
+      field: 'OPRGDT'
     },
     OPRGTM: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPRGTM",
+      field: 'OPRGTM'
     },
     OPLMDT: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPLMDT",
+      field: 'OPLMDT'
     },
     OPCHNO: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPCHNO",
+      field: 'OPCHNO'
     },
     OPCHID: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPCHID",
+      field: 'OPCHID'
     },
     OPLMTS: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "OPLMTS",
+      field: 'OPLMTS'
     },
     OPTXID: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OPTXID",
+      field: 'OPTXID'
     },
     OPECAR: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OPECAR",
+      field: 'OPECAR'
     },
     OPGEOX: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OPGEOX",
+      field: 'OPGEOX'
     },
     OPGEOY: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OPGEOY",
-    },
+      field: 'OPGEOY'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
 
-module.exports = Shipping;
+module.exports = Shipping

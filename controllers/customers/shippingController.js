@@ -125,6 +125,93 @@ exports.update = async (req, res, next) => {
   }
 }
 
+exports.insertShipping = async (data, transaction) => {
+  try {
+    const shippings = req.body.shippings
+
+    const jsonPath = path.join(__dirname, '../../', 'Jsons', 'shipping.json')
+    let existingData = []
+    if (fs.existsSync(jsonPath)) {
+      const jsonData = fs.readFileSync(jsonPath, 'utf-8')
+      existingData = JSON.parse(jsonData)
+    }
+
+    for (let shipping of shippings) {
+      const shinppingData = await Shipping.findAll({
+        where: {
+          customerNo: shipping.customerNo,
+          coNo: 410
+        }
+      })
+
+      let checkShipping = 'SHIP'
+      let shinppingNum = 0
+      let addressID = ''
+
+      if (shinppingData.length > 0) {
+        for (let shinpping of shinppingData) {
+          if (filterStringEN(shinpping.addressID) === 'SHIP') {
+            checkShipping = 'SHIP'
+            if (
+              shinppingNum < parseInt(filterStringNumber(shinpping.addressID))
+            ) {
+              shinppingNum = parseInt(filterStringNumber(shinpping.addressID))
+            }
+          } else {
+            checkShipping = 'SHIP'
+          }
+        }
+      }
+      addressID = `${checkShipping}${shinppingNum + 1}`
+
+      await Shipping.create(
+        {
+          coNo: existingData.OPCONO, // OPCONO,
+          customerNo: shipping.customerNo, // OPCUNO
+          OPADRT: existingData.OPADRT, // OPPART
+          addressID: addressID, // addressID
+          customerName: shipping.customerName, // OPCUNM
+          shippingAddress1: shipping.shippingAddress1, // OPCUA1
+          shippingAddress2: shipping.shippingAddress2, // OPCUA2
+          shippingAddress3: shipping.shippingAddress3, // OPCUA3
+          shippingAddress4: shipping.shippingAddress4, // OKCUA4
+          shippingPoscode: shipping.shippingPoscode, // OPPONO
+          // OPEALO: existingData.OPEALO, // OPEALO
+          OPECAR: shipping.shippingPoscode.slice(0, 2), // OPECAR
+          // OPECAR: shipping.shippingPoscode.slice(0, 2), // OPECAR
+          // OPRONO: '', // OPRONO
+          OPMODL: existingData.OPMODL, // OPMODL
+          OPTEDL: existingData.OPTEDL, // OPTEDL
+          shippingPhone: shipping.shippingPhone, // OPPHNO
+          OPCSCD: existingData.OPCSCD, // OPCSCD
+          OPEDES: existingData.OPEDES, // OPEDES
+          OPGEOX: shipping.OPGEOX, // OPGEOX
+          OPGEOY: shipping.OPGEOY, // OPGEOY
+          // OPRODN: '', // OPRODN
+          shippingRoute: shipping.shippingRoute, // OPULZO
+          OPGEOC: existingData.OPGEOC, // OPGEOC
+          OPFVDT: existingData.OPFVDT, // OPFVDT
+          OPLVDT: existingData.OPLVDT, // OPLVDT
+          OPDTID: existingData.OPDTID, // OPDTID
+          OPBCKO: existingData.OPBCKO, // OPBCKO
+          OPPADL: existingData.OPPADL, // OPPADL
+          OPRGDT: formatDate(), // OPRGDT
+          OPRGTM: getCurrentTimeFormatted(), // OPRGTM
+          OPLMDT: formatDate(), // OPLMDT
+          OPCHNO: existingData.OPCHNO, // OPCHNO
+          OPCHID: existingData.OPCHID, // OPCHID
+          OPLMTS: Date.now() // OPLMTS
+        },
+        {
+          transaction
+        }
+      )
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 exports.insert = async (req, res, next) => {
   try {
     const shippings = req.body.shippings
