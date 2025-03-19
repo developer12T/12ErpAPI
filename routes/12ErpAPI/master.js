@@ -14,7 +14,8 @@ const {
   getItemAll,
   getItemDetails,
   getCoType,
-  getItemAnalysis
+  getItemAnalysis,
+  getTransectionLot
 } = require("../../controllers/master/masterContorller");
 const {
   getStockAll,
@@ -35,6 +36,9 @@ router.post("/itemdetails", getItemDetails);
 
 //http://localhost:3000/master/itemdetails
 router.get("/itemAnalysis", getItemAnalysis);
+
+//http://localhost:3000/master/itemdetails
+router.post("/itemLot", getTransectionLot);
 
 
 //=================================== Order ====================================

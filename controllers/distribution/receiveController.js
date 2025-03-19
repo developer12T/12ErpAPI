@@ -2,7 +2,8 @@ const { MGHEAD, MGLINE, MGDADR } = require('../../models/distribution')
 const { fetchWareHose } = require('../../services/warehouseService')
 const {
   fetchCalWeight,
-  fetchItemFactor
+  fetchItemFactor,
+  fetchTransectionLot
 } = require('../../services/itemsService')
 const { Op } = require('sequelize')
 
@@ -33,7 +34,6 @@ exports.getReceive = async (req, res, next) => {
       receiveLineObj[receiveData[i].orderNo] = []
 
       for (let j = 0; j < receiveLineData.length; j++) {
-
         const weight = await fetchCalWeight({
           itemCode: receiveLineData[j].itemCode,
           qty: receiveLineData[j].itemQty
@@ -47,6 +47,14 @@ exports.getReceive = async (req, res, next) => {
         const itemCode = receiveLineData[j].itemCode.trim()
         const itemName = receiveLineData[j].itemName.trim()
         const unit = receiveLineData[j].itemUnit.trim() || 'PCS'
+
+        const itemLot = await fetchTransectionLot({
+          itemCode: itemCode,
+          towarehouse: areaData.warehouse,
+          orderId: receiveData[i].orderNo.trim()
+        })
+
+        // res.status(200).json(itemLot)
 
         receiveLineObj[receiveData[i].orderNo].push({
           //   productNumber: receiveLineData[j].productNumber,
@@ -66,15 +74,18 @@ exports.getReceive = async (req, res, next) => {
           //   brand: '',
           //   size: '',
           //   flavour: '',
-        //   itemFactor: itemFactor.factor,
-          qty:  unit == "CTN" ? receiveLineData[j].itemQty / itemFactor.factor : receiveLineData[j].itemQty,
+          //   itemFactor: itemFactor.factor,
+          qty:
+            unit == 'CTN'
+              ? receiveLineData[j].itemQty / itemFactor.factor
+              : receiveLineData[j].itemQty,
           unit: unit,
           qtyPcs: receiveLineData[j].itemQty,
           //   price: receiveLineData[j].MRTRPR,
           //   total: '',
           weightGross: receiveLineData[j].MRGRWE,
           weightNet: weight.netWeight,
-          lot: receiveLineData[j].itemLot
+          lot: itemLot.itemLot || ''
         })
       }
     }

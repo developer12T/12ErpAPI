@@ -1,98 +1,99 @@
-const { ItemFac, ItemMaster, ItemUnit } = require("../models/master");
-const errorEndpoint = require("../middleware/errorEndpoint");
+const { ItemFac, ItemMaster, ItemUnit } = require('../models/master')
+const errorEndpoint = require('../middleware/errorEndpoint')
 
-const path = require("path");
-const currentFilePath = path.basename(__filename);
+const path = require('path')
+const MoveMent = require('../models/transection')
+const currentFilePath = path.basename(__filename)
 
-exports.fetchItemDetails = async (itemCode) => {
+exports.fetchItemDetails = async itemCode => {
   try {
-    const itemFacObj = {};
-    let unitarr = [];
-    let minUnit = [];
-    let maxUnit = [];
-    const maxUnitfactor = await ItemUnit.max("factor", {
+    const itemFacObj = {}
+    let unitarr = []
+    let minUnit = []
+    let maxUnit = []
+    const maxUnitfactor = await ItemUnit.max('factor', {
       where: {
         coNo: 410,
         itemCode: itemCode,
-        facType: 1,
-      },
-    });
+        facType: 1
+      }
+    })
     const maxUnitData = await ItemUnit.findOne({
       where: {
         coNo: 410,
         itemCode: itemCode,
         facType: 1,
-        factor: maxUnitfactor,
-      },
-    });
-    maxUnit.push(maxUnitData);
-    const minUnitfactor = await ItemUnit.min("factor", {
+        factor: maxUnitfactor
+      }
+    })
+    maxUnit.push(maxUnitData)
+    const minUnitfactor = await ItemUnit.min('factor', {
       where: {
         coNo: 410,
         itemCode: itemCode,
-        facType: 1,
-      },
-    });
+        facType: 1
+      }
+    })
 
     const minUnitData = await ItemUnit.findOne({
       where: {
         coNo: 410,
         itemCode: itemCode,
         facType: 1,
-        factor: minUnitfactor,
-      },
-    });
-    maxUnit.push(minUnitData);
+        factor: minUnitfactor
+      }
+    })
+    maxUnit.push(minUnitData)
 
     const itemData = await ItemMaster.findAll({
       where: {
         coNo: 410,
-        itemCode: itemCode,
-      },
-    });
+        itemCode: itemCode
+      }
+    })
 
     // Gather itemCode values to make a batch request
-    itemCode = itemData.map((item) => item.itemCode.trim());
+    itemCode = itemData.map(item => item.itemCode.trim())
     const facDatas = await ItemFac.findAll({
       where: {
         coNo: 410,
-        itemCode: itemCode,
-      },
-    });
-    const facData = facDatas.map((item) => {
-      const itemCode = item.itemCode.trim();
+        itemCode: itemCode
+      }
+    })
+    const facData = facDatas.map(item => {
+      const itemCode = item.itemCode.trim()
       return {
         itemCode: itemCode,
         M9FACI: item.M9FACI,
-        cost: item.cost,
-      };
-    });
-    facData.forEach((fac) => {
-      itemFacObj[fac.itemCode] = fac.cost;
-    });
+        cost: item.cost
+      }
+    })
+    facData.forEach(fac => {
+      itemFacObj[fac.itemCode] = fac.cost
+    })
 
     for (let i = 0; i < itemData.length; i++) {
       const itemUnitData = await ItemUnit.findAll({
-        where: { itemCode: itemData[i].itemCode, coNo: 410, facType: 1 },
-      });
-      itemUnitData.forEach((unit) => {
+        where: { itemCode: itemData[i].itemCode, coNo: 410, facType: 1 }
+      })
+      itemUnitData.forEach(unit => {
         unitarr.push({
           facType: unit.facType,
           factor: unit.factor,
-          unit: unit.unit,
-        });
-      });
+          unit: unit.unit
+        })
+      })
     }
 
-    const items = itemData.map((item) => {
-      const itemCode = item.itemCode.trim();
-      const itemName = item.itemName.trim();
-      const itemDescription = item.itemDescription.trim();
-      const itemType = item.itemType.trim();
-      const MMITGR = item.MMITGR.trim();
-      const itemClass = item.itemClass.trim();
-      const itemGroup = item.itemGroup.trim();
-      const cost = itemFacObj[itemCode] || 0;
+    const items = itemData.map(item => {
+      const itemCode = item.itemCode.trim()
+      const itemName = item.itemName.trim()
+      const itemDescription = item.itemDescription.trim()
+      const itemType = item.itemType.trim()
+      const MMITGR = item.MMITGR.trim()
+      const itemClass = item.itemClass.trim()
+      const itemGroup = item.itemGroup.trim()
+      const cost = itemFacObj[itemCode] || 0
       return {
         coNo: item.coNo,
         itemCode: itemCode,
@@ -109,16 +110,16 @@ exports.fetchItemDetails = async (itemCode) => {
         grossWeight: item.grossWeight,
         unit: unitarr,
         maxUnit: maxUnit,
-        minUnit: minUnit,
-      };
-    });
+        minUnit: minUnit
+      }
+    })
 
-    return items;
+    return items
   } catch (error) {
     // Enhanced error handling
-    throw errorEndpoint(currentFilePath, "Item Detail:", error);
+    throw errorEndpoint(currentFilePath, 'Item Detail:', error)
   }
-};
+}
 
 exports.fetchItemFactor = async (itemCode, unit) => {
   try {
@@ -127,61 +128,110 @@ exports.fetchItemFactor = async (itemCode, unit) => {
         coNo: 410,
         itemCode: itemCode,
         unit: unit,
-        facType: 1,
-      },
-    });
+        facType: 1
+      }
+    })
     if (itemData) {
-      return itemData;
+      return itemData
     } else {
-      return { factor: 1 };
+      return { factor: 1 }
     }
   } catch (error) {
     // Enhanced error handling
-    throw errorEndpoint(currentFilePath, "fetchItemFactor", error);
+    throw errorEndpoint(currentFilePath, 'fetchItemFactor', error)
   }
-};
+}
 
-exports.fetchCalWeight = async (data) => {
+exports.fetchCalWeight = async data => {
   try {
-    const { itemCode, qty } = data;
+    const { itemCode, qty } = data
     let itemData = await ItemMaster.findOne({
       where: {
-        itemCode: itemCode,
-      },
-    });
+        itemCode: itemCode
+      }
+    })
 
     itemData = {
       itemCode: itemData.itemCode.trim(),
       status: itemData.status,
       netWeight: Number(Number(itemData.netWeight * qty).toFixed(3)),
-      grossWeight: Number(Number(itemData.grossWeight * qty).toFixed(3)),
-    };
+      grossWeight: Number(Number(itemData.grossWeight * qty).toFixed(3))
+    }
 
-    return itemData;
+    return itemData
   } catch (error) {
     // Enhanced error handling
-    throw errorEndpoint(currentFilePath, "fetchCalWeight", error);
+    throw errorEndpoint(currentFilePath, 'fetchCalWeight', error)
   }
-};
+}
 
-exports.fetchCalCost = async (data) => {
+exports.fetchCalCost = async data => {
   try {
-    const { itemCode, qty } = data;
+    const { itemCode, qty } = data
     let itemData = await ItemFac.findOne({
       where: {
         itemCode: itemCode,
-        coNo: 410,
-      },
-    });
+        coNo: 410
+      }
+    })
 
     itemData = {
       itemCode: itemData.itemCode.trim(),
-      cost: Number(Number(itemData.cost * qty).toFixed(6)),
-    };
+      cost: Number(Number(itemData.cost * qty).toFixed(6))
+    }
 
-    return itemData;
+    if (itemData) {
+      return itemData
+    } else {
+      return { itemLot: '' }
+    }
   } catch (error) {
     // Enhanced error handling
-    throw errorEndpoint(currentFilePath, "fetchCalCost", error);
+    throw errorEndpoint(currentFilePath, 'fetchCalCost', error)
   }
-};
+}
+
+// exports.fetchCalCost = async (data) => {
+//   try {
+//     const { itemCode, qty } = data;
+//     let itemData = await MoveMent.findOne({
+//       where: {
+//         itemCode: itemCode,
+//         coNo: 410,
+//       },
+//     });
+
+//     itemData = {
+//       itemCode: itemData.itemCode.trim(),
+//       cost: Number(Number(itemData.cost * qty).toFixed(6)),
+//     };
+
+//     return itemData;
+//   } catch (error) {
+//     // Enhanced error handling
+//     throw errorEndpoint(currentFilePath, "fetchCalCost", error);
+//   }
+// };
+
+exports.fetchTransectionLot = async data => {
+  try {
+    const { towarehouse, orderId, itemCode } = data
+    const itemData = await MoveMent.findOne({
+      where: {
+        coNo: 410,
+        towarehouse: towarehouse,
+        itemCode: itemCode,
+        orderId: orderId
+      }
+    })
+
+    if (itemData) {
+      return itemData
+    } else {
+      return { itemLot: '' }
+    }
+  } catch (error) {
+    // Enhanced error handling
+    throw errorEndpoint(currentFilePath, 'fetchTransectionLot', error)
+  }
+}

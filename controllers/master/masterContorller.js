@@ -16,6 +16,7 @@ const {
   NumberSeries,
   NumberSeriesInvoice
 } = require('../../models/runningnumber')
+const MoveMent = require('../../models/transection')
 // Utils
 const { trimObjectStrings } = require('../../utils/String')
 
@@ -228,6 +229,24 @@ exports.getItemAll = async (req, res, next) => {
     })
     const response = itemData.map(item => trimObjectStrings(item.toJSON()))
     res.json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.getTransectionLot = async (req, res, next) => {
+  try {
+    const { towarehouse, orderId, itemCode } = req.body
+    const itemData = await MoveMent.findOne({
+      where: {
+        coNo: 410,
+        towarehouse: towarehouse,
+        itemCode: itemCode,
+        orderId: orderId
+      }
+    })
+    // const response = itemData.map(item => trimObjectStrings(item.toJSON()))
+    res.json(itemData)
   } catch (error) {
     next(error)
   }
