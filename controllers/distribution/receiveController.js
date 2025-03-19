@@ -1,6 +1,9 @@
 const { MGHEAD, MGLINE, MGDADR } = require('../../models/distribution')
 const { fetchWareHose } = require('../../services/warehouseService')
-const { fetchCalWeight } = require('../../services/itemsService')
+const {
+  fetchCalWeight,
+  fetchItemFactor
+} = require('../../services/itemsService')
 const { Op } = require('sequelize')
 
 exports.getReceive = async (req, res, next) => {
@@ -14,7 +17,7 @@ exports.getReceive = async (req, res, next) => {
       where: {
         coNo: 410,
         statusHigh: 99,
-        warehouse: areaData.warehouse,
+        towarehouse: areaData.warehouse,
         MGRGDT: {
           [Op.like]: `${peroid}%`
         }
@@ -30,10 +33,17 @@ exports.getReceive = async (req, res, next) => {
       receiveLineObj[receiveData[i].orderNo] = []
 
       for (let j = 0; j < receiveLineData.length; j++) {
+
         const weight = await fetchCalWeight({
           itemCode: receiveLineData[j].itemCode,
           qty: receiveLineData[j].itemQty
         })
+
+        const itemFactor = await fetchItemFactor(
+          receiveLineData[j].itemCode,
+          receiveLineData[j].itemUnit
+        )
+
         const itemCode = receiveLineData[j].itemCode.trim()
         const itemName = receiveLineData[j].itemName.trim()
         const unit = receiveLineData[j].itemUnit.trim() || 'PCS'
@@ -56,12 +66,13 @@ exports.getReceive = async (req, res, next) => {
           //   brand: '',
           //   size: '',
           //   flavour: '',
-          qty: receiveLineData[j].MRTRQA,
+        //   itemFactor: itemFactor.factor,
+          qty:  unit == "CTN" ? receiveLineData[j].itemQty / itemFactor.factor : receiveLineData[j].itemQty,
           unit: unit,
           qtyPcs: receiveLineData[j].itemQty,
-          price: receiveLineData[j].MRTRPR,
+          //   price: receiveLineData[j].MRTRPR,
           //   total: '',
-          weightGross: receiveLineData[j].MGGRWE,
+          weightGross: receiveLineData[j].MRGRWE,
           weightNet: weight.netWeight,
           lot: receiveLineData[j].itemLot
         })
@@ -107,8 +118,7 @@ exports.getReceive = async (req, res, next) => {
           order: receive.orderNo,
           orderId: receive.orderNo,
           orderType: receive.orderType,
-          orderTypeName: '',
-          area: receive.area || '', // Ensure area is defined
+          area: area, // Ensure area is defined
           fromWarehouse: fromWarehouse,
           toWarehouse: toWarehouse,
           shippingId: shippingId,
