@@ -15,6 +15,7 @@ const {
   trimObjectStrings
 } = require('../../utils/String')
 const { decryptData, encryptData } = require('../../utils/hashData')
+const { io } = require('../../server')
 
 exports.index = async (req, res, next) => {
   try {
@@ -424,232 +425,228 @@ exports.update = async (req, res, next) => {
   }
 }
 
-exports.insert = io => {
-  
-  return async (req, res, next) => {
-    try {
-      const {
-        Hcase,
-        customerNo,
-        customerStatus,
-        customerChannel,
-        customerAddress1,
-        customerAddress2,
-        customerAddress3,
-        customerPoscode,
-        customerPhone,
-        customerCoType,
-        warehouse,
-        OKSDST,
-        saleTeam,
-        OKCFC1,
-        OKCFC3,
-        OKCFC6,
-        salePayer,
-        creditLimit,
-        taxno,
-        saleCode,
-        saleZone
-      } = req.body
+exports.insert = async (req, res, next) => {
+  try {
+    const {
+      Hcase,
+      customerNo,
+      customerStatus,
+      customerChannel,
+      customerAddress1,
+      customerAddress2,
+      customerAddress3,
+      customerPoscode,
+      customerPhone,
+      customerCoType,
+      warehouse,
+      OKSDST,
+      saleTeam,
+      OKCFC1,
+      OKCFC3,
+      OKCFC6,
+      salePayer,
+      creditLimit,
+      taxno,
+      saleCode,
+      saleZone
+    } = req.body
 
-      let { customerAddress4, customerName } = req.body
-      const shippings = req.body.shippings
+    let { customerAddress4, customerName } = req.body
+    const shippings = req.body.shippings
 
-      if ((customerName.trim().length > 36 && customerChannel == !105) || 103) {
-        customerAddress4 = customerName.trim().slice(35)
-        customerName = customerName.trim().slice(0, 35)
-      }
-
-      const jsonPath = path.join(__dirname, '../../', 'Jsons', 'customer.json')
-      let existingData = []
-      if (fs.existsSync(jsonPath)) {
-        const jsonData = fs.readFileSync(jsonPath, 'utf-8')
-        existingData = JSON.parse(jsonData)
-      }
-
-      const customer = {
-        coNo: existingData.OKCONO, // OKCONO
-        // OKDIVI
-        customerStatus: customerStatus, // OKSTAT
-        customerNo: customerNo, // OKCUNO,
-
-        customerChannel: customerChannel, // OKCUCL
-        // OKCUTP
-        OKALCU: customerName.slice(0, 10),
-        customerCoType: customerCoType, // OKORTP
-        customerName: customerName, // OKCUNM
-        customerAddress1: customerAddress1, // OKCUA1
-        customerAddress2: customerAddress2, // OKCUA2
-        customerAddress3: customerAddress3, // OKCUA3
-        customerAddress4: customerAddress4, // OKCUA4
-        addressID: existingData.OKADID, // OKADID
-        customerPhone: customerPhone, // OKPHNO
-        // OKTREF
-        customerPoscode: customerPoscode, // OKPONO
-
-        warehouse: warehouse, // OKWHLO
-        OKSDST: OKSDST, // OKSDST
-        saleTeam: saleTeam, // OKCFC8
-        OKCFC1: OKCFC1, // OKCFC1
-        OKCFC3: OKCFC3, // OKCFC3
-        OKCFC6: OKCFC6, // OKCFC6
-        salePayer: salePayer, // OKPYNO
-        creditLimit: creditLimit, // OKCRL2
-        taxno: taxno, // OKVRNO
-        saleCode: saleCode, // OKSMCD
-        OKCUTP: existingData.OKCUTP, // OKCUTP
-        OKCORG: existingData.OKCORG, // OKCORG
-        creditTerm: existingData.OKTEPY, // OKTEPY
-        OKOT75: existingData.OKOT75, // OKOT75
-        OKTEDL: existingData.OKTEDL, // OKTEDL
-        OKMODL: existingData.OKMODL, // OKMODL
-        OKDIPC: existingData.OKDIPC, // OKDIPC
-        OKTXAP: existingData.OKTXAP, // OKTXAP
-        OKCUCD: existingData.OKCUCD, // OKCUCD
-        OKCRTP: existingData.OKCRTP, // OKCRTP
-        OKDTFM: existingData.OKDTFM, // OKDTFM
-        OKPRIC: existingData.OKPRIC, // OKPRIC
-        OKCSCD: existingData.OKCSCD, // OKCSCD
-        OKLHCD: existingData.OKLHCD, // OKLHCD
-        OKDOGR: existingData.OKDOGR, // OKDOGR
-        OKEDES: existingData.OKEDES, // OKEDES
-        OKPYCD: existingData.OKPYCD, // OKPYCD
-        OKGRPY: existingData.OKGRPY, // OKGRPY
-        OKTINC: existingData.OKTINC, // OKTINC
-        OKPRDL: existingData.OKPRDL, // OKPRDL
-        OKIVGP: existingData.OKIVGP, // OKIVGP
-        OKFACI: existingData.OKFACI, // OKFACI
-        OKRESP: existingData.USER, // OKRESP
-        OKUSR1: existingData.USER, // OKUSR1
-        OKUSR2: existingData.USER, // OKUSR2
-        OKUSR3: existingData.USER, // OKUSR3
-        OKDTE1: formatDate(), // OKDTE1
-        OKDTE2: formatDate(), // OKDTE2
-        OKDTE3: formatDate(), // OKDTE3
-        OKRGDT: formatDate(), // OKRGDT
-        OKRGTM: getCurrentTimeFormatted(), // OKRGTM
-        OKLMDT: formatDate(), // OKLMDT
-        OKCHID: existingData.USER, // OKCHID
-        OKLMTS: Date.now(), // OKLMTS
-        saleZone: saleZone
-      }
-      if (Hcase === 1) {
-        const customerData = await Customer.findOne({
-          where: {
-            customerNo: customerNo,
-            coNo: '410'
-          }
-        })
-        if (customerData) {
-          if(customerData.customerName == customerName){
-            res.status(400).json({
-              message: 'Already Exists'
-            })
-            return
-          }    
-        }
-        await Customer.create(customer)
-      }
-      let shippingData = shippings.map(shipping => {
-        return {
-          customerNo: customerNo,
-          customerName: customerName,
-          shippingAddress1: shipping.shippingAddress1,
-          shippingAddress2: shipping.shippingAddress2,
-          shippingAddress3: shipping.shippingAddress3,
-          shippingAddress4:
-            customerChannel == 102 || customerChannel == 103
-              ? customerAddress4 || shipping.shippingAddress4
-              : shipping.shippingAddress4,
-          shippingPoscode: shipping.shippingPoscode,
-          shippingPhone: shipping.shippingPhone,
-          shippingRoute: shipping.shippingRoute,
-          OPGEOX: shipping.OPGEOX,
-          OPGEOY: shipping.OPGEOY,
-        }
-      })
-      // Insert Shipping
-
-      await axios({
-        method: 'post',
-        url: `${HOST}erp/shinpping/insert`,
-        data: {
-          shippings: shippingData
-        }
-      })
-
-      // io.emit("shippingData", shippingData);
-      // io.emit("customerData", customer);
-      res.status(201).json({
-        message: 'Created'
-      })
-    } catch (error) {
-      next(error)
+    if ((customerName.trim().length > 36 && customerChannel == !105) || 103) {
+      customerAddress4 = customerName.trim().slice(35)
+      customerName = customerName.trim().slice(0, 35)
     }
+
+    const jsonPath = path.join(__dirname, '../../', 'Jsons', 'customer.json')
+    let existingData = []
+    if (fs.existsSync(jsonPath)) {
+      const jsonData = fs.readFileSync(jsonPath, 'utf-8')
+      existingData = JSON.parse(jsonData)
+    }
+
+    const customer = {
+      coNo: existingData.OKCONO, // OKCONO
+      // OKDIVI
+      customerStatus: customerStatus, // OKSTAT
+      customerNo: customerNo, // OKCUNO,
+
+      customerChannel: customerChannel, // OKCUCL
+      // OKCUTP
+      OKALCU: customerName.slice(0, 10),
+      customerCoType: customerCoType, // OKORTP
+      customerName: customerName, // OKCUNM
+      customerAddress1: customerAddress1, // OKCUA1
+      customerAddress2: customerAddress2, // OKCUA2
+      customerAddress3: customerAddress3, // OKCUA3
+      customerAddress4: customerAddress4, // OKCUA4
+      addressID: existingData.OKADID, // OKADID
+      customerPhone: customerPhone, // OKPHNO
+      // OKTREF
+      customerPoscode: customerPoscode, // OKPONO
+
+      warehouse: warehouse, // OKWHLO
+      OKSDST: OKSDST, // OKSDST
+      saleTeam: saleTeam, // OKCFC8
+      OKCFC1: OKCFC1, // OKCFC1
+      OKCFC3: OKCFC3, // OKCFC3
+      OKCFC6: OKCFC6, // OKCFC6
+      salePayer: salePayer, // OKPYNO
+      creditLimit: creditLimit, // OKCRL2
+      taxno: taxno, // OKVRNO
+      saleCode: saleCode, // OKSMCD
+      OKCUTP: existingData.OKCUTP, // OKCUTP
+      OKCORG: existingData.OKCORG, // OKCORG
+      creditTerm: existingData.OKTEPY, // OKTEPY
+      OKOT75: existingData.OKOT75, // OKOT75
+      OKTEDL: existingData.OKTEDL, // OKTEDL
+      OKMODL: existingData.OKMODL, // OKMODL
+      OKDIPC: existingData.OKDIPC, // OKDIPC
+      OKTXAP: existingData.OKTXAP, // OKTXAP
+      OKCUCD: existingData.OKCUCD, // OKCUCD
+      OKCRTP: existingData.OKCRTP, // OKCRTP
+      OKDTFM: existingData.OKDTFM, // OKDTFM
+      OKPRIC: existingData.OKPRIC, // OKPRIC
+      OKCSCD: existingData.OKCSCD, // OKCSCD
+      OKLHCD: existingData.OKLHCD, // OKLHCD
+      OKDOGR: existingData.OKDOGR, // OKDOGR
+      OKEDES: existingData.OKEDES, // OKEDES
+      OKPYCD: existingData.OKPYCD, // OKPYCD
+      OKGRPY: existingData.OKGRPY, // OKGRPY
+      OKTINC: existingData.OKTINC, // OKTINC
+      OKPRDL: existingData.OKPRDL, // OKPRDL
+      OKIVGP: existingData.OKIVGP, // OKIVGP
+      OKFACI: existingData.OKFACI, // OKFACI
+      OKRESP: existingData.USER, // OKRESP
+      OKUSR1: existingData.USER, // OKUSR1
+      OKUSR2: existingData.USER, // OKUSR2
+      OKUSR3: existingData.USER, // OKUSR3
+      OKDTE1: formatDate(), // OKDTE1
+      OKDTE2: formatDate(), // OKDTE2
+      OKDTE3: formatDate(), // OKDTE3
+      OKRGDT: formatDate(), // OKRGDT
+      OKRGTM: getCurrentTimeFormatted(), // OKRGTM
+      OKLMDT: formatDate(), // OKLMDT
+      OKCHID: existingData.USER, // OKCHID
+      OKLMTS: Date.now(), // OKLMTS
+      saleZone: saleZone
+    }
+    if (Hcase === 1) {
+      const customerData = await Customer.findOne({
+        where: {
+          customerNo: customerNo,
+          coNo: '410'
+        }
+      })
+      if (customerData) {
+        if (customerData.customerName == customerName) {
+          res.status(400).json({
+            message: 'Already Exists'
+          })
+          return
+        }
+      }
+      await Customer.create(customer)
+    }
+    let shippingData = shippings.map(shipping => {
+      return {
+        customerNo: customerNo,
+        customerName: customerName,
+        shippingAddress1: shipping.shippingAddress1,
+        shippingAddress2: shipping.shippingAddress2,
+        shippingAddress3: shipping.shippingAddress3,
+        shippingAddress4:
+          customerChannel == 102 || customerChannel == 103
+            ? customerAddress4 || shipping.shippingAddress4
+            : shipping.shippingAddress4,
+        shippingPoscode: shipping.shippingPoscode,
+        shippingPhone: shipping.shippingPhone,
+        shippingRoute: shipping.shippingRoute,
+        OPGEOX: shipping.OPGEOX,
+        OPGEOY: shipping.OPGEOY
+      }
+    })
+    // Insert Shipping
+
+    await axios({
+      method: 'post',
+      url: `${HOST}erp/shinpping/insert`,
+      data: {
+        shippings: shippingData
+      }
+    })
+
+    // io.emit("shippingData", shippingData);
+    // io.emit("customerData", customer);
+    res.status(201).json({
+      message: 'Created'
+    })
+  } catch (error) {
+    next(error)
   }
 }
 
-exports.saleZone = io => {
-  return async (req, res, next) => {
-    try {
-      const { saleZone } = req.body
-      const customersData = await Customer.findAll({
-        where: {
-          customerStatus: 20,
-          coNo: 410,
-          saleZone: saleZone
-        }
-      })
-      const customers = customersData.map(customer => {
-        const customerNo = customer.customerNo.trim()
-        const customerPoscode = customer.customerPoscode.trim()
-        const customerPhone = customer.customerPhone.trim()
-        const saleZone = customer.saleZone.trim()
-        const saleTeam = customer.saleTeam.trim()
-        const OKCFC1 = customer.OKCFC1.trim()
-        const OKCFC3 = customer.OKCFC3.trim()
-        const OKCFC6 = customer.OKCFC6.trim()
-        const salePayer = customer.salePayer.trim()
-        const taxno = customer.taxno.trim()
-        const OKALCU = customer.OKALCU.trim()
-        return {
-          customerNoHash: encryptData(customerNo),
-          customerNo: decryptData(encryptData(customerNo)),
-          customerStatus: customer.customerStatus,
-          customerChannel: customer.customerChannel,
-          customerName:
-            customer.customerChannel == '102' || '103'
-              ? customer.customerName + customer.customerAddress4
-              : customer.customerName,
-          OKALCU: OKALCU,
-          coNo: customer.coNo,
-          customerAddress1: customer.customerAddress1,
-          customerPoscode: customerPoscode,
-          customerPhone: customerPhone,
-          creditTerm: customer.creditTerm,
-          orderType: customer.orderType,
-          zone: saleZone,
-          saleTeam: saleTeam,
-          OKCFC1: OKCFC1,
-          OKCFC3: OKCFC3,
-          OKCFC6: OKCFC6,
-          salePayer: salePayer,
-          creditLimit: customer.creditLimit,
-          taxno: taxno
-        }
-      })
-
-      if (!customers.length) {
-        const error = new Error('Not Found')
-        error.statusCode = 404
-        throw error
+exports.saleZone = async (req, res, next) => {
+  try {
+    const { saleZone } = req.body
+    const customersData = await Customer.findAll({
+      where: {
+        customerStatus: 20,
+        coNo: 410,
+        saleZone: saleZone,
+        customerNo: 'VB20700031'
       }
-      // Emit data via Socket.io
-      io.emit('customerData', customers)
-      res.status(200).json(customers)
-    } catch (error) {
-      next(error)
+    })
+    const customers = customersData.map(customer => {
+      const customerNo = customer.customerNo.trim()
+      const customerPoscode = customer.customerPoscode.trim()
+      const customerPhone = customer.customerPhone.trim()
+      const saleZone = customer.saleZone.trim()
+      const saleTeam = customer.saleTeam.trim()
+      const OKCFC1 = customer.OKCFC1.trim()
+      const OKCFC3 = customer.OKCFC3.trim()
+      const OKCFC6 = customer.OKCFC6.trim()
+      const salePayer = customer.salePayer.trim()
+      const taxno = customer.taxno.trim()
+      const OKALCU = customer.OKALCU.trim()
+      return {
+        customerNoHash: encryptData(customerNo),
+        customerNo: decryptData(encryptData(customerNo)),
+        customerStatus: customer.customerStatus,
+        customerChannel: customer.customerChannel,
+        customerName:
+          customer.customerChannel == '102' || '103'
+            ? customer.customerName + customer.customerAddress4
+            : customer.customerName,
+        OKALCU: OKALCU,
+        coNo: customer.coNo,
+        customerAddress1: customer.customerAddress1,
+        customerPoscode: customerPoscode,
+        customerPhone: customerPhone,
+        creditTerm: customer.creditTerm,
+        orderType: customer.orderType,
+        zone: saleZone,
+        saleTeam: saleTeam,
+        OKCFC1: OKCFC1,
+        OKCFC3: OKCFC3,
+        OKCFC6: OKCFC6,
+        salePayer: salePayer,
+        creditLimit: customer.creditLimit,
+        taxno: taxno
+      }
+    })
+
+    if (!customers.length) {
+      const error = new Error('Not Found')
+      error.statusCode = 404
+      throw error
     }
+    // Emit data via Socket.io
+    io.emit('customerData', customers)
+    res.status(200).json(customers)
+  } catch (error) {
+    next(error)
   }
 }
 

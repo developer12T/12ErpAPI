@@ -8,32 +8,30 @@ const {
   saleZone,
   selectTopOnehundred
 } = require('../../controllers/customers/customerController')
-// const { io } = require('../../server')
+
 const passportJWT = require('../../middleware/passportJWT')
 
-module.exports = io => {
-  const router = express.Router()
-  /* GET home page. */
-  //http://localhost:3000/customer/
-  router.post('/bearer', [passportJWT.isLogin], index)
+const router = express.Router()
+/* GET home page. */
+//http://localhost:3000/customer/
+router.post('/bearer', [passportJWT.isLogin], index)
 
-  //http://localhost:3000/customer/single
-  router.post('/', single)
+//http://localhost:3000/customer/single
+router.post('/', single)
 
-  //http://localhost:3000/customer/top100
-  router.post('/top100', selectTopOnehundred)
+//http://localhost:3000/customer/top100
+router.post('/top100', selectTopOnehundred)
 
-  //http://localhost:3000/customer/edit
-  router.post('/edit', update)
+//http://localhost:3000/customer/edit
+router.post('/edit', update)
 
-  //http://localhost:3000/customer/insert
-  router.post('/insert', insert(io))
+//http://localhost:3000/customer/insert
+router.post('/insert', insert)
 
-  //http://localhost:3000/customer/saleZone
-  router.post('/saleZone', saleZone(io))
+//http://localhost:3000/customer/saleZone
+router.post('/saleZone', saleZone)
 
-  //http://localhost:3000/customer/delete
-  router.post('/delete', deleted)
+//http://localhost:3000/customer/delete
+router.post('/delete', deleted)
 
-  return router
-}
+module.exports = router

@@ -57,4 +57,4 @@ function onListening () {
 
 // module.exports = { server }
 
-module.exports = io
+module.exports = { io }

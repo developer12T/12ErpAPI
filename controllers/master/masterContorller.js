@@ -9,12 +9,17 @@ const {
   ItemUnit,
   OODFLT
 } = require('../../models/master')
+
+const { OrderLine } = require('../../models/order')
+
 const {
   NumberSeries,
   NumberSeriesInvoice
 } = require('../../models/runningnumber')
 // Utils
 const { trimObjectStrings } = require('../../utils/String')
+
+const { Sequelize, Op } = require('sequelize')
 
 exports.getCalWeight = async (req, res, next) => {
   try {
@@ -369,5 +374,96 @@ exports.getCoType = async (req, res, next) => {
     }
   } catch (error) {
     next(error)
+  }
+}
+
+exports.getItemAnalysis = async (req, res, next) => {
+  try {
+    const results = await OrderLine.findAll({
+      attributes: [
+        [Sequelize.fn('LEFT', Sequelize.col('OBLMDT'), 6), 'YearMonth'], // Use Sequelize.fn for LEFT function
+        'OBITNO', // Keep item number as is
+        [Sequelize.fn('SUM', Sequelize.col('OBPONR')), 'monthlySum'] // Sum the OBPONR column
+      ],
+      where: {
+        coNo: 410,
+        OBLMDT: { [Op.like]: '2024%' }, // Filter for the year 2024
+        OBCUNO: '21000026' // Filter by customer number
+      },
+      group: [
+        [Sequelize.fn('LEFT', Sequelize.col('OBLMDT'), 6)], // Group by YearMonth
+        'OBITNO' // Group by item number
+      ]
+    })
+
+    // res.json(results)
+
+    // Transform data into monthly columns
+    // const monthlyData = {}
+    // results.forEach(result => {
+    //   const { YearMonth, OBITNO: itemNo, monthlySum } = result.dataValues
+
+    //   if (!monthlyData[itemNo]) {
+    //     monthlyData[itemNo] = {
+    //       itemNo,
+    //       January: 0,
+    //       February: 0,
+    //       March: 0,
+    //       April: 0,
+    //       May: 0,
+    //       June: 0,
+    //       July: 0,
+    //       August: 0,
+    //       September: 0,
+    //       October: 0,
+    //       November: 0,
+    //       December: 0,
+    //       MAX: 0,
+    //       AVG: 0,
+    //       Summarize: 0
+    //     }
+    //   }
+
+    //   // Map monthly sums to corresponding months
+    //   const month = YearMonth.slice(4, 6) // Extract the month part (e.g., '01', '02', etc.)
+    //   const monthMap = {
+    //     '01': 'January',
+    //     '02': 'February',
+    //     '03': 'March',
+    //     '04': 'April',
+    //     '05': 'May',
+    //     '06': 'June',
+    //     '07': 'July',
+    //     '08': 'August',
+    //     '09': 'September',
+    //     10: 'October',
+    //     11: 'November',
+    //     12: 'December'
+    //   }
+
+    //   monthlyData[itemNo][monthMap[month]] = monthlySum
+    //   monthlyData[itemNo].Summarize += monthlySum // Calculate total sum
+    //   monthlyData[itemNo].MAX = Math.max(monthlyData[itemNo].MAX, monthlySum) // Update MAX
+    // })
+
+    // // Calculate AVG
+    // Object.values(monthlyData).forEach(data => {
+    //   const totalMonths = Object.keys(data)
+    //     .filter(
+    //       key =>
+    //         key !== 'itemNo' &&
+    //         key !== 'MAX' &&
+    //         key !== 'AVG' &&
+    //         key !== 'Summarize'
+    //     )
+    //     .reduce((count, key) => count + (data[key] > 0 ? 1 : 0), 0)
+    //   data.AVG = totalMonths > 0 ? data.Summarize / totalMonths : 0
+    // })
+
+    // // Send response
+    // res.json(Object.values(monthlyData))
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'An error occurred while fetching data.' })
   }
 }

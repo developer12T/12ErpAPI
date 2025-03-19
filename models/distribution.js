@@ -1,553 +1,563 @@
-const { sequelize, DataTypes } = require("../config/m3db");
+const { sequelize, DataTypes } = require('../config/m3db')
 const MGHEAD = sequelize.define(
-  "MGHEAD",
+  'MGHEAD',
   {
     coNo: {
       type: DataTypes.STRING,
       allowNull: true,
       primaryKey: true,
-      field: "MGCONO",
+      field: 'MGCONO'
     },
     orderNo: {
       type: DataTypes.STRING,
       allowNull: true,
       primaryKey: true,
-      field: "MGTRNR",
+      field: 'MGTRNR'
     },
     orderType: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGTRTP",
+      field: 'MGTRTP'
     },
     MGFACI: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGFACI",
+      field: 'MGFACI'
     },
     MGATHS: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGRORN",
+      field: 'MGRORN'
     },
     MGRORN: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGRORN",
+      field: 'MGRORN'
     },
     MGRESP: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGRESP",
+      field: 'MGRESP'
     },
     MGATHS: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGATHS",
+      field: 'MGATHS'
     },
     statusLow: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGTRSL",
+      field: 'MGTRSL'
     },
     statusHigh: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGTRSH",
+      field: 'MGTRSH'
     },
     MGPRIO: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGPRIO",
+      field: 'MGPRIO'
     },
     tranferDate: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGTRDT",
+      field: 'MGTRDT'
     },
     MGRIDT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGRIDT",
+      field: 'MGRIDT'
     },
     MGTRTM: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "MGTRTM",
+      field: 'MGTRTM'
     },
     MGRIDT: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "MGRIDT",
+      field: 'MGRIDT'
     },
     MGRITM: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "MGRITM",
+      field: 'MGRITM'
     },
     location: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "MGTWSL",
+      field: 'MGTWSL'
     },
     towarehouse: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGTWLO",
+      field: 'MGTWLO'
     },
     remark: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGREMK",
+      field: 'MGREMK'
     },
     warehouse: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGWHLO",
+      field: 'MGWHLO'
     },
     MGGRWE: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGGRWE",
+      field: 'MGGRWE'
     },
     MGDEPT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGDEPT",
+      field: 'MGDEPT'
     },
     MGNUGL: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGNUGL",
+      field: 'MGNUGL'
     },
     MGRGDT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGRGDT",
+      field: 'MGRGDT'
     },
     MGRGTM: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGRGTM",
+      field: 'MGRGTM'
     },
     MGLMDT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGLMDT",
+      field: 'MGLMDT'
     },
     MGCHNO: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGCHNO",
+      field: 'MGCHNO'
     },
     MGCHID: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGCHID",
+      field: 'MGCHID'
     },
     MGLMTS: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MGLMTS",
-    },
+      field: 'MGLMTS'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
-    updatedAt: false,
+    updatedAt: false
   }
-);
+)
 const MGLINE = sequelize.define(
-  "MGLINE",
+  'MGLINE',
   {
     coNo: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRCONO",
+      field: 'MRCONO'
     },
     orderNo: {
       type: DataTypes.STRING,
       allowNull: true,
       primaryKey: true,
-      field: "MRTRNR",
+      field: 'MRTRNR'
     },
     itemNo: {
       type: DataTypes.STRING,
       allowNull: true,
       primaryKey: true,
-      field: "MRPONR",
+      field: 'MRPONR'
     },
     MRTRSH: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRTRSH",
+      field: 'MRTRSH'
     },
     MRWHLO: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRWHLO",
+      field: 'MRWHLO'
     },
     itemCode: {
       type: DataTypes.STRING,
       allowNull: true,
       primaryKey: true,
-      field: "MRITNO",
+      field: 'MRITNO'
     },
     itemName: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRITDS",
+      field: 'MRITDS'
     },
     MRGRWE: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "MRGRWE",
+      field: 'MRGRWE'
     },
     MRTRDT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRTRDT",
+      field: 'MRTRDT'
     },
     MRRPDT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRRPDT",
+      field: 'MRRPDT'
     },
     MRSTAS: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRSTAS",
+      field: 'MRSTAS'
     },
     itemQty: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRTRQT",
+      field: 'MRTRQT'
     },
     MRTRSH: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRTRSH",
+      field: 'MRTRSH'
     },
     itemUnit: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRALUN",
+      field: 'MRALUN'
     },
     location: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRWHSL",
+      field: 'MRWHSL'
     },
     toLocation: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRTWSL",
+      field: 'MRTWSL'
     },
     itemLot: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRBANO",
+      field: 'MRBANO'
     },
     itemStatus: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRTRSH",
+      field: 'MRTRSH'
     },
     MRRPQT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRRPQT",
+      field: 'MRRPQT'
     },
     MRACQT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRACQT",
+      field: 'MRACQT'
     },
     MRSTCD: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRSTCD",
+      field: 'MRSTCD'
     },
     MRCUCD: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRCUCD",
+      field: 'MRCUCD'
     },
     MRPRDT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRPRDT",
+      field: 'MRPRDT'
     },
     MRNUCR: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRNUCR",
+      field: 'MRNUCR'
     },
     MRRORN: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRRORN",
+      field: 'MRRORN'
     },
     MRRESP: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRRESP",
+      field: 'MRRESP'
     },
     MRTIHM: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRTIHM",
+      field: 'MRTIHM'
     },
     MRRGDT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRRGDT",
+      field: 'MRRGDT'
     },
     MRRGTM: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRRGTM",
+      field: 'MRRGTM'
     },
     MRLMDT: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRLMDT",
+      field: 'MRLMDT'
     },
     MRCHNO: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRCHNO",
+      field: 'MRCHNO'
     },
     MRCHID: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRCHID",
+      field: 'MRCHID'
     },
     MRLMTS: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRLMTS",
+      field: 'MRLMTS'
     },
     MRPRIO: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MRPRIO",
+      field: 'MRPRIO'
     },
+    MRTRPR: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'MRTRPR'
+    },
+    MRTRQA: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'MRTRQA'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
-    updatedAt: false,
+    updatedAt: false
   }
-);
+)
 const MGDADR = sequelize.define(
-  "MGDADR",
+  'MGDADR',
   {
     coNo: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "MACONO",
+      field: 'MACONO'
     },
     orderNo: {
       type: DataTypes.NUMBER,
       primaryKey: true,
       allowNull: true,
-      field: "MATRNR",
+      field: 'MATRNR'
     },
     MAADK1: {
       type: DataTypes.NUMBER,
       allowNull: true,
       primaryKey: true,
-      field: "MAADK1",
+      field: 'MAADK1'
     },
 
     MASUNO: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MASUNO",
+      field: 'MASUNO'
     },
     MAADID: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MAADID",
+      field: 'MAADID'
     },
     MACONM: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MACONM",
+      field: 'MACONM'
     },
     MAADR1: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MAADR1",
+      field: 'MAADR1'
     },
     MAADR2: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MAADR2",
+      field: 'MAADR2'
     },
     MAADR3: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MAADR3",
+      field: 'MAADR3'
     },
     MAADR4: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MAADR4",
+      field: 'MAADR4'
     },
     MAPONO: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MAPONO",
+      field: 'MAPONO'
     },
     MACSCD: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MACSCD",
+      field: 'MACSCD'
     },
     MAADVI: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MAADVI",
+      field: 'MAADVI'
     },
     MAOREF: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MAOREF",
+      field: 'MAOREF'
     },
     MAYREF: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MAYREF",
+      field: 'MAYREF'
     },
     MATXID: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MATXID",
+      field: 'MATXID'
     },
     MATOWN: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MATOWN",
+      field: 'MATOWN'
     },
     MAECAR: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MAECAR",
+      field: 'MAECAR'
     },
     MARGDT: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MARGDT",
+      field: 'MARGDT'
     },
     MARGTM: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MARGTM",
+      field: 'MARGTM'
     },
     MALMDT: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MALMDT",
+      field: 'MALMDT'
     },
     MACHNO: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MACHNO",
+      field: 'MACHNO'
     },
     MACHID: {
       type: DataTypes.NUMBER,
       allowNull: true,
-      field: "MACHID",
-    },
+      field: 'MACHID'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
-    updatedAt: false,
+    updatedAt: false
   }
-);
+)
 
 const CIADDR = sequelize.define(
-  "CIADDR",
+  'CIADDR',
   {
     coNo: {
       type: DataTypes.STRING,
       primaryKey: true,
       allowNull: true,
-      field: "OACONO",
+      field: 'OACONO'
     },
     OAADK1: {
       type: DataTypes.STRING,
       primaryKey: true,
       allowNull: true,
-      field: "OAADK1",
+      field: 'OAADK1'
     },
     OAADK2: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OAADK2",
+      field: 'OAADK2'
     },
     OACONM: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OACONM",
+      field: 'OACONM'
     },
     OAADR1: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OAADR1",
+      field: 'OAADR1'
     },
     OAADR2: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OAADR2",
+      field: 'OAADR2'
     },
     OAADR3: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OAADR3",
+      field: 'OAADR3'
     },
     OAADR4: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OAADR4",
+      field: 'OAADR4'
     },
     OACSCD: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OACSCD",
+      field: 'OACSCD'
     },
     OAPONO: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OAPONO",
+      field: 'OAPONO'
     },
     OAECAR: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OAECAR",
+      field: 'OAECAR'
     },
     OATXID: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OATXID",
-    },
+      field: 'OATXID'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
-    updatedAt: false,
+    updatedAt: false
   }
-);
+)
 
 module.exports = {
   MGHEAD,
   MGLINE,
   MGDADR,
-  CIADDR,
-};
+  CIADDR
+}
