@@ -118,8 +118,8 @@ exports.getReceive = async (req, res, next) => {
         const addressData = await MGDADR.findOne({
           where: { coNo: 410, orderNo: receive.orderNo }
         })
-        const shippingId = addressData.MAADID.trim()
-        const shippingRoute = addressData.MAADK1.trim()
+        const shippingId = addressData.MAADK1.trim()
+        const shippingRoute = addressData.MAPONO.trim()
         const shippingName = addressData.MACONM.trim()
         const sendAddress = addressData.MAADR1.trim()
         const fromWarehouse = receive.warehouse
