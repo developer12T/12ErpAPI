@@ -126,7 +126,7 @@ exports.getReceive = async (req, res, next) => {
         const toWarehouse = receive.towarehouse
 
         return {
-          order: receive.orderNo,
+        //   order: receive.orderNo,
           orderId: receive.orderNo,
           orderType: receive.orderType,
           area: area, // Ensure area is defined
