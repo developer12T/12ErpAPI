@@ -9,20 +9,37 @@ const { Op } = require('sequelize')
 
 exports.getReceive = async (req, res, next) => {
   try {
-    const { area, peroid } = req.body
+    const { peroid, transdate } = req.body
+    let { area } = req.body
+
     let receiveLinearr = []
     const receiveLineObj = {}
-    const areaData = await fetchWareHose(area)
+    let areaData = {}
+
+    // const whereCondition = {
+    //   coNo: 410,
+    //   statusHigh: 99,
+    //   MGRGDT: {
+    //     [Op.like]: `${peroid}%`
+    //   }
+    // }
+    // // Conditionally add 'warehouse' only if areaData is not empty
+    // if (area !== '') {
+    //   //   areaData = await fetchWareHose(area)
+    //   //   whereCondition.towarehouse = areaData.warehouse
+    // } else {
+    //   whereCondition.MGRGDT = {
+    //     [Op.like]: `${transdate}%`
+    //   }
+    // }
 
     const receiveData = await MGHEAD.findAll({
       where: {
         coNo: 410,
         statusHigh: 99,
-        towarehouse: areaData.warehouse,
         MGRGDT: {
-          [Op.like]: `${peroid}%`
+          [Op.like]: `${transdate}%`
         }
-        // orderNo: '0000000002'
       }
     })
 
@@ -50,7 +67,10 @@ exports.getReceive = async (req, res, next) => {
 
         const itemLot = await fetchTransectionLot({
           itemCode: itemCode,
-          towarehouse: areaData.warehouse,
+          towarehouse: receiveData[i].towarehouse,
+          // area !== ''
+          //   ? receiveData[i].towarehouse
+          //   : receiveData[i].towarehouse,
           orderId: receiveData[i].orderNo.trim()
         })
 
@@ -126,7 +146,7 @@ exports.getReceive = async (req, res, next) => {
         const toWarehouse = receive.towarehouse
 
         return {
-        //   order: receive.orderNo,
+          //   order: receive.orderNo,
           orderId: receive.orderNo,
           orderType: receive.orderType,
           area: area, // Ensure area is defined
@@ -173,6 +193,29 @@ exports.getReceive = async (req, res, next) => {
     // })
 
     res.status(200).json(receive)
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.updateStatus = async (req, res, next) => {
+  try {
+    const { orderList } = req.body
+    for (const order in orderList) {
+      await MGHEAD.update(
+        {
+          MGGSR3: 'Y'
+        },
+        {
+          where: {
+            orderNo: order
+          }
+        }
+      )
+    }
+    res.status(200).json({
+      status: 'success'
+    })
   } catch (error) {
     next(error)
   }

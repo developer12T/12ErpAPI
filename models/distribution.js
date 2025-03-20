@@ -148,6 +148,11 @@ const MGHEAD = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
       field: 'MGLMTS'
+    },
+    MGGSR3: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'MGGSR3'
     }
   },
   {

@@ -69,7 +69,11 @@ exports.fetchWareHose = async areaCode => {
       warehouse: WarehouseData.warehouse,
       area: String(WarehouseData.warehouseName).slice(0, 5)
     }
-    return areaData
+    if (areaData) {
+      return areaData
+    } else {
+      return ''
+    }
   } catch (error) {
     throw errorEndpoint(currentFilePath, 'fetchWareHose', error)
   }
