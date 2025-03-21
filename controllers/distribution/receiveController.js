@@ -16,31 +16,27 @@ exports.getReceive = async (req, res, next) => {
     const receiveLineObj = {}
     let areaData = {}
 
-    // const whereCondition = {
-    //   coNo: 410,
-    //   statusHigh: 99,
-    //   MGRGDT: {
-    //     [Op.like]: `${peroid}%`
-    //   }
-    // }
+    const whereCondition = {
+      coNo: 410,
+      statusHigh: 99
+    }
+    console.log(area)
+
     // // Conditionally add 'warehouse' only if areaData is not empty
-    // if (area !== '') {
-    //   //   areaData = await fetchWareHose(area)
-    //   //   whereCondition.towarehouse = areaData.warehouse
-    // } else {
-    //   whereCondition.MGRGDT = {
-    //     [Op.like]: `${transdate}%`
-    //   }
-    // }
+    if (area) {
+      areaData = await fetchWareHose(area)
+      whereCondition.towarehouse = areaData.warehouse
+      whereCondition.MGRGDT = {
+        [Op.like]: `${peroid}%`
+      }
+    } else {
+      whereCondition.MGRGDT = {
+        [Op.like]: `${transdate}%`
+      }
+    }
 
     const receiveData = await MGHEAD.findAll({
-      where: {
-        coNo: 410,
-        statusHigh: 99,
-        MGRGDT: {
-          [Op.like]: `${transdate}%`
-        }
-      }
+      where: whereCondition
     })
 
     for (let i = 0; i < receiveData.length; i++) {
@@ -149,7 +145,7 @@ exports.getReceive = async (req, res, next) => {
           //   order: receive.orderNo,
           orderId: receive.orderNo,
           orderType: receive.orderType,
-          area: area, // Ensure area is defined
+          area: area,
           fromWarehouse: fromWarehouse,
           toWarehouse: toWarehouse,
           shippingId: shippingId,
@@ -201,13 +197,14 @@ exports.getReceive = async (req, res, next) => {
 exports.updateStatus = async (req, res, next) => {
   try {
     const { orderList } = req.body
-    for (const order in orderList) {
+    for (const order of orderList) {
       await MGHEAD.update(
         {
           MGGSR3: 'Y'
         },
         {
           where: {
+            coNo: 410,
             orderNo: order
           }
         }

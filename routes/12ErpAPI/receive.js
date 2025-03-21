@@ -1,6 +1,7 @@
 const { getArea,getWareHose } = require('../../services/warehouseService')
 const {
-  getReceive
+  getReceive,
+  updateStatus
 } = require('../../controllers/distribution/receiveController')
 const express = require('express')
 const router = express.Router()
@@ -10,5 +11,6 @@ const router = express.Router()
 router.post('/getArea', getArea)
 router.post('/getWareHose', getWareHose)
 router.post('/getReceiveAll', getReceive)
+router.post('/updateStatus', updateStatus)
 
 module.exports = router
