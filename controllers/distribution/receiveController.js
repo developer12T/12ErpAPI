@@ -12,7 +12,6 @@ exports.getReceive = async (req, res, next) => {
     const { peroid, transdate } = req.body
     let { area } = req.body
 
-    let receiveLinearr = []
     const receiveLineObj = {}
     let areaData = {}
 
@@ -71,38 +70,39 @@ exports.getReceive = async (req, res, next) => {
         })
 
         // res.status(200).json(itemLot)
-
-        receiveLineObj[receiveData[i].orderNo].push({
-          //   productNumber: receiveLineData[j].productNumber,
-          //   itemCode: receiveLineData[j].itemCode,
-          //   itemNo: receiveLineData[j].itemNo,
-          //   itemName: receiveLineData[j].itemName,
-          //   qty: receiveLineData[j].qty,
-          //   unit: receiveLineData[j].unit,
-          //   price: receiveLineData[j].price,
-          //   discount: receiveLineData[j].discount,
-          //   netPrice: receiveLineData[j].netPrice,
-          //   total: receiveLineData[j].total,
-          //   promotionCode: receiveLineData[j].promotionCode
-          id: itemCode,
-          name: itemName,
-          //   group: '',
-          //   brand: '',
-          //   size: '',
-          //   flavour: '',
-          //   itemFactor: itemFactor.factor,
-          qty:
-            unit == 'CTN'
-              ? receiveLineData[j].itemQty / itemFactor.factor
-              : receiveLineData[j].itemQty,
-          unit: unit,
-          qtyPcs: receiveLineData[j].itemQty,
-          //   price: receiveLineData[j].MRTRPR,
-          //   total: '',
-          weightGross: receiveLineData[j].MRGRWE,
-          weightNet: weight.netWeight,
-          lot: itemLot.itemLot || ''
-        })
+        if (parseInt(receiveLineData[j].itemQty) > 0) {
+          receiveLineObj[receiveData[i].orderNo].push({
+            //   productNumber: receiveLineData[j].productNumber,
+            //   itemCode: receiveLineData[j].itemCode,
+            //   itemNo: receiveLineData[j].itemNo,
+            //   itemName: receiveLineData[j].itemName,
+            //   qty: receiveLineData[j].qty,
+            //   unit: receiveLineData[j].unit,
+            //   price: receiveLineData[j].price,
+            //   discount: receiveLineData[j].discount,
+            //   netPrice: receiveLineData[j].netPrice,
+            //   total: receiveLineData[j].total,
+            //   promotionCode: receiveLineData[j].promotionCode
+            id: itemCode,
+            name: itemName,
+            //   group: '',
+            //   brand: '',
+            //   size: '',
+            //   flavour: '',
+            //   itemFactor: itemFactor.factor,
+            qty:
+              unit == 'CTN'
+                ? receiveLineData[j].itemQty / itemFactor.factor
+                : receiveLineData[j].itemQty,
+            unit: unit,
+            qtyPcs: receiveLineData[j].itemQty,
+            //   price: receiveLineData[j].MRTRPR,
+            //   total: '',
+            weightGross: receiveLineData[j].MRGRWE,
+            weightNet: weight.netWeight,
+            lot: itemLot.itemLot || ''
+          })
+        }
       }
     }
     receiveLinearr = receiveLineObj
