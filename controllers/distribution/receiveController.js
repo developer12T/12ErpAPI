@@ -10,7 +10,7 @@ const { fetchCAWareHouse, fetchCAArea } = require('../customers/customerControll
 
 exports.getReceive = async (req, res, next) => {
   try {
-    const { peroid, transdate } = req.body
+    const { period, transdate } = req.body
     let { area } = req.body
 
     const receiveLineObj = {}
@@ -38,7 +38,7 @@ exports.getReceive = async (req, res, next) => {
       areaData = await fetchWareHose(area)
       whereCondition.towarehouse = areaData.warehouse
       whereCondition.MGRGDT = {
-        [Op.like]: `${peroid}%`
+        [Op.like]: `${period}%`
       }
     } else {
       whereCondition.tranferDate = {
