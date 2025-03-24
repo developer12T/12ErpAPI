@@ -16,6 +16,7 @@ const {
 } = require('../../utils/String')
 const { decryptData, encryptData } = require('../../utils/hashData')
 const { io } = require('../../server')
+const { response } = require('express')
 
 exports.index = async (req, res, next) => {
   try {
@@ -674,5 +675,101 @@ exports.deleted = async (req, res, next) => {
     }
   } catch (error) {
     next(error)
+  }
+}
+exports.getCAWareHouse = async (req, res, next) => {
+  try {
+    const response = await Customer.findAll({
+      attributes: [
+        ['OKWHLO', 'warehouse'],
+        ['OKCFC1', 'OKCFC1']
+      ],
+      where: {
+        coNo: 410,
+        customerStatus: 20,
+        customerChannel: 103,
+        warehouse: { [Op.ne]: '' }
+      },
+      group: ['OKWHLO', 'OKCFC1']
+    })
+    const data = response.map(item => {
+      return {
+        warehouse: item.warehouse,
+        OKCFC1: item.OKCFC1.trim()
+      }
+    })
+
+    res.status(200).json(data)
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.fetchCAWareHouse = async () => {
+  try {
+    const response = await Customer.findAll({
+      attributes: [
+        ['OKWHLO', 'warehouse'],
+        ['OKCFC1', 'OKCFC1']
+      ],
+      where: {
+        coNo: 410,
+        customerStatus: 20,
+        customerChannel: 103,
+        warehouse: { [Op.ne]: '' }
+      },
+      group: ['OKWHLO', 'OKCFC1']
+    })
+
+    if (response) {
+      const data = response.map(item => {
+        return {
+          warehouse: item.warehouse,
+          OKCFC1: item.OKCFC1.trim()
+        }
+      })
+
+      return data
+    } else {
+      return []
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+exports.fetchCAArea = async wh => {
+  try {
+    const response = await Customer.findOne({
+      attributes: [
+        ['OKWHLO', 'warehouse'],
+        ['OKCFC1', 'OKCFC1']
+      ],
+      where: {
+        coNo: 410,
+        customerStatus: 20,
+        customerChannel: 103,
+        warehouse: wh
+      }
+    })
+
+    if (response) {
+      // const data = response.map(item => {
+      //   return {
+      //     warehouse: item.warehouse,
+      //     OKCFC1: item.OKCFC1.trim()
+      //   }
+      // })
+      const data = {
+        warehouse: response.warehouse,
+        OKCFC1: response.OKCFC1.trim()
+      }
+
+      return data
+    } else {
+      return []
+    }
+  } catch (error) {
+    console.log(error)
   }
 }

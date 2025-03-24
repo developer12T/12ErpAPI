@@ -1,11 +1,12 @@
 const { MGHEAD, MGLINE, MGDADR } = require('../../models/distribution')
-const { fetchWareHose } = require('../../services/warehouseService')
+const { fetchWareHose, fetchArea } = require('../../services/warehouseService')
 const {
   fetchCalWeight,
   fetchItemFactor,
   fetchTransectionLot
 } = require('../../services/itemsService')
 const { Op } = require('sequelize')
+const { fetchCAWareHouse, fetchCAArea } = require('../customers/customerController')
 
 exports.getReceive = async (req, res, next) => {
   try {
@@ -14,6 +15,9 @@ exports.getReceive = async (req, res, next) => {
 
     const receiveLineObj = {}
     let areaData = {}
+    let warehouseARR = []
+
+    let areaDataObj = {}
 
     const whereCondition = {
       coNo: 410,
@@ -21,7 +25,15 @@ exports.getReceive = async (req, res, next) => {
     }
     console.log(area)
 
+    // console.log('warehouseARR ' + warehouseARR)
+
     // // Conditionally add 'warehouse' only if areaData is not empty
+
+    const dataCAWareHouse = await fetchCAWareHouse()
+    for (const key of dataCAWareHouse) {
+      warehouseARR.push(key.warehouse)
+    }
+
     if (area) {
       areaData = await fetchWareHose(area)
       whereCondition.towarehouse = areaData.warehouse
@@ -29,21 +41,41 @@ exports.getReceive = async (req, res, next) => {
         [Op.like]: `${peroid}%`
       }
     } else {
-      whereCondition.MGRGDT = {
+      whereCondition.tranferDate = {
         [Op.like]: `${transdate}%`
       }
+      whereCondition.towarehouse = {
+        [Op.in]: [warehouseARR]
+      }
     }
-
     const receiveData = await MGHEAD.findAll({
       where: whereCondition
     })
 
     for (let i = 0; i < receiveData.length; i++) {
+      // if (area) {
+      //   const areaData = await fetchArea(receiveData[i].towarehouse)
+      //   area = areaData.area
+      // }
+
+
       const receiveLineData = await MGLINE.findAll({
         where: { orderNo: receiveData[i].orderNo }
       })
 
       receiveLineObj[receiveData[i].orderNo] = []
+    //   areaDataObj[receiveData[i].orderNo] = []
+
+      
+    //   if (!area) {
+    //     for (const key of dataCAWareHouse) {
+    //       console.log('Area CA ' + key.OKCFC1)
+    //       console.log('fromWarehouse ' + receiveData[i].towarehouse)
+    //       if (key.warehouse === receiveData[i].towarehouse) {
+    //         area = key.OKCFC1
+    //       }
+    //     }
+    //   }
 
       for (let j = 0; j < receiveLineData.length; j++) {
         const weight = await fetchCalWeight({
@@ -63,6 +95,7 @@ exports.getReceive = async (req, res, next) => {
         const itemLot = await fetchTransectionLot({
           itemCode: itemCode,
           towarehouse: receiveData[i].towarehouse,
+          //   area: area,
           // area !== ''
           //   ? receiveData[i].towarehouse
           //   : receiveData[i].towarehouse,
@@ -106,27 +139,6 @@ exports.getReceive = async (req, res, next) => {
       }
     }
     receiveLinearr = receiveLineObj
-
-    // const receive = receiveData.map(receive => async () => {
-    //   const receiveLineArr = receiveLineObj[receive.orderNo] || []
-
-    //   return {
-    //     order: receive.orderNo,
-    //     orderId: receive.orderNo,
-    //     orderType: receive.orderType,
-    //     orderTypeName: '',
-    //     area: area,
-    //     fromWarehouse: receive.warehouse,
-    //     toWarehouse: receive.towarehouse,
-    //     // shippingId: receive,
-    //     shippingRoute: '',
-    //     shippingName: '',
-    //     sendAddress: '',
-    //     sendDate: receive.MGLMDT,
-    //     remark: receive.remark,
-    //     listProduct: receiveLineArr
-    //   }
-    // })
     const receive = await Promise.all(
       receiveData.map(async receive => {
         const receiveLineArr = receiveLineObj[receive.orderNo] || []
@@ -134,12 +146,18 @@ exports.getReceive = async (req, res, next) => {
         const addressData = await MGDADR.findOne({
           where: { coNo: 410, orderNo: receive.orderNo }
         })
+
         const shippingId = addressData.MAADK1.trim()
         const shippingRoute = addressData.MAPONO.trim()
         const shippingName = addressData.MACONM.trim()
         const sendAddress = addressData.MAADR1.trim()
         const fromWarehouse = receive.warehouse
         const toWarehouse = receive.towarehouse
+
+        if (!area) {
+          const CAData = await fetchCAArea(toWarehouse)
+          area = CAData.OKCFC1
+        }
 
         return {
           //   order: receive.orderNo,
@@ -158,35 +176,6 @@ exports.getReceive = async (req, res, next) => {
         }
       })
     )
-
-    // const receive = receiveData.map(receive => {
-    //   const receiveLineArr = receiveLineObj[orderNo] || []
-    //   const receiveLines = receiveLineArr.map(receiveLine => {
-    //     const itemName = receiveLine.itemName.trim()
-    //     const itemCode = receiveLine.itemCode.trim()
-
-    //     return {
-    //       productNumber: receiveLine.productNumber,
-    //       itemCode: itemCode,
-    //       itemNo: receiveLine.itemNo
-    //     }
-    //   })
-    //   return {
-    //     orderDate: order.orderDate,
-    //     requestDate: order.requestDate,
-    //     customerNo: customerNo,
-    //     orderNo: orderNo,
-    //     orderType: order.orderType,
-    //     warehouse: order.warehouse,
-    //     orderStatusLow: order.orderStatusLow,
-    //     total: order.total,
-    //     totalNet: order.totalNet,
-    //     totalVat: order.totalVat,
-    //     totalNonVat: order.totalNonVat,
-    //     totalDiscount: order.totalDiscount,
-    //     item: receiveLines
-    //   }
-    // })
 
     res.status(200).json(receive)
   } catch (error) {

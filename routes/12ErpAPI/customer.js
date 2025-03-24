@@ -6,7 +6,8 @@ const {
   deleted,
   single,
   saleZone,
-  selectTopOnehundred
+  selectTopOnehundred,
+  getCAWareHouse
 } = require('../../controllers/customers/customerController')
 
 const passportJWT = require('../../middleware/passportJWT')
@@ -33,5 +34,8 @@ router.post('/saleZone', saleZone)
 
 //http://localhost:3000/customer/delete
 router.post('/delete', deleted)
+
+//http://localhost:3000/customer/delete
+router.get('/getCAWareHouse', getCAWareHouse)
 
 module.exports = router
