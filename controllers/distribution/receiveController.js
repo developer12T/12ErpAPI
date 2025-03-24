@@ -33,7 +33,9 @@ exports.getReceive = async (req, res, next) => {
     for (const key of dataCAWareHouse) {
       warehouseARR.push(key.warehouse)
     }
-
+    whereCondition.MGGSR3 = {
+      [Op.ne]: `Y`
+    }
     if (area) {
       areaData = await fetchWareHose(area)
       whereCondition.towarehouse = areaData.warehouse
