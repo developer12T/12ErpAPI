@@ -206,6 +206,29 @@ exports.single = async (req, res, next) => {
       }
     }
 
+    const createdDateUTC = '2025-03-26T08:49:00Z'
+
+    // Convert to Bangkok time (+7)
+    const dateObj = new Date(createdDateUTC)
+    const options = {
+      timeZone: 'Asia/Bangkok',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false // 24-hour format
+    }
+
+    // Format Bangkok time correctly
+    const bangkokTime = new Intl.DateTimeFormat('en-GB', options).format(
+      dateObj
+    )
+    const [date, time] = bangkokTime.replace(',', '').split(' ')
+    const [year, month, day] = date.split('/')
+    const finalDate = `${year}-${month}-${day}T${time}`
+
     const customers = customersData.map(customer => {
       const customerNo = customer.customerNo.trim()
       const customerPoscode = customer.customerPoscode.trim()
@@ -226,6 +249,7 @@ exports.single = async (req, res, next) => {
       // const OKPYCD = customer.OKPYCD.trim();
       // const taxno = customer.taxno.trim();
       return {
+        finalDate: finalDate,
         coNo: customer.coNo,
         customerStatus: customer.customerStatus,
         customerNo: customerNo,

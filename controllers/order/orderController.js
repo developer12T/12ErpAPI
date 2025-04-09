@@ -690,10 +690,11 @@ exports.insert = async (req, res, next) => {
           requestDate: requestDate,
           OARGTM: getCurrentTimeFormatted(),
           grossWeight: totalgrossWeight.toFixed(3),
+          tranferDate: requestDate,
           netWeight: totalnetWeight.toFixed(3)
         }
         await allocateInsert(itemsData, transaction)
-        await deliveryHeadInsert(deliveryObj, transaction)
+        // await deliveryHeadInsert(deliveryObj, transaction)
         await deliveryLineInsert(itemsData, transaction)
         await orderLineInsert(itemsData, transaction)
         await prepareInvoiceInsertA(itemsData, transaction)
