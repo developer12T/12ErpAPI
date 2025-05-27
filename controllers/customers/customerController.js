@@ -4,6 +4,7 @@ const Sale = require('../../models/sale')
 const { Op } = require('sequelize')
 const axios = require('axios')
 const { HOST } = require('../../config/index')
+const { sequelize } = require('../../config/m3db')
 const {
   formatDate,
   getCurrentTimeFormatted
@@ -17,6 +18,10 @@ const {
 const { decryptData, encryptData } = require('../../utils/hashData')
 const { io } = require('../../server')
 const { response } = require('express')
+const XLSX = require('xlsx');
+const { shinppingInsert } = require('./shippingController')
+
+
 
 exports.index = async (req, res, next) => {
   try {
@@ -476,136 +481,155 @@ exports.insert = async (req, res, next) => {
       saleZone
     } = req.body
 
-    let { customerAddress4, customerName } = req.body
-    const shippings = req.body.shippings
+    let transaction
+    try {
+      transaction = await sequelize.transaction()
+      // console.log("transaction",transaction)
 
-    if ((customerName.trim().length > 36 && customerChannel == !105) || 103) {
-      customerAddress4 = customerName.trim().slice(35)
-      customerName = customerName.trim().slice(0, 35)
-    }
+      let { customerAddress4, customerName } = req.body
+      const shippings = req.body.shippings
 
-    const jsonPath = path.join(__dirname, '../../', 'Jsons', 'customer.json')
-    let existingData = []
-    if (fs.existsSync(jsonPath)) {
-      const jsonData = fs.readFileSync(jsonPath, 'utf-8')
-      existingData = JSON.parse(jsonData)
-    }
+      if ((customerName.trim().length > 36 && customerChannel == !105) || 103) {
+        customerAddress4 = customerName.trim().slice(35)
+        customerName = customerName.trim().slice(0, 35)
+      }
 
-    const customer = {
-      coNo: existingData.OKCONO, // OKCONO
-      // OKDIVI
-      customerStatus: customerStatus, // OKSTAT
-      customerNo: customerNo, // OKCUNO,
+      const jsonPath = path.join(__dirname, '../../', 'Jsons', 'customer.json')
+      let existingData = []
+      if (fs.existsSync(jsonPath)) {
+        const jsonData = fs.readFileSync(jsonPath, 'utf-8')
+        existingData = JSON.parse(jsonData)
+      }
 
-      customerChannel: customerChannel, // OKCUCL
-      // OKCUTP
-      OKALCU: customerName.slice(0, 10),
-      customerCoType: customerCoType, // OKORTP
-      customerName: customerName, // OKCUNM
-      customerAddress1: customerAddress1, // OKCUA1
-      customerAddress2: customerAddress2, // OKCUA2
-      customerAddress3: customerAddress3, // OKCUA3
-      customerAddress4: customerAddress4, // OKCUA4
-      addressID: existingData.OKADID, // OKADID
-      customerPhone: customerPhone, // OKPHNO
-      // OKTREF
-      customerPoscode: customerPoscode, // OKPONO
+      const customer = {
+        coNo: existingData.OKCONO, // OKCONO
+        // OKDIVI
+        customerStatus: customerStatus, // OKSTAT
+        customerNo: customerNo, // OKCUNO,
 
-      warehouse: warehouse, // OKWHLO
-      OKSDST: OKSDST, // OKSDST
-      saleTeam: saleTeam, // OKCFC8
-      OKCFC1: OKCFC1, // OKCFC1
-      OKCFC3: OKCFC3, // OKCFC3
-      OKCFC6: OKCFC6, // OKCFC6
-      salePayer: salePayer, // OKPYNO
-      creditLimit: creditLimit, // OKCRL2
-      taxno: taxno, // OKVRNO
-      saleCode: saleCode, // OKSMCD
-      OKCUTP: existingData.OKCUTP, // OKCUTP
-      OKCORG: existingData.OKCORG, // OKCORG
-      creditTerm: existingData.OKTEPY, // OKTEPY
-      OKOT75: existingData.OKOT75, // OKOT75
-      OKTEDL: existingData.OKTEDL, // OKTEDL
-      OKMODL: existingData.OKMODL, // OKMODL
-      OKDIPC: existingData.OKDIPC, // OKDIPC
-      OKTXAP: existingData.OKTXAP, // OKTXAP
-      OKCUCD: existingData.OKCUCD, // OKCUCD
-      OKCRTP: existingData.OKCRTP, // OKCRTP
-      OKDTFM: existingData.OKDTFM, // OKDTFM
-      OKPRIC: existingData.OKPRIC, // OKPRIC
-      OKCSCD: existingData.OKCSCD, // OKCSCD
-      OKLHCD: existingData.OKLHCD, // OKLHCD
-      OKDOGR: existingData.OKDOGR, // OKDOGR
-      OKEDES: existingData.OKEDES, // OKEDES
-      OKPYCD: existingData.OKPYCD, // OKPYCD
-      OKGRPY: existingData.OKGRPY, // OKGRPY
-      OKTINC: existingData.OKTINC, // OKTINC
-      OKPRDL: existingData.OKPRDL, // OKPRDL
-      OKIVGP: existingData.OKIVGP, // OKIVGP
-      OKFACI: existingData.OKFACI, // OKFACI
-      OKRESP: existingData.USER, // OKRESP
-      OKUSR1: existingData.USER, // OKUSR1
-      OKUSR2: existingData.USER, // OKUSR2
-      OKUSR3: existingData.USER, // OKUSR3
-      OKDTE1: formatDate(), // OKDTE1
-      OKDTE2: formatDate(), // OKDTE2
-      OKDTE3: formatDate(), // OKDTE3
-      OKRGDT: formatDate(), // OKRGDT
-      OKRGTM: getCurrentTimeFormatted(), // OKRGTM
-      OKLMDT: formatDate(), // OKLMDT
-      OKCHID: existingData.USER, // OKCHID
-      OKLMTS: Date.now(), // OKLMTS
-      saleZone: saleZone
-    }
-    if (Hcase === 1) {
-      const customerData = await Customer.findOne({
-        where: {
+        customerChannel: customerChannel, // OKCUCL
+        // OKCUTP
+        OKALCU: customerName.slice(0, 10),
+        customerCoType: customerCoType, // OKORTP
+        customerName: customerName, // OKCUNM
+        customerAddress1: customerAddress1, // OKCUA1
+        customerAddress2: customerAddress2, // OKCUA2
+        customerAddress3: customerAddress3, // OKCUA3
+        customerAddress4: customerAddress4, // OKCUA4
+        addressID: existingData.OKADID, // OKADID
+        customerPhone: customerPhone, // OKPHNO
+        // OKTREF
+        customerPoscode: customerPoscode, // OKPONO
+
+        warehouse: warehouse, // OKWHLO
+        OKSDST: OKSDST, // OKSDST
+        saleTeam: saleTeam, // OKCFC8
+        OKCFC1: OKCFC1, // OKCFC1
+        OKCFC3: OKCFC3, // OKCFC3
+        OKCFC6: OKCFC6, // OKCFC6
+        salePayer: salePayer, // OKPYNO
+        creditLimit: creditLimit, // OKCRL2
+        taxno: taxno, // OKVRNO
+        saleCode: saleCode, // OKSMCD
+        OKCUTP: existingData.OKCUTP, // OKCUTP
+        OKCORG: existingData.OKCORG, // OKCORG
+        creditTerm: existingData.OKTEPY, // OKTEPY
+        OKOT75: existingData.OKOT75, // OKOT75
+        OKTEDL: existingData.OKTEDL, // OKTEDL
+        OKMODL: existingData.OKMODL, // OKMODL
+        OKDIPC: existingData.OKDIPC, // OKDIPC
+        OKTXAP: existingData.OKTXAP, // OKTXAP
+        OKCUCD: existingData.OKCUCD, // OKCUCD
+        OKCRTP: existingData.OKCRTP, // OKCRTP
+        OKDTFM: existingData.OKDTFM, // OKDTFM
+        OKPRIC: existingData.OKPRIC, // OKPRIC
+        OKCSCD: existingData.OKCSCD, // OKCSCD
+        OKLHCD: existingData.OKLHCD, // OKLHCD
+        OKDOGR: existingData.OKDOGR, // OKDOGR
+        OKEDES: existingData.OKEDES, // OKEDES
+        OKPYCD: existingData.OKPYCD, // OKPYCD
+        OKGRPY: existingData.OKGRPY, // OKGRPY
+        OKTINC: existingData.OKTINC, // OKTINC
+        OKPRDL: existingData.OKPRDL, // OKPRDL
+        OKIVGP: existingData.OKIVGP, // OKIVGP
+        OKFACI: existingData.OKFACI, // OKFACI
+        OKRESP: existingData.USER, // OKRESP
+        OKUSR1: existingData.USER, // OKUSR1
+        OKUSR2: existingData.USER, // OKUSR2
+        OKUSR3: existingData.USER, // OKUSR3
+        OKDTE1: formatDate(), // OKDTE1
+        OKDTE2: formatDate(), // OKDTE2
+        OKDTE3: formatDate(), // OKDTE3
+        OKRGDT: formatDate(), // OKRGDT
+        OKRGTM: getCurrentTimeFormatted(), // OKRGTM
+        OKLMDT: formatDate(), // OKLMDT
+        OKCHID: existingData.USER, // OKCHID
+        OKLMTS: Date.now(), // OKLMTS
+        saleZone: saleZone
+      }
+      if (Hcase === 1) {
+        const customerData = await Customer.findOne({
+          where: {
+            customerNo: customerNo,
+            coNo: '410'
+          }
+        })
+        if (customerData) {
+          if (customerData.customerName == customerName) {
+            res.status(400).json({
+              message: 'Already Exists'
+            })
+            return
+          }
+        }
+        await Customer.create(customer)
+      }
+      let shippingData = shippings.map(shipping => {
+        return {
           customerNo: customerNo,
-          coNo: '410'
+          customerName: customerName,
+          shippingAddress1: shipping.shippingAddress1,
+          shippingAddress2: shipping.shippingAddress2,
+          shippingAddress3: shipping.shippingAddress3,
+          shippingAddress4:
+            customerChannel == 102 || customerChannel == 103
+              ? customerAddress4 || shipping.shippingAddress4
+              : shipping.shippingAddress4,
+          shippingPoscode: shipping.shippingPoscode,
+          shippingPhone: shipping.shippingPhone,
+          shippingRoute: shipping.shippingRoute,
+          OPGEOX: shipping.OPGEOX,
+          OPGEOY: shipping.OPGEOY
         }
       })
-      if (customerData) {
-        if (customerData.customerName == customerName) {
-          res.status(400).json({
-            message: 'Already Exists'
-          })
-          return
-        }
-      }
-      await Customer.create(customer)
-    }
-    let shippingData = shippings.map(shipping => {
-      return {
-        customerNo: customerNo,
-        customerName: customerName,
-        shippingAddress1: shipping.shippingAddress1,
-        shippingAddress2: shipping.shippingAddress2,
-        shippingAddress3: shipping.shippingAddress3,
-        shippingAddress4:
-          customerChannel == 102 || customerChannel == 103
-            ? customerAddress4 || shipping.shippingAddress4
-            : shipping.shippingAddress4,
-        shippingPoscode: shipping.shippingPoscode,
-        shippingPhone: shipping.shippingPhone,
-        shippingRoute: shipping.shippingRoute,
-        OPGEOX: shipping.OPGEOX,
-        OPGEOY: shipping.OPGEOY
-      }
-    })
-    // Insert Shipping
 
-    await axios({
-      method: 'post',
-      url: `${HOST}erp/shinpping/insert`,
-      data: {
-        shippings: shippingData
-      }
-    })
+      // console.log(shippingData)
+      // Insert Shipping
+      await shinppingInsert(shippingData, transaction)
+
+
+      // await axios({
+      //   method: 'post',
+      //   url: `${HOST}erp/shinpping/insert`,
+      //   data: {
+      //     shippings: shippingData
+      //   }
+      // })
+      await transaction.commit();
+    } catch (error) {
+      // Rollback for this particular order, log the error
+      await transaction.rollback()
+      // console.error("Rollback because of error:", error.stack);
+      // console.error("Rollback because of error:", error);
+
+    }
+
 
     // io.emit("shippingData", shippingData);
     // io.emit("customerData", customer);
     res.status(201).json({
-      message: 'Created'
+      message: 'Created',
+      // data : customer
     })
   } catch (error) {
     next(error)
@@ -614,7 +638,9 @@ exports.insert = async (req, res, next) => {
 
 exports.saleZone = async (req, res, next) => {
   try {
+
     const { saleZone } = req.body
+
     const customersData = await Customer.findAll({
       where: {
         customerStatus: 20,

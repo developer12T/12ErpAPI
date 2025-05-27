@@ -66,8 +66,8 @@ const Shipping = sequelize.define(
         },
         isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
-          if (value.toString().length !== 3) {
-            throw new Error('shippingRoute must be exactly 3 digits')
+          if (value.toString().length !== 5) {
+            throw new Error('shippingRoute must be exactly 5 digits')
           }
         }
       }

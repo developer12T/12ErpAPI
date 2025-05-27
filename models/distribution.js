@@ -560,6 +560,23 @@ const CIADDR = sequelize.define(
   }
 )
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = {
   MGHEAD,
   MGLINE,

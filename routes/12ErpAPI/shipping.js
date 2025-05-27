@@ -1,7 +1,7 @@
 const express = require("express");
 const {
   update,
-  insert,
+  // insert,
   deleted,
   getShipping,
   getShippingAll,
@@ -15,7 +15,7 @@ module.exports = (io) => {
   // Define routes
   router.post("/all", getShippingAll);
   router.post("/update", update);
-  router.post("/insert", insert);
+  // router.post("/insert", insert);
   router.post("/deleted", deleted);
   router.post("/", getShipping(io)); // Pass io to the controller
 

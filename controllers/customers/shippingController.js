@@ -212,16 +212,16 @@ exports.insertShipping = async (data, transaction) => {
   }
 }
 
-exports.insert = async (req, res, next) => {
+exports.shinppingInsert = async (shippings,transaction) => {
   try {
-    const shippings = req.body.shippings
-
     const jsonPath = path.join(__dirname, '../../', 'Jsons', 'shipping.json')
     let existingData = []
     if (fs.existsSync(jsonPath)) {
       const jsonData = fs.readFileSync(jsonPath, 'utf-8')
       existingData = JSON.parse(jsonData)
     }
+// console.log("shippings",shippings)
+
 
     for (let shipping of shippings) {
       const shinppingData = await Shipping.findAll({
@@ -230,6 +230,8 @@ exports.insert = async (req, res, next) => {
           coNo: 410
         }
       })
+      
+
 
       let checkShipping = 'SHIP'
       let shinppingNum = 0
@@ -250,8 +252,9 @@ exports.insert = async (req, res, next) => {
         }
       }
       addressID = `${checkShipping}${shinppingNum + 1}`
+      // console.log("existingData",existingData)
 
-      await Shipping.create({
+     const data =   await Shipping.create({
         coNo: existingData.OPCONO, // OPCONO,
         customerNo: shipping.customerNo, // OPCUNO
         OPADRT: existingData.OPADRT, // OPPART
@@ -287,15 +290,18 @@ exports.insert = async (req, res, next) => {
         OPCHNO: existingData.OPCHNO, // OPCHNO
         OPCHID: existingData.OPCHID, // OPCHID
         OPLMTS: Date.now() // OPLMTS
-      })
+      },{transaction}
+    )
+    // console.log("data",data)
     }
-    res.status(201).json({
-      message: 'Insert Success'
-    })
+
   } catch (error) {
-    next(error)
+    console.error(`[shippingInsert] Error:`, error.stack || error.message);
+    error.message = `[shippingInsert] ${error.message}`;
+    throw error; 
   }
-}
+};
+
 
 exports.deleted = async (req, res, next) => {
   try {
