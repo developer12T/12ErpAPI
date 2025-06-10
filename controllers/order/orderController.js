@@ -725,7 +725,7 @@ exports.insert = async (req, res, next) => {
       failedOrders: failedOrders
     })
   } catch (error) {
-    // if (transaction) await transaction.rollback();
+    if (transaction) await transaction.rollback();
     next(error)
   }
 }

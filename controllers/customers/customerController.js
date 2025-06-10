@@ -484,7 +484,7 @@ exports.insert = async (req, res, next) => {
     let transaction
     try {
       transaction = await sequelize.transaction()
-      // console.log("transaction",transaction)
+      console.log("transaction",transaction)
 
       let { customerAddress4, customerName } = req.body
       const shippings = req.body.shippings
@@ -616,21 +616,26 @@ exports.insert = async (req, res, next) => {
       //   }
       // })
       await transaction.commit();
+      res.status(201).json({
+        message: 'Created',
+        // data : customer
+      })
     } catch (error) {
       // Rollback for this particular order, log the error
       await transaction.rollback()
-      // console.error("Rollback because of error:", error.stack);
-      // console.error("Rollback because of error:", error);
+      // console.error("Rollback because of error:", error.stack || error);
+
+      res.status(500).json({
+        message: 'Transaction rolled back due to error',
+        error: error.message || 'Unknown error'
+      });
 
     }
 
 
     // io.emit("shippingData", shippingData);
     // io.emit("customerData", customer);
-    res.status(201).json({
-      message: 'Created',
-      // data : customer
-    })
+
   } catch (error) {
     next(error)
   }
