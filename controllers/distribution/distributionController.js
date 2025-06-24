@@ -38,6 +38,7 @@ exports.insertHead = async (req, res, next) => {
   let transaction
   try {
     const distributions = req.body
+    // console.log(distributions)
     const responses = []
     const failedDistributions = []
     for (let distribution of distributions) {

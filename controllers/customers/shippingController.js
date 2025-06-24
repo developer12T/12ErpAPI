@@ -295,11 +295,16 @@ exports.shinppingInsert = async (shippings,transaction) => {
     // console.log("data",data)
     }
 
-  } catch (error) {
-    console.error(`[shippingInsert] Error:`, error.stack || error.message);
-    error.message = `[shippingInsert] ${error.message}`;
-    throw error; 
-  }
+  } catch (e) {
+  console.error('[shippingInsert] Error:', e);
+  // if (e.errors) {
+  //   for (const err of e.errors) {
+  //     console.error('- Path:', err.path, '| Type:', err.type, '| Message:', err.message);
+  //   }
+  // }
+}
+
+  
 };
 
 

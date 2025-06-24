@@ -115,6 +115,7 @@ exports.fetchShipping = async (data) => {
         addressID,
       },
     });
+    console.log(customerNo, addressID)
     shippingData = {
       coNo: shippingData.coNo,
       customerNo: shippingData.customerNo.trim(),

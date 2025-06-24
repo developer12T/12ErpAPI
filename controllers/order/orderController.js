@@ -713,7 +713,6 @@ exports.insert = async (req, res, next) => {
       }
     }
 
-    // Send a combined response
     res.status(207).json({
       message: 'Partial Success',
       successfulOrders: responses,

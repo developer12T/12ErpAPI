@@ -484,7 +484,7 @@ exports.insert = async (req, res, next) => {
     let transaction
     try {
       transaction = await sequelize.transaction()
-      console.log("transaction",transaction)
+      // console.log("transaction",transaction)
 
       let { customerAddress4, customerName } = req.body
       const shippings = req.body.shippings
@@ -567,6 +567,7 @@ exports.insert = async (req, res, next) => {
         OKLMTS: Date.now(), // OKLMTS
         saleZone: saleZone
       }
+      // console.log(customer)
       if (Hcase === 1) {
         const customerData = await Customer.findOne({
           where: {
@@ -585,6 +586,7 @@ exports.insert = async (req, res, next) => {
         await Customer.create(customer)
       }
       let shippingData = shippings.map(shipping => {
+        // console.log(shipping.shippingRoute)
         return {
           customerNo: customerNo,
           customerName: customerName,
@@ -608,13 +610,6 @@ exports.insert = async (req, res, next) => {
       await shinppingInsert(shippingData, transaction)
 
 
-      // await axios({
-      //   method: 'post',
-      //   url: `${HOST}erp/shinpping/insert`,
-      //   data: {
-      //     shippings: shippingData
-      //   }
-      // })
       await transaction.commit();
       res.status(201).json({
         message: 'Created',
@@ -623,7 +618,7 @@ exports.insert = async (req, res, next) => {
     } catch (error) {
       // Rollback for this particular order, log the error
       await transaction.rollback()
-      // console.error("Rollback because of error:", error.stack || error);
+      console.error("Rollback because of error:", error.stack || error);
 
       res.status(500).json({
         message: 'Transaction rolled back due to error',
@@ -633,8 +628,8 @@ exports.insert = async (req, res, next) => {
     }
 
 
-    // io.emit("shippingData", shippingData);
-    // io.emit("customerData", customer);
+    io.emit("shippingData", shippingData);
+    io.emit("customerData", customer);
 
   } catch (error) {
     next(error)
