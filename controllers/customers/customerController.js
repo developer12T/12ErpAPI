@@ -575,6 +575,7 @@ exports.insert = async (req, res, next) => {
             coNo: '410'
           }
         })
+        // console.log(customerData)
         if (customerData) {
           if (customerData.customerName == customerName) {
             res.status(400).json({

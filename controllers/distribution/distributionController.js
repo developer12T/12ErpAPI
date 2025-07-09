@@ -55,7 +55,7 @@ exports.insertHead = async (req, res, next) => {
         MGNUGL,
         MGDEPT,
         routeCode,
-        addressCode
+        addressCode,
       } = distribution
 
       const items = distribution.items
@@ -101,7 +101,7 @@ exports.insertHead = async (req, res, next) => {
             }
           })
           // res.json(oldDistribution)
-          console.log('oldDistribution' + oldDistribution)
+          // console.log('oldDistribution' + oldDistribution)
           // const newTotalNet = parseInt(oldOrder.totalNet + totalNet)
           // const newTotal = parseInt(oldOrder.total + total)
           // const newtotalCost = parseInt(oldOrder.OACOAM + totalCost)
@@ -238,6 +238,7 @@ exports.insertHead = async (req, res, next) => {
           },
           transaction
         )
+        console.log(distributionJson[0])
         if (Hcase == 1) {
           await MGHEAD.create(
             {

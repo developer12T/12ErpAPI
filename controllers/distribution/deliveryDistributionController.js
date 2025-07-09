@@ -104,6 +104,7 @@ exports.distributionDeliveryHead = async (data, transaction) => {
       OQSCES: deliveryData[0].DELIVERY_HEAD.OQSCES, //90
       OQLMTS: Date.now(),
     };
+    // console.log("coNo",coNo)
     switch (orderType.slice(0, 1)) {
       case "T":
         await DeliveryHead.create(deliveryobj, {
@@ -132,6 +133,7 @@ exports.distributionDeliveryHead = async (data, transaction) => {
 exports.distributionDeliveryLine = async (data, transaction) => {
   try {
     const items = data;
+    // console.log(items)
     for (let item of items) {
       await DeliveryLine.create(
         {

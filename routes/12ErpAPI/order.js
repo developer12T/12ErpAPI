@@ -6,6 +6,7 @@ const {
   getOrder,
   insert,
   deleted,
+  
 } = require("../../controllers/order/orderController");
 const {
   getOrderItemAll,
@@ -33,5 +34,8 @@ router.post("/orderitemAll", getOrderItemAll);
 
 //http://localhost:3000/order/insertorderitem
 router.post("/deleteitem", deleteitem);
+
+
+
 
 module.exports = router;
