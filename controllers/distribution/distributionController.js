@@ -35,12 +35,15 @@ const { fetchDistributionPolicy } = require('../../services/policyService')
 const currentFilePath = path.basename(__filename)
 
 exports.insertHead = async (req, res, next) => {
-  let transaction
+  const distributions = req.body;
+  const responses = [];
+  const failedDistributions = [];
+  let transaction;
+
   try {
-    const distributions = req.body
-    // console.log(distributions)
-    const responses = []
-    const failedDistributions = []
+    // ใช้ transaction เดียวครอบทั้ง batch
+    transaction = await sequelize.transaction();
+
     for (let distribution of distributions) {
       const {
         orderType,
@@ -56,271 +59,227 @@ exports.insertHead = async (req, res, next) => {
         MGDEPT,
         routeCode,
         addressCode,
-      } = distribution
+        items,
+        orderNo: originalOrderNo,
+      } = distribution;
 
-      const items = distribution.items
-      let { orderNo } = distribution
-      const calWeights = []
-      try {
-        transaction = await sequelize.transaction()
-        for (let item of items) {
-          const itemFactor = await fetchItemFactor(item.itemCode, item.itemUnit)
-          const weight = await fetchCalWeight({
-            itemCode: item.itemCode,
-            qty: itemFactor.factor * item.itemQty
-          })
-          calWeights.push(weight)
+      let orderNo = originalOrderNo;
+      const calWeights = [];
+
+      // --- คำนวณน้ำหนัก ---
+      for (let item of items) {
+        const itemFactor = await fetchItemFactor(item.itemCode, item.itemUnit);
+        const weight = await fetchCalWeight({
+          itemCode: item.itemCode,
+          qty: itemFactor.factor * item.itemQty
+        });
+        calWeights.push(weight);
+      }
+      const totalgrossWeight = calWeights.reduce((acc, w) => acc + w.grossWeight, 0);
+      const totalnetWeight = calWeights.reduce((acc, w) => acc + w.netWeight, 0);
+
+      // --- Hcase === 0 ---
+      if (Hcase === 0) {
+        if (!orderNo || orderNo === '') {
+          throw new Error('Order No is required');
         }
-        const totalgrossWeight = calWeights.reduce((accumulator, calWeight) => {
-          return accumulator + calWeight.grossWeight
-        }, 0)
-
-        const totalnetWeight = calWeights.reduce((accumulator, calWeight) => {
-          return accumulator + calWeight.netWeight
-        }, 0)
-
-        if (Hcase === 0) {
-          const checkOrderNo = await MGHEAD.findOne({
-            where: {
-              orderNo: orderNo
-            }
-          })
-          if (orderNo === '') {
-            const error = new Error('Order No is required')
-            error.statusCode = 422
-            throw error
-          }
-          if (!checkOrderNo) {
-            const error = new Error('Order No is incorrect or not found')
-            error.statusCode = 422
-            throw error
-          }
-          const oldDistribution = await MGHEAD.findOne({
-            where: {
-              orderNo: orderNo
-            }
-          })
-          // res.json(oldDistribution)
-          // console.log('oldDistribution' + oldDistribution)
-          // const newTotalNet = parseInt(oldOrder.totalNet + totalNet)
-          // const newTotal = parseInt(oldOrder.total + total)
-          // const newtotalCost = parseInt(oldOrder.OACOAM + totalCost)
-          // const newNetWeight = parseInt(oldOrder.netWeight + totalnetWeight)
-          const newGrossWeight = parseInt(
-            oldDistribution.MGGRWE + totalgrossWeight
-          )
-          const newSumLine = parseInt(oldDistribution.MGNUGL + MGNUGL)
-          // console.log('newSumLine' + newSumLine)
-          // console.log('newGrossWeight' + newGrossWeight)
-          await MGHEAD.update(
-            {
-              MGGRWE: newGrossWeight.toFixed(3),
-              MGNUGL: newSumLine
-            },
-            {
-              where: {
-                orderNo: orderNo
-              },
-              transaction
-            }
-          )
+        const checkOrderNo = await MGHEAD.findOne({ where: { orderNo } });
+        if (!checkOrderNo) {
+          throw new Error('Order No is incorrect or not found');
         }
-
-        const series = await fetchDistributionPolicy(orderType)
-        if (series == null) {
-          const error = new Error('Order Type is incorrect or not found')
-          error.statusCode = 422
-          throw error
-        }
-
-        if (orderNo == '') {
-          orderNo = ''
-          const orderNoRunning = await runningNumber(
-            {
-              coNo: runningJson[0].DISTRIBUTION.coNo,
-              series: series.YXNBID,
-              seriesType: runningJson[0].DISTRIBUTION.seriesType
-            },
-            transaction
-          )
-          orderNo = parseInt(orderNoRunning.lastNo) + 1
-          await updateRunningNumber(
-            {
-              coNo: runningJson[0].DISTRIBUTION.coNo,
-              series: series.YXNBID,
-              seriesType: runningJson[0].DISTRIBUTION.seriesType,
-              lastNo: orderNo
-            },
-            transaction
-          )
-          orderNo = orderNo.toString()
-          orderNo = orderNo.padStart(10, '0')
-        }
-
-        const running = await runningNumber(
+        const oldDistribution = await MGHEAD.findOne({ where: { orderNo } });
+        const newGrossWeight = parseInt(oldDistribution.MGGRWE + totalgrossWeight);
+        const newSumLine = parseInt(oldDistribution.MGNUGL + MGNUGL);
+        await MGHEAD.update(
           {
-            coNo: runningJson[0].DISTRIBUTION_DELIVERY.coNo,
-            series: runningJson[0].DISTRIBUTION_DELIVERY.series, //series.OOSPIC,
-            seriesType: runningJson[0].DISTRIBUTION_DELIVERY.seriesType // runningJson[0].DELIVERY.seriesType,
+            MGGRWE: newGrossWeight.toFixed(3),
+            MGNUGL: newSumLine
+          },
+          {
+            where: { orderNo },
+            transaction
+          }
+        );
+      }
+
+      // --- ตรวจสอบ policy ---
+      const series = await fetchDistributionPolicy(orderType);
+      if (!series) throw new Error('Order Type is incorrect or not found');
+
+      // --- gen orderNo ถ้าจำเป็น ---
+      if (!orderNo || orderNo === '') {
+        const orderNoRunning = await runningNumber(
+          {
+            coNo: runningJson[0].DISTRIBUTION.coNo,
+            series: series.YXNBID,
+            seriesType: runningJson[0].DISTRIBUTION.seriesType
           },
           transaction
-        )
-        const runningNumberH = parseInt(running.lastNo) + 1
-
-        let itemsData = await Promise.all(
-          items.map(async item => {
-            const weight = await fetchCalWeight({
-              itemCode: item.itemCode,
-              qty: item.itemQty
-            })
-            const stock = await fetchStock({
-              warehouse: warehouse,
-              itemCode: item.itemCode
-            })
-            const itemDetail = await fetchItemDetails(item.itemCode)
-            return {
-              coNo: distributionJson[0].HEAD.MGCONO,
-              runningNumberH: runningNumberH,
-              orderNo: orderNo, //OAORNO
-              location: item.location,
-              toLocation: item.toLocation,
-              warehouse: warehouse,
-              towarehouse: towarehouse,
-              itemCode: item.itemCode, //OQDLIX
-              itemName: itemDetail[0].itemDescription, //OAORTP
-              itemTranferDate: tranferDate, //OQDQTY
-              itemQty: item.itemQty, //OAORSL
-              itemUnit: itemDetail[0].basicUnit, //OAORDT
-              itemLocation: item.itemLocation, //OARLDT
-              itemLot: item.itemLot,
-              itemStatus: item.itemStatus,
-              MRWHLO: item.MRWHLO,
-              MRGRWE: weight.grossWeight,
-              MRNEWE: weight.netWeight,
-              MRSTAS: stock[0].allocateMethod
-            }
-          })
-        )
-
-        let itemNo = 1
-        itemsData = itemsData.map(item => {
-          const result = {
-            ...item, // Spread the properties of the original item
-            itemNo: itemNo // Add the itemNo property
-          }
-          itemNo++
-          return result
-        })
-        let itemNoData = await MGLINE.findOne({
-          where: {
-            orderNo: orderNo
-          },
-          order: [['itemNo', 'DESC']]
-        })
-
-        if (itemNoData != null) {
-          itemNo = itemNoData.itemNo + 1
-          itemsData = itemsData.map(item => {
-            const result = {
-              ...item, // Spread the properties of the original item
-              itemNo: itemNo // Add the itemNo property
-            }
-            itemNo++
-            return result
-          })
-        }
+        );
+        orderNo = (parseInt(orderNoRunning.lastNo) + 1).toString().padStart(10, '0');
         await updateRunningNumber(
           {
-            coNo: runningJson[0].DISTRIBUTION_DELIVERY.coNo,
-            series: runningJson[0].DISTRIBUTION_DELIVERY.series,
-            seriesType: runningJson[0].DISTRIBUTION_DELIVERY.seriesType,
-            lastNo: runningNumberH
+            coNo: runningJson[0].DISTRIBUTION.coNo,
+            series: series.YXNBID,
+            seriesType: runningJson[0].DISTRIBUTION.seriesType,
+            lastNo: orderNo
           },
           transaction
-        )
-        console.log(distributionJson[0])
-        if (Hcase == 1) {
-          await MGHEAD.create(
-            {
-              coNo: distributionJson[0].HEAD.MGCONO,
-              orderNo: orderNo,
-              MGRORN: orderNo,
-              orderType: orderType,
-              tranferDate: tranferDate,
-              MGRIDT: tranferDate,
-              MGATHS: distributionJson[0].HEAD.MGATHS,
-              warehouse: warehouse,
-              towarehouse: towarehouse,
-              location: location,
-              statusLow: statusLow,
-              statusHigh: statusHigh,
-              remark: remark,
-              MGFACI: distributionJson[0].HEAD.MGFACI,
-              MGRESP: distributionJson[0].HEAD.MGCHID,
-              MGDEPT: MGDEPT,
-              MGPRIO: distributionJson[0].HEAD.MGPRIO,
-              MGTRTM: parseInt(getCurrentTimeFormatted()),
-              MGRITM: getCurrentTimeFormatted().slice(0, -2),
-              MGGRWE: totalgrossWeight.toFixed(3),
-              MGNUGL: MGNUGL,
-              MGRGDT: formatDate(),
-              MGRGTM: getCurrentTimeFormatted(),
-              MGLMDT: formatDate(),
-              MGCHNO: distributionJson[0].HEAD.MGCHNO,
-              MGCHID: distributionJson[0].HEAD.MGCHID,
-              MGLMTS: Date.now()
-            },
-            { transaction }
-          )
-          await insertAddress(orderNo, addressCode, transaction)
-        }
-        const deliveryHead = {
-          warehouse: warehouse,
-          coNo: distributionJson[0].HEAD.MGCONO,
-          runningNumberH: runningNumberH,
-          orderNo: orderNo,
-          orderType: orderType,
-          grossWeight: totalgrossWeight.toFixed(3),
-          tranferDate: tranferDate,
-          towarehouse: towarehouse,
-          netWeight: totalnetWeight.toFixed(3),
-          routeCode: routeCode
-        }
-        await distributionDeliveryLine(itemsData, transaction)
-        await distributionAllocate(itemsData, orderType, transaction)
-        await distributionDeliveryHead(deliveryHead, transaction)
-        await insertLine(itemsData, transaction)
-
-        // const route = await fetchRouteCode(routeCode);
-        responses.push({
-          orderNo: orderNo,
-          status: Hcase === 1 ? 'Distribution Created' : 'Distribution Updated'
-        })
-        await transaction.commit()
-        // res.json(data);
-      } catch (distributionError) {
-        await transaction.rollback()
-        failedDistributions.push({
-          orderNo: orderNo,
-          error: distributionError.message
-        })
+        );
       }
+
+      // --- running number delivery ---
+      const running = await runningNumber(
+        {
+          coNo: runningJson[0].DISTRIBUTION_DELIVERY.coNo,
+          series: runningJson[0].DISTRIBUTION_DELIVERY.series,
+          seriesType: runningJson[0].DISTRIBUTION_DELIVERY.seriesType,
+        },
+        transaction
+      );
+      const runningNumberH = parseInt(running.lastNo) + 1;
+
+      // --- สร้าง itemsData ---
+      let itemsData = await Promise.all(
+        items.map(async item => {
+          const weight = await fetchCalWeight({
+            itemCode: item.itemCode,
+            qty: item.itemQty
+          });
+          const stock = await fetchStock({
+            warehouse: warehouse,
+            itemCode: item.itemCode
+          });
+          const itemDetail = await fetchItemDetails(item.itemCode);
+          return {
+            coNo: distributionJson[0].HEAD.MGCONO,
+            runningNumberH,
+            orderNo,
+            location: item.location,
+            toLocation: item.toLocation,
+            warehouse,
+            towarehouse,
+            itemCode: item.itemCode,
+            itemName: itemDetail[0].itemDescription,
+            itemTranferDate: tranferDate,
+            itemQty: item.itemQty,
+            itemUnit: itemDetail[0].basicUnit,
+            itemLocation: item.itemLocation,
+            itemLot: item.itemLot,
+            itemStatus: item.itemStatus,
+            MRWHLO: item.MRWHLO,
+            MRGRWE: weight.grossWeight,
+            MRNEWE: weight.netWeight,
+            MRSTAS: stock[0].allocateMethod
+          }
+        })
+      );
+
+      // --- กำหนด itemNo ---
+      let itemNo = 1;
+      let itemNoData = await MGLINE.findOne({
+        where: { orderNo },
+        order: [['itemNo', 'DESC']]
+      });
+      if (itemNoData) itemNo = itemNoData.itemNo + 1;
+      itemsData = itemsData.map(item => ({ ...item, itemNo: itemNo++ }));
+
+      await updateRunningNumber(
+        {
+          coNo: runningJson[0].DISTRIBUTION_DELIVERY.coNo,
+          series: runningJson[0].DISTRIBUTION_DELIVERY.series,
+          seriesType: runningJson[0].DISTRIBUTION_DELIVERY.seriesType,
+          lastNo: runningNumberH
+        },
+        transaction
+      );
+
+      // --- Create MGHEAD (Hcase == 1) ---
+      if (Hcase == 1) {
+        await MGHEAD.create(
+          {
+            coNo: distributionJson[0].HEAD.MGCONO,
+            orderNo,
+            MGRORN: orderNo,
+            orderType,
+            tranferDate,
+            MGRIDT: tranferDate,
+            MGATHS: distributionJson[0].HEAD.MGATHS,
+            warehouse,
+            towarehouse,
+            location,
+            statusLow,
+            statusHigh,
+            remark,
+            MGFACI: distributionJson[0].HEAD.MGFACI,
+            MGRESP: distributionJson[0].HEAD.MGCHID,
+            MGDEPT,
+            MGPRIO: distributionJson[0].HEAD.MGPRIO,
+            MGTRTM: parseInt(getCurrentTimeFormatted()),
+            MGRITM: getCurrentTimeFormatted().slice(0, -2),
+            MGGRWE: totalgrossWeight.toFixed(3),
+            MGNUGL: MGNUGL,
+            MGRGDT: formatDate(),
+            MGRGTM: getCurrentTimeFormatted(),
+            MGLMDT: formatDate(),
+            MGCHNO: distributionJson[0].HEAD.MGCHNO,
+            MGCHID: distributionJson[0].HEAD.MGCHID,
+            MGLMTS: Date.now()
+          },
+          { transaction }
+        );
+        await insertAddress(orderNo, addressCode, transaction);
+      }
+
+      // --- Delivery, Allocate, Line ---
+      const deliveryHead = {
+        warehouse,
+        coNo: distributionJson[0].HEAD.MGCONO,
+        runningNumberH,
+        orderNo,
+        orderType,
+        grossWeight: totalgrossWeight.toFixed(3),
+        tranferDate,
+        towarehouse,
+        netWeight: totalnetWeight.toFixed(3),
+        routeCode
+      }
+      await distributionDeliveryLine(itemsData, transaction);
+      await distributionAllocate(itemsData, orderType, transaction);
+      await distributionDeliveryHead(deliveryHead, transaction);
+      await insertLine(itemsData, transaction);
+
+      // --- Success ---
+      responses.push({
+        orderNo,
+        status: Hcase === 1 ? 'Distribution Created' : 'Distribution Updated'
+      });
     }
-    // Send a combined response
-    res.status(207).json({
-      message: 'Partial Success',
+
+    // ไม่มี error ใน batch, commit ได้เลย
+    await transaction.commit();
+
+    return res.status(200).json({
+      message: 'All distributions successful',
       successfulDistributions: responses,
-      failedDistributions: failedDistributions
-    })
-    console.log({
-      message: 'Partial Success',
-      successfulDistributions: responses,
-      failedDistributions: failedDistributions
-    })
+      failedDistributions: []
+    });
+
   } catch (error) {
-    next(error)
+    // ถ้ามี error ตรงไหน, rollback ทันที และ return error
+    if (transaction) await transaction.rollback();
+    failedDistributions.push({
+      error: error.original?.message || error.message || JSON.stringify(error),
+      stage: 'batch'
+    });
+    return res.status(500).json({
+      message: 'All distributions failed and rolled back',
+      successfulDistributions: [],
+      failedDistributions
+    });
   }
-}
+};
+
 // insert Line
 insertLine = async (data, transaction) => {
   try {
