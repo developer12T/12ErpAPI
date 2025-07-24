@@ -4,9 +4,11 @@ const currentFilePath = path.basename(__filename);
 const errorEndpoint = require("../middleware/errorEndpoint");
 
 exports.fetchRoute = async (shippingRoute) => {
+  // console.log("shippingRoute",shippingRoute)
   try {
     const udiObj = {};
     const uteObj = {};
+    // console.log("shippingRoute",shippingRoute)
     let RouteData = await DRODPR.findAll({
       where: {
         DOOBV1: shippingRoute,
@@ -74,6 +76,7 @@ exports.fetchRoute = async (shippingRoute) => {
 };
 
 exports.fetchRouteCode = async (routeCode) => {
+  // console.log(routeCode)
   try {
     const udiObj = {};
     const uteObj = {};
@@ -117,6 +120,7 @@ exports.fetchRouteCode = async (routeCode) => {
       uteObj[ute.routeCode] = ute.routeName;
     });
 
+    // console.log("routeCode",routeCode)
     const routes = RouteData.map((route) => {
       const method = udiObj[route.routeCode].method || "";
       const departureTime = udiObj[route.routeCode].departureTime || 0;

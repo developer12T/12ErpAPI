@@ -84,8 +84,8 @@ exports.deliveryHeadInsert = async (data, transaction) => {
     })
 
     // console.log('Customer_DAWD' + policy)
-
     const route = await fetchRoute(shinpping.shippingRoute)
+    
     await DeliveryHead.create(
       {
         coNo: coNo,

@@ -36,12 +36,14 @@ exports.fetchDistributionAddress = async (addressCode) => {
     });
     if (address) {
       const response = trimObjectStrings(address.toJSON());
+      // console.log(response)
       return response;
     } else {
       const error = new Error("Not Found Address");
       error.statusCode = 404;
       throw error;
     }
+    
   } catch (error) {
     throw errorEndpoint(currentFilePath, "fetchDistributionAddress", error);
   }

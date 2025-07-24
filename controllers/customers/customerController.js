@@ -456,6 +456,7 @@ exports.update = async (req, res, next) => {
 }
 
 exports.insert = async (req, res, next) => {
+
   try {
     const {
       Hcase,
@@ -482,13 +483,14 @@ exports.insert = async (req, res, next) => {
     } = req.body
 
     let transaction
+
     try {
       transaction = await sequelize.transaction()
       // console.log("transaction",transaction)
 
       let { customerAddress4, customerName } = req.body
       const shippings = req.body.shippings
-
+      // console.log("shippings",shippings)
       if ((customerName.trim().length > 36 && customerChannel == !105) || 103) {
         customerAddress4 = customerName.trim().slice(35)
         customerName = customerName.trim().slice(0, 35)
@@ -584,10 +586,9 @@ exports.insert = async (req, res, next) => {
             return
           }
         }
-        await Customer.create(customer)
+        await Customer.create(customer, { transaction })
       }
       let shippingData = shippings.map(shipping => {
-        // console.log(shipping.shippingRoute)
         return {
           customerNo: customerNo,
           customerName: customerName,
@@ -606,10 +607,11 @@ exports.insert = async (req, res, next) => {
         }
       })
 
-      // console.log(shippingData)
+      // console.log("shippingData",shippingData)
       // Insert Shipping
       await shinppingInsert(shippingData, transaction)
-
+      // io.emit("shippingData", shippingData);
+      // io.emit("customerData", customer);
 
       await transaction.commit();
       res.status(201).json({
@@ -627,10 +629,6 @@ exports.insert = async (req, res, next) => {
       });
 
     }
-
-
-    io.emit("shippingData", shippingData);
-    io.emit("customerData", customer);
 
   } catch (error) {
     next(error)

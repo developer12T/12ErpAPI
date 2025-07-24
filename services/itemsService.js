@@ -144,13 +144,17 @@ exports.fetchItemFactor = async (itemCode, unit) => {
 
 exports.fetchCalWeight = async data => {
   try {
+    // console.log("data",data)
     const { itemCode, qty } = data
+    const itemCodeTrim = itemCode.trim()
+
     let itemData = await ItemMaster.findOne({
       where: {
-        itemCode: itemCode
+        itemCode: itemCodeTrim
       }
     })
-
+    // console.log("itemData",itemData)
+    // console.log("itemCode",itemCode)
     itemData = {
       itemCode: itemData.itemCode.trim(),
       status: itemData.status,

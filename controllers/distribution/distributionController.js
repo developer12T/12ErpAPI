@@ -68,6 +68,7 @@ exports.insertHead = async (req, res, next) => {
 
       // --- คำนวณน้ำหนัก ---
       for (let item of items) {
+        // console.log(item.itemCode)
         const itemFactor = await fetchItemFactor(item.itemCode, item.itemUnit);
         const weight = await fetchCalWeight({
           itemCode: item.itemCode,
@@ -146,10 +147,12 @@ exports.insertHead = async (req, res, next) => {
             itemCode: item.itemCode,
             qty: item.itemQty
           });
+          // console.log("item.itemCode",item.itemCode)
           const stock = await fetchStock({
             warehouse: warehouse,
             itemCode: item.itemCode
           });
+          // console.log(stock)
           const itemDetail = await fetchItemDetails(item.itemCode);
           return {
             coNo: distributionJson[0].HEAD.MGCONO,
@@ -170,7 +173,7 @@ exports.insertHead = async (req, res, next) => {
             MRWHLO: item.MRWHLO,
             MRGRWE: weight.grossWeight,
             MRNEWE: weight.netWeight,
-            MRSTAS: stock[0].allocateMethod
+            MRSTAS: stock[0].allocateMethod 
           }
         })
       );
@@ -333,6 +336,7 @@ insertLine = async (data, transaction) => {
 insertAddress = async (orderNo, addressCode, transaction) => {
   try {
     const address = await fetchDistributionAddress(addressCode)
+
     await MGDADR.create(
       {
         coNo: 410,
@@ -340,19 +344,19 @@ insertAddress = async (orderNo, addressCode, transaction) => {
         MAADK1: addressCode,
         MASUNO: '',
         MAADID: '',
-        MACONM: address.OACONM,
-        MAADR1: address.OAADR1,
-        MAADR2: address.OAADR2,
-        MAADR3: address.OAADR3,
-        MAADR4: address.OAADR4,
-        MAPONO: address.OAPONO,
-        MACSCD: address.OACSCD,
+        MACONM: address.OACONM?? '',
+        MAADR1: address.OAADR1?? '',
+        MAADR2: address.OAADR2?? '',
+        MAADR3: address.OAADR3?? '',
+        MAADR4: address.OAADR4?? '',
+        MAPONO: address.OAPONO?? '',
+        MACSCD: address.OACSCD?? '',
         MAADVI: '',
         MAOREF: '',
         MAYREF: '',
-        MATXID: address.OATXID,
+        MATXID: address.OATXID?? '',
         MATOWN: '',
-        MAECAR: address.OAECAR,
+        MAECAR: address.OAECAR?? '',
         MARGDT: formatDate(),
         MARGTM: getCurrentTimeFormatted(),
         MALMDT: formatDate(),
@@ -362,6 +366,6 @@ insertAddress = async (orderNo, addressCode, transaction) => {
       { transaction }
     )
   } catch (error) {
-    throw errorEndpoint(currentFilePath, 'Distribution insertAddresss:', error)
+    throw errorEndpoint(currentFilePath, 'Distribution :', error)
   }
 }

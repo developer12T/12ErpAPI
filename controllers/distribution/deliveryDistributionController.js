@@ -30,7 +30,7 @@ exports.distributionDeliveryHead = async (data, transaction) => {
       routeCode,
       netWeight,
     } = data;
-
+    // console.log(routeCode)
     const route = await fetchRouteCode(routeCode);
     const policy = await fetchDistributionPolicy(orderType);
 

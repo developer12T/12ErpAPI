@@ -54,7 +54,6 @@ exports.getStockAll = async (req, res, next) => {
     const stocks = BalanceData.map(stock => {
       const locate = locateData[stock.itemCode.trim()] || []
       const itemCode = stock.itemCode.trim()
-
       return {
         coNo: stock.coNo,
         warehouse: stock.warehouse,

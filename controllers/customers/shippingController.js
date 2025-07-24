@@ -297,6 +297,8 @@ exports.shinppingInsert = async (shippings,transaction) => {
 
   } catch (e) {
   console.error('[shippingInsert] Error:', e);
+  throw e
+
   // if (e.errors) {
   //   for (const err of e.errors) {
   //     console.error('- Path:', err.path, '| Type:', err.type, '| Message:', err.message);
