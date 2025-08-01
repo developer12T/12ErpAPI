@@ -167,7 +167,7 @@ exports.insertHead = async (req, res, next) => {
             itemTranferDate: tranferDate,
             itemQty: item.itemQty,
             // itemUnit: itemDetail[0].basicUnit,
-            itemUnit: item.unit,
+            itemUnit: item.itemUnit,
             itemLocation: item.itemLocation,
             itemLot: item.itemLot,
             itemStatus: item.itemStatus,
