@@ -72,13 +72,15 @@ exports.insertHead = async (req, res, next) => {
         const itemFactor = await fetchItemFactor(item.itemCode, item.itemUnit);
         const weight = await fetchCalWeight({
           itemCode: item.itemCode,
-          qty: itemFactor.factor * item.itemQty
+          qty: itemFactor.factor * item.itemQtyCTN
         });
         calWeights.push(weight);
       }
       const totalgrossWeight = calWeights.reduce((acc, w) => acc + w.grossWeight, 0);
       const totalnetWeight = calWeights.reduce((acc, w) => acc + w.netWeight, 0);
 
+      // console.log("totalgrossWeight",totalgrossWeight)
+      // console.log("totalnetWeight",totalnetWeight)
       // --- Hcase === 0 ---
       if (Hcase === 0) {
         if (!orderNo || orderNo === '') {
@@ -235,6 +237,7 @@ exports.insertHead = async (req, res, next) => {
         await insertAddress(orderNo, addressCode, transaction);
       }
 
+      // console.log("itemsData",itemsData)
       // --- Delivery, Allocate, Line ---
 
       // console.log("totalgrossWeight.toFixed(3)",totalgrossWeight.toFixed(3))
@@ -292,6 +295,8 @@ insertLine = async (data, transaction) => {
     const items = data
     // const orderNo = req.body.orderNo;
     for (let item of items) {
+      // console.log("itemNo",item.itemCode)
+      // console.log("MRGRWE",item.MRGRWE)
       await MGLINE.create(
         {
           coNo: item.coNo,
