@@ -72,7 +72,7 @@ exports.insertHead = async (req, res, next) => {
         const itemFactor = await fetchItemFactor(item.itemCode, item.itemUnit);
         const weight = await fetchCalWeight({
           itemCode: item.itemCode,
-          qty: itemFactor.factor * item.itemQty
+          qty: itemFactor.factor * item.itemQtyCTN
         });
         calWeights.push(weight);
       }
@@ -145,7 +145,7 @@ exports.insertHead = async (req, res, next) => {
         items.map(async item => {
           const weight = await fetchCalWeight({
             itemCode: item.itemCode,
-            qty: item.itemQty
+            qty: item.itemQtyCTN
           });
           // console.log("item.itemCode",item.itemCode)
           const stock = await fetchStock({
