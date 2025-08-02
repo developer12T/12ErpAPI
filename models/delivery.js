@@ -224,8 +224,8 @@ const DeliveryLine = sequelize.define(
       field: "URGRWE",
       validate: {
         len: {
-          args: [0, 9],
-          msg: "Gross Weight must be 0-9 digits long",
+          args: [0, 12],
+          msg: "Gross Weight must be 0-12 digits long",
         },
         isNumeric: {
           msg: "Gross Weight must contain only numbers", // Ensure the value is numeric
@@ -519,8 +519,8 @@ const DeliveryHead = sequelize.define(
       field: "OQGRWE",
       validate: {
         len: {
-          args: [0, 9],
-          msg: "Gross Weight must be 0-9 digits long",
+          args: [0, 12],
+          msg: "Gross Weight must be 0-12 digits long",
         },
         isNumeric: {
           msg: "Gross Weight must contain only numbers", // Ensure the value is numeric

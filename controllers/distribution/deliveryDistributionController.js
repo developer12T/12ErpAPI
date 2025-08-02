@@ -35,6 +35,8 @@ exports.distributionDeliveryHead = async (data, transaction) => {
     const policy = await fetchDistributionPolicy(orderType);
 
     // res.status(200).json(route)
+
+    // console.log("grossWeight",grossWeight)
     let deliveryobj = {
       coNo: coNo,
       OQDLIX: runningNumberH,

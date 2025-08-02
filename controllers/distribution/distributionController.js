@@ -236,6 +236,8 @@ exports.insertHead = async (req, res, next) => {
       }
 
       // --- Delivery, Allocate, Line ---
+
+      // console.log("totalgrossWeight.toFixed(3)",totalgrossWeight.toFixed(3))
       const deliveryHead = {
         warehouse,
         coNo: distributionJson[0].HEAD.MGCONO,
