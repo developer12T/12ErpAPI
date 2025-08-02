@@ -137,6 +137,7 @@ exports.distributionDeliveryLine = async (data, transaction) => {
     const items = data;
     // console.log(items)
     for (let item of items) {
+      // console.log("item.URNEWE",item.MRNEWE)
       await DeliveryLine.create(
         {
           coNo: item.coNo,
