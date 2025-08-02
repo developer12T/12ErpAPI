@@ -1,0 +1,42 @@
+<template>
+    <div>
+      <button @click="throttledClick">Click me</button>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    data() {
+      return {
+        lastClickTime: null,
+        lastTimeout: null,
+      };
+    },
+    methods: {
+      throttle(func, limit) {
+        return () => {
+          const now = Date.now();
+          if (!this.lastClickTime || now - this.lastClickTime >= limit) {
+            func();
+            this.lastClickTime = now;
+          } else {
+            clearTimeout(this.lastTimeout);
+            this.lastTimeout = setTimeout(() => {
+              if (now - this.lastClickTime >= limit) {
+                func();
+                this.lastClickTime = Date.now();
+              }
+            }, limit - (now - this.lastClickTime));
+          }
+        };
+      },
+      handleClick() {
+        console.log('Button clicked!');
+      },
+    },
+    created() {
+      this.throttledClick = this.throttle(this.handleClick, 1000); // Throttle click to once every 1000ms (1 second)
+    },
+  };
+  </script>
+  

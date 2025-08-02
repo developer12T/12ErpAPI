@@ -1,0 +1,32 @@
+[
+  {
+    "HEAD": {
+      "OQINOU": 1,
+      "OQRORC": 3,
+      "OQTTYP": 31,
+      "OQEDES": "TH00000   ",
+      "OQDOCR": 0,
+      "OQDOCE": 0,
+      "OQDEWD": 3,
+      "OQSEEQ": 50,
+      "OQIVSS": 2,
+      "OQPRIO": 5,
+      "OQAGKY": "",
+      "OQCHNO": 2,
+      "OQCHID": "MVXSECOFR",
+      "OQSCES": 90,
+      "OQLMTS": 1603184363952,
+      "OQPGRS": "01",
+      "OQPIST": "00",
+      "OQTIZO": "&SYS",
+      "OQIRST": "00"
+    },
+    "LINE": {
+      "URFACI": "F10",
+      "URSTCD": 1,
+      "URCHNO": 1,
+      "URCHID": "MVXSECOFR",
+      "URLMTS": 1603184364063
+    }
+  }
+]

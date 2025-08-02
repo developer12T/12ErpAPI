@@ -1,0 +1,28 @@
+[
+  {
+    "DELIVERY": {
+      "coNo": 410,
+      "series": "B",
+      "seriesType": "07"
+    },
+    "INVOICE": {
+      "coNo": 410,
+      "series": "#",
+      "year": "07"
+    },
+    "CO": {
+      "coNo": 410,
+      "seriesType": "01"
+    },
+    "DISTRIBUTION": {
+      "coNo": 410,
+      "series": "B",
+      "seriesType": "14"
+    },
+    "DISTRIBUTION_DELIVERY": {
+      "coNo": 410,
+      "series": "A",
+      "seriesType": "07"
+    }
+  }
+]

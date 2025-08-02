@@ -1,0 +1,57 @@
+[
+  {
+    "HEAD": {
+      "MGCONO": 410,
+      "MGFACI": "F10",
+      "MGATHS": 1,
+      "MGPRIO": 5,
+      "MGCHNO": 1,
+      "MGCHID": "MVXSECOFR"
+    },
+    "LINE": {
+      "MRSTCD": 1,
+      "MRCUCD": "THB",
+      "MRNUCR": 1,
+      "MRTIHM": 1021,
+      "MRCHNO": 1,
+      "MRPRIO": 5
+    },
+    "DELIVERY_HEAD": {
+      "OQINOU": 1,
+      "OQSDES": "TH00000",
+      "OQDSHM": 0,
+      "OQRORC": 5,
+      "OQTTYP": 51,
+      "OQEDES": "TH00000",
+      "OQPGRS": "00",
+      "OQPIST": "00",
+      "OQIRST": "00",
+      "OQTIZO": "&SYS",
+      "OQDOCR": 1,
+      "OQDOCE": 1,
+      "OQDEWD": 1,
+      "OQSEEQ": 50,
+      "OQIVSS": 2,
+      "OQPRIO": 5,
+      "OQCSCD": "TH",
+      "OQAGKY": "15",
+      "XXXXXX": "00"
+    },
+    "DELIVERY_LINE": {
+      "URFACI": "F10",
+      "URSTCD": 1,
+      "URCHNO": 1,
+      "URCHID": "MVXSECOFR"
+    },
+    "ALLOCATE": {
+      "MOORCA_TO": 501,
+      "MOORCA_FROM": 511,
+      "MOTIHM": 1639,
+      "MOALMT_TO": 2,
+      "MOALMT_FROM": 1,
+      "MOPRIO": 5,
+      "MORPRT": 1,
+      "MOCALI": 1
+    }
+  }
+]
