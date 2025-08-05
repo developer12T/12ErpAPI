@@ -11,7 +11,7 @@ exports.fetchRoute = async (shippingRoute) => {
     // console.log("shippingRoute",shippingRoute)
     let RouteData = await DRODPR.findAll({
       where: {
-        DOOBV1: shippingRoute,
+        DOOBV2: shippingRoute,
         coNo: 410,
       },
     });

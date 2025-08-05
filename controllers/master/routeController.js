@@ -88,7 +88,7 @@ exports.getRoute = async (req, res, next) => {
 
     let RouteData = await DRODPR.findAll({
       where: {
-        DOOBV1: shippingRoute,
+        DOOBV2: shippingRoute,
         coNo: 410,
       },
     });
