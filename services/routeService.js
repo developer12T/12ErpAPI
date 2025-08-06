@@ -82,7 +82,7 @@ exports.fetchRouteCode = async (routeCode) => {
     const uteObj = {};
     const RouteData = await DRODPR.findAll({
       where: {
-        routeCode: routeCode,
+        DOOBV2: routeCode,
         coNo: 410,
       },
     });
@@ -142,6 +142,6 @@ exports.fetchRouteCode = async (routeCode) => {
     });
     return routes;
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "fetchRoute:", error);
+    throw errorEndpoint(currentFilePath, "fetchRouteCode:", error);
   }
 };
