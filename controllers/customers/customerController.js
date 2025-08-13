@@ -466,6 +466,7 @@ exports.insert = async (req, res, next) => {
       customerAddress1,
       customerAddress2,
       customerAddress3,
+      // customerAddress4,
       customerPoscode,
       customerPhone,
       customerCoType,
@@ -479,7 +480,11 @@ exports.insert = async (req, res, next) => {
       creditLimit,
       taxno,
       saleCode,
-      saleZone
+      saleZone,
+      OKFRE1,
+      OKECAR,
+      OKCFC4,
+      OKTOWN
     } = req.body
 
     let transaction
@@ -516,7 +521,7 @@ exports.insert = async (req, res, next) => {
         customerName: customerName, // OKCUNM
         customerAddress1: customerAddress1, // OKCUA1
         customerAddress2: customerAddress2, // OKCUA2
-        customerAddress3: customerAddress3, // OKCUA3
+        customerAddress3: customerAddress3, // OKCUA3 
         customerAddress4: customerAddress4, // OKCUA4
         addressID: existingData.OKADID, // OKADID
         customerPhone: customerPhone, // OKPHNO
@@ -541,6 +546,7 @@ exports.insert = async (req, res, next) => {
         OKMODL: existingData.OKMODL, // OKMODL
         OKDIPC: existingData.OKDIPC, // OKDIPC
         OKTXAP: existingData.OKTXAP, // OKTXAP
+
         OKCUCD: existingData.OKCUCD, // OKCUCD
         OKCRTP: existingData.OKCRTP, // OKCRTP
         OKDTFM: existingData.OKDTFM, // OKDTFM
@@ -567,7 +573,20 @@ exports.insert = async (req, res, next) => {
         OKLMDT: formatDate(), // OKLMDT
         OKCHID: existingData.USER, // OKCHID
         OKLMTS: Date.now(), // OKLMTS
-        saleZone: saleZone
+        saleZone: saleZone,
+        OKFRE1 : OKFRE1,
+        OKECAR : OKECAR,
+        OKCFC4 : OKCFC4,
+
+        OKVTCD :existingData.OKVTCD,
+        OKPRIO :existingData.OKPRIO,
+        OKAICD :existingData.OKAICD,
+        OKDUCD :existingData.OKDUCD,
+        OKMCOS :existingData.OKMCOS,
+        OKATPR :existingData.OKATPR,
+        OKSTMS :existingData.OKSTMS,
+        OKCHNO :existingData.OKCHNO,
+        OKTOWN : OKTOWN
       }
       // console.log(customer)
       if (Hcase === 1) {

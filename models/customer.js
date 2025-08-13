@@ -236,6 +236,123 @@ const Customer = sequelize.define(
       allowNull: true,
       field: "OKFRE1",
     },
+
+
+    OKCORG: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKCORG",
+    },
+    OKVTCD: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKVTCD",
+    },
+    OKTXAP: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKTXAP",
+    },
+    OKPRIC: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKPRIC",
+    },
+    OKCRTP: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKCRTP",
+    },
+    OKDTFM: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKDTFM",
+    },
+    OKLHCD: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKLHCD",
+    },
+    OKPRIO: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKPRIO",
+    },
+    OKAICD: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKAICD",
+    },
+    OKDOGR: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKDOGR",
+    },
+    OKDUCD: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKDUCD",
+    },
+    OKEDES: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKEDES",
+    },
+    OKGRPY: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKGRPY",
+    },
+    OKTINC: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKTINC",
+    },
+    OKPRDL: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKPRDL",
+    }
+    ,
+    OKIVGP: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKIVGP",
+    },
+    OKMCOS: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKMCOS",
+    }
+    ,
+    OKATPR: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKATPR",
+    }
+    ,
+    OKSTMS: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKSTMS",
+    }
+    ,
+    OKCHNO: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKCHNO",
+    }
+    ,
+    OKCFC4: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKCFC4",
+    },
+    OKTOWN: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OKTOWN",
+    }
   },
   {
     freezeTableName: true,

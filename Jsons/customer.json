@@ -1,7 +1,7 @@
 {
     "OKCONO" : 410,
     "OKCUTP" : 0,
-    "OKCORG" : "0000",
+    "OKCORG" : "00000",
     "OKADID" : "SHIP1",
     "OKTEPY" : "000",
     "OKOT75"  : 0, 
@@ -14,19 +14,24 @@
     "OKCUCD" : "THB",
     "OKCRTP" : "2",
     "OKDTFM" : "DMY",
-    "OKPRIC" : 1,
+    "OKPRIC" : "1",
     "OKCSCD" : "TH",
     "OKLHCD" : "GB",
     "OKDOGR" : "DOM",
     "OKEDES" : "TH00000",
     "OKPYCD" : "CSH",
-    "OKGRPY" : 1,
-    "OKTINC" : 1,
-    "OKPRDL" : 1,
+    "OKGRPY" : "1",
+    "OKTINC" : "1",
+    "OKPRDL" : "1",
     "OKIVGP" : "DOM",
     "OKFACI" : "F10",
-    "OKMCOS" : 1,
+    "OKMCOS" : "1",
     "OKATPR" : "1",
-    "OKSTMS" : 2,
-    "OKCHNO" : 1
+    "OKSTMS" : "2",
+    "OKCHNO" : "23",
+    "OKPRIO" : "5",
+    "OKAICD" : "0",
+
+    "OKDUCD" : "1"
+
 }
