@@ -11,7 +11,7 @@ exports.fetchRoute = async (shippingRoute) => {
     // console.log("shippingRoute",shippingRoute)
     let RouteData = await DRODPR.findAll({
       where: {
-        DOOBV1: shippingRoute,
+        DOOBV2: shippingRoute,
         coNo: 410,
       },
     });
@@ -82,7 +82,7 @@ exports.fetchRouteCode = async (routeCode) => {
     const uteObj = {};
     const RouteData = await DRODPR.findAll({
       where: {
-        routeCode: routeCode,
+        DOOBV2: routeCode,
         coNo: 410,
       },
     });
@@ -142,6 +142,6 @@ exports.fetchRouteCode = async (routeCode) => {
     });
     return routes;
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "fetchRoute:", error);
+    throw errorEndpoint(currentFilePath, "fetchRouteCode:", error);
   }
 };

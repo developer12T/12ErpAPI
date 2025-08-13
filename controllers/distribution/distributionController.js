@@ -72,7 +72,7 @@ exports.insertHead = async (req, res, next) => {
         const itemFactor = await fetchItemFactor(item.itemCode, item.itemUnit);
         const weight = await fetchCalWeight({
           itemCode: item.itemCode,
-          qty: itemFactor.factor * item.itemQtyCTN
+          qty: item.itemQty
         });
         calWeights.push(weight);
       }
