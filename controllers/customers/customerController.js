@@ -562,9 +562,9 @@ exports.insert = async (req, res, next) => {
         OKIVGP: existingData.OKIVGP, // OKIVGP
         OKFACI: existingData.OKFACI, // OKFACI
         OKRESP: existingData.USER, // OKRESP
-        OKUSR1: existingData.USER, // OKUSR1
-        OKUSR2: existingData.USER, // OKUSR2
-        OKUSR3: existingData.USER, // OKUSR3
+        // OKUSR1: existingData.USER, // OKUSR1
+        // OKUSR2: existingData.USER, // OKUSR2
+        // OKUSR3: existingData.USER, // OKUSR3
         OKDTE1: formatDate(), // OKDTE1
         OKDTE2: formatDate(), // OKDTE2
         OKDTE3: formatDate(), // OKDTE3
@@ -586,7 +586,10 @@ exports.insert = async (req, res, next) => {
         OKATPR :existingData.OKATPR,
         OKSTMS :existingData.OKSTMS,
         OKCHNO :existingData.OKCHNO,
-        OKTOWN : OKTOWN
+        OKTOWN : OKTOWN,
+        OKUSR1 :existingData.OKUSR1,
+        OKUSR2 :existingData.OKUSR2,
+        OKUSR3 :existingData.OKUSR3
       }
       // console.log(customer)
       if (Hcase === 1) {

@@ -28,10 +28,14 @@
     "OKMCOS" : "1",
     "OKATPR" : "1",
     "OKSTMS" : "2",
-    "OKCHNO" : "23",
+    "OKCHNO" : "2",
     "OKPRIO" : "5",
-    "OKAICD" : "0",
+    "OKAICD" : "1",
 
-    "OKDUCD" : "1"
+    "OKDUCD" : "1",
+    "OKUSR1" : "MI02",
+    "OKUSR2" : "MI02",
+    "OKUSR3" : "MI02"
+
 
 }
