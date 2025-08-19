@@ -35,14 +35,14 @@ const { fetchDistributionPolicy } = require('../../services/policyService')
 const currentFilePath = path.basename(__filename)
 
 exports.insertHead = async (req, res, next) => {
-  const distributions = req.body;
-  const responses = [];
-  const failedDistributions = [];
-  let transaction;
+  const distributions = req.body
+  const responses = []
+  const failedDistributions = []
+  let transaction
 
   try {
     // ใช้ transaction เดียวครอบทั้ง batch
-    transaction = await sequelize.transaction();
+    transaction = await sequelize.transaction()
 
     for (let distribution of distributions) {
       const {
@@ -60,39 +60,44 @@ exports.insertHead = async (req, res, next) => {
         routeCode,
         addressCode,
         items,
-        orderNo: originalOrderNo,
-      } = distribution;
+        orderNo: originalOrderNo
+      } = distribution
 
-      let orderNo = originalOrderNo;
-      const calWeights = [];
+      let orderNo = originalOrderNo
+      const calWeights = []
 
       // --- คำนวณน้ำหนัก ---
       for (let item of items) {
         // console.log(item.itemCode)
-        const itemFactor = await fetchItemFactor(item.itemCode, item.itemUnit);
+        const itemFactor = await fetchItemFactor(item.itemCode, item.itemUnit)
         const weight = await fetchCalWeight({
           itemCode: item.itemCode,
           qty: item.itemQty
-        });
-        calWeights.push(weight);
+        })
+        calWeights.push(weight)
       }
-      const totalgrossWeight = calWeights.reduce((acc, w) => acc + w.grossWeight, 0);
-      const totalnetWeight = calWeights.reduce((acc, w) => acc + w.netWeight, 0);
+      const totalgrossWeight = calWeights.reduce(
+        (acc, w) => acc + w.grossWeight,
+        0
+      )
+      const totalnetWeight = calWeights.reduce((acc, w) => acc + w.netWeight, 0)
 
       // console.log("totalgrossWeight",totalgrossWeight)
       // console.log("totalnetWeight",totalnetWeight)
       // --- Hcase === 0 ---
       if (Hcase === 0) {
         if (!orderNo || orderNo === '') {
-          throw new Error('Order No is required');
+          throw new Error('Order No is required')
         }
-        const checkOrderNo = await MGHEAD.findOne({ where: { orderNo } });
+        const checkOrderNo = await MGHEAD.findOne({ where: { orderNo } })
         if (!checkOrderNo) {
-          throw new Error('Order No is incorrect or not found');
+          throw new Error('Order No is incorrect or not found')
         }
-        const oldDistribution = await MGHEAD.findOne({ where: { orderNo } });
-        const newGrossWeight = parseInt(oldDistribution.MGGRWE + totalgrossWeight);
-        const newSumLine = parseInt(oldDistribution.MGNUGL + MGNUGL);
+        const oldDistribution = await MGHEAD.findOne({ where: { orderNo } })
+        const newGrossWeight = parseInt(
+          oldDistribution.MGGRWE + totalgrossWeight
+        )
+        const newSumLine = parseInt(oldDistribution.MGNUGL + MGNUGL)
         await MGHEAD.update(
           {
             MGGRWE: newGrossWeight.toFixed(3),
@@ -102,12 +107,12 @@ exports.insertHead = async (req, res, next) => {
             where: { orderNo },
             transaction
           }
-        );
+        )
       }
 
       // --- ตรวจสอบ policy ---
-      const series = await fetchDistributionPolicy(orderType);
-      if (!series) throw new Error('Order Type is incorrect or not found');
+      const series = await fetchDistributionPolicy(orderType)
+      if (!series) throw new Error('Order Type is incorrect or not found')
 
       // --- gen orderNo ถ้าจำเป็น ---
       if (!orderNo || orderNo === '') {
@@ -118,8 +123,10 @@ exports.insertHead = async (req, res, next) => {
             seriesType: runningJson[0].DISTRIBUTION.seriesType
           },
           transaction
-        );
-        orderNo = (parseInt(orderNoRunning.lastNo) + 1).toString().padStart(10, '0');
+        )
+        orderNo = (parseInt(orderNoRunning.lastNo) + 1)
+          .toString()
+          .padStart(10, '0')
         await updateRunningNumber(
           {
             coNo: runningJson[0].DISTRIBUTION.coNo,
@@ -128,7 +135,7 @@ exports.insertHead = async (req, res, next) => {
             lastNo: orderNo
           },
           transaction
-        );
+        )
       }
 
       // --- running number delivery ---
@@ -136,11 +143,11 @@ exports.insertHead = async (req, res, next) => {
         {
           coNo: runningJson[0].DISTRIBUTION_DELIVERY.coNo,
           series: runningJson[0].DISTRIBUTION_DELIVERY.series,
-          seriesType: runningJson[0].DISTRIBUTION_DELIVERY.seriesType,
+          seriesType: runningJson[0].DISTRIBUTION_DELIVERY.seriesType
         },
         transaction
-      );
-      const runningNumberH = parseInt(running.lastNo) + 1;
+      )
+      const runningNumberH = parseInt(running.lastNo) + 1
 
       // --- สร้าง itemsData ---
       let itemsData = await Promise.all(
@@ -148,14 +155,15 @@ exports.insertHead = async (req, res, next) => {
           const weight = await fetchCalWeight({
             itemCode: item.itemCode,
             qty: item.itemQty
-          });
+          })
           // console.log("item.itemCode",item.itemCode)
           const stock = await fetchStock({
             warehouse: warehouse,
             itemCode: item.itemCode
-          });
+          })
           // console.log(stock)
-          const itemDetail = await fetchItemDetails(item.itemCode);
+          const itemDetail = await fetchItemDetails(item.itemCode)
+
           return {
             coNo: distributionJson[0].HEAD.MGCONO,
             runningNumberH,
@@ -176,19 +184,21 @@ exports.insertHead = async (req, res, next) => {
             MRWHLO: item.MRWHLO,
             MRGRWE: weight.grossWeight,
             MRNEWE: weight.netWeight,
-            MRSTAS: stock[0].allocateMethod 
+            URGRWE: itemDetail[0].grossWeight,
+            URNEWE: itemDetail[0].netWeight,
+            MRSTAS: stock[0].allocateMethod
           }
         })
-      );
+      )
 
       // --- กำหนด itemNo ---
-      let itemNo = 1;
+      let itemNo = 1
       let itemNoData = await MGLINE.findOne({
         where: { orderNo },
         order: [['itemNo', 'DESC']]
-      });
-      if (itemNoData) itemNo = itemNoData.itemNo + 1;
-      itemsData = itemsData.map(item => ({ ...item, itemNo: itemNo++ }));
+      })
+      if (itemNoData) itemNo = itemNoData.itemNo + 1
+      itemsData = itemsData.map(item => ({ ...item, itemNo: itemNo++ }))
 
       await updateRunningNumber(
         {
@@ -198,7 +208,7 @@ exports.insertHead = async (req, res, next) => {
           lastNo: runningNumberH
         },
         transaction
-      );
+      )
 
       // --- Create MGHEAD (Hcase == 1) ---
       if (Hcase == 1) {
@@ -233,8 +243,8 @@ exports.insertHead = async (req, res, next) => {
             MGLMTS: Date.now()
           },
           { transaction }
-        );
-        await insertAddress(orderNo, addressCode, transaction);
+        )
+        await insertAddress(orderNo, addressCode, transaction)
       }
 
       // console.log("itemsData",itemsData)
@@ -253,41 +263,42 @@ exports.insertHead = async (req, res, next) => {
         netWeight: totalnetWeight.toFixed(3),
         routeCode
       }
-      await distributionDeliveryLine(itemsData, transaction);
-      await distributionAllocate(itemsData, orderType, transaction);
-      await distributionDeliveryHead(deliveryHead, transaction);
-      await insertLine(itemsData, transaction);
+
+      console.log(itemsData)
+      await distributionDeliveryLine(itemsData, transaction)
+      await distributionAllocate(itemsData, orderType, transaction)
+      await distributionDeliveryHead(deliveryHead, transaction)
+      await insertLine(itemsData, transaction)
 
       // --- Success ---
       responses.push({
         orderNo,
         status: Hcase === 1 ? 'Distribution Created' : 'Distribution Updated'
-      });
+      })
     }
 
     // ไม่มี error ใน batch, commit ได้เลย
-    await transaction.commit();
+    await transaction.commit()
 
     return res.status(200).json({
       message: 'All distributions successful',
       successfulDistributions: responses,
       failedDistributions: []
-    });
-
+    })
   } catch (error) {
     // ถ้ามี error ตรงไหน, rollback ทันที และ return error
-    if (transaction) await transaction.rollback();
+    if (transaction) await transaction.rollback()
     failedDistributions.push({
       error: error.original?.message || error.message || JSON.stringify(error),
       stage: 'batch'
-    });
+    })
     return res.status(500).json({
       message: 'All distributions failed and rolled back',
       successfulDistributions: [],
       failedDistributions
-    });
+    })
   }
-};
+}
 
 // insert Line
 insertLine = async (data, transaction) => {
@@ -355,19 +366,19 @@ insertAddress = async (orderNo, addressCode, transaction) => {
         MAADK1: addressCode,
         MASUNO: '',
         MAADID: '',
-        MACONM: address.OACONM?? '',
-        MAADR1: address.OAADR1?? '',
-        MAADR2: address.OAADR2?? '',
-        MAADR3: address.OAADR3?? '',
-        MAADR4: address.OAADR4?? '',
-        MAPONO: address.OAPONO?? '',
-        MACSCD: address.OACSCD?? '',
+        MACONM: address.OACONM ?? '',
+        MAADR1: address.OAADR1 ?? '',
+        MAADR2: address.OAADR2 ?? '',
+        MAADR3: address.OAADR3 ?? '',
+        MAADR4: address.OAADR4 ?? '',
+        MAPONO: address.OAPONO ?? '',
+        MACSCD: address.OACSCD ?? '',
         MAADVI: '',
         MAOREF: '',
         MAYREF: '',
-        MATXID: address.OATXID?? '',
+        MATXID: address.OATXID ?? '',
         MATOWN: '',
-        MAECAR: address.OAECAR?? '',
+        MAECAR: address.OAECAR ?? '',
         MARGDT: formatDate(),
         MARGTM: getCurrentTimeFormatted(),
         MALMDT: formatDate(),
