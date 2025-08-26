@@ -2,6 +2,7 @@ const {
   getRoute,
   getRouteAll,
   getRouteCode,
+  getMethod
 } = require("../../controllers/master/routeController");
 const express = require("express");
 const router = express.Router();
@@ -12,6 +13,7 @@ router.post("/all", getRouteAll);
 
 //http://localhost:3000/promotion/edit
 router.post("/", getRoute);
+router.post("/method", getMethod);
 
 //http://localhost:3000/promotion/edit
 router.post("/routecode", getRouteCode);

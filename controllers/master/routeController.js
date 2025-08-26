@@ -80,6 +80,21 @@ exports.getRouteAll = async (req, res, next) => {
     next(error)
   }
 }
+
+exports.getMethod = async (req, res, next) => {
+  try {
+    const { routeCode } = req.body
+    const uteData = await DROUTE.findOne({
+      where: {
+        routeCode: routeCode,
+        coNo: 410
+      }
+    })
+    res.json(uteData)
+  } catch (error) {
+    next(error)
+  }
+}
 exports.getRoute = async (req, res, next) => {
   try {
     const { shippingRoute } = req.body

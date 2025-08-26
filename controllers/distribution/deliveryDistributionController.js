@@ -1,20 +1,20 @@
 // Models
-const { DeliveryHead, DeliveryLine } = require("../../models/delivery");
+const { DeliveryHead, DeliveryLine } = require('../../models/delivery')
 // Service
-const { fetchRouteCode } = require("../../services/routeService");
-const { fetchDistributionPolicy } = require("../../services/policyService");
+const { fetchRouteCode, fetchMethod } = require('../../services/routeService')
+const { fetchDistributionPolicy } = require('../../services/policyService')
 // Utils
 const {
   formatDate,
-  getCurrentTimeFormatted,
-} = require("../../utils/getDateTime");
-const { getJsonData } = require("../../utils/getJsonData");
+  getCurrentTimeFormatted
+} = require('../../utils/getDateTime')
+const { getJsonData } = require('../../utils/getJsonData')
 // Json
-const deliveryData = getJsonData("distribution.json");
+const deliveryData = getJsonData('distribution.json')
 // Middleware
-const errorEndpoint = require("../../middleware/errorEndpoint");
-const path = require("path");
-const currentFilePath = path.basename(__filename);
+const errorEndpoint = require('../../middleware/errorEndpoint')
+const path = require('path')
+const currentFilePath = path.basename(__filename)
 
 exports.distributionDeliveryHead = async (data, transaction) => {
   try {
@@ -28,11 +28,15 @@ exports.distributionDeliveryHead = async (data, transaction) => {
       tranferDate,
       towarehouse,
       routeCode,
-      netWeight,
-    } = data;
+      netWeight
+    } = data
     // console.log(routeCode)
-    const route = await fetchRouteCode(routeCode);
-    const policy = await fetchDistributionPolicy(orderType);
+    // const route = await fetchRouteCode(routeCode);
+    const policy = await fetchDistributionPolicy(orderType)
+
+    const method = await fetchMethod(routeCode)
+
+    console.log(method)
 
     // res.status(200).json(route)
 
@@ -53,11 +57,15 @@ exports.distributionDeliveryHead = async (data, transaction) => {
       OQTRDT: tranferDate, //OOHEAD OAORDT
       OQTRTM: getCurrentTimeFormatted(), //OOHEAD
       OQSROT: routeCode, //route.routeCode, // ROUTE
-      OQSROD: route[0].routeDeparture, //route.routeDeparture, // ROUTE routeDeparture
+      // OQSROD: route[0].routeDeparture, //route.routeDeparture, // ROUTE routeDeparture
+      OQSROD: 24, //route.routeDeparture, // ROUTE routeDeparture
       OQROUT: routeCode, //route.routeCode, // ROUTE
-      OQRODN: route[0].routeDeparture, //route.routeDeparture, // ROUTE routeDeparture
-      OQMODL: route[0].method, //customer.OKMODL, empty
-      OQMODF: route[0].method, //customer.OKMODL, empty
+      // OQRODN: route[0].routeDeparture, //route.routeDeparture, // ROUTE routeDeparture
+      OQRODN: 24, //route.routeDeparture, // ROUTE routeDeparture
+      // OQMODL: route[0].method, //customer.OKMODL, empty
+      // OQMODF: route[0].method, //customer.OKMODL, empty
+      OQMODL: method.method, //customer.OKMODL, empty
+      OQMODF: method.method, //customer.OKMODL, empty
       // OQTEDL: 0, //customer.OKTEDL, empty
       // OQTEDF: 0, //customer.OKTEDL, empty
       OQRORC: String(policy.YXTTYP).slice(0, 1), // deliveryData[0].DELIVERY_HEAD.OQRORC, // 3 to 5
@@ -82,9 +90,10 @@ exports.distributionDeliveryHead = async (data, transaction) => {
       OQNEWE: netWeight, // netWeight, // OrderLine SUM
       OQDTDT: tranferDate, //requestDate,
       OQGRWE: grossWeight, // OrderLine SUM
-      OQTIZO: deliveryData[0].DELIVERY_HEAD.OQTIZO, 
+      OQTIZO: deliveryData[0].DELIVERY_HEAD.OQTIZO,
       OQDTDT: tranferDate, //requestDate, // OOHEAD requestDate
-      OQDTHM: route[0].departureTime, //route.departureTime, // departureTime
+      // OQDTHM: route[0].departureTime, //route.departureTime, // departureTime
+      OQDTHM: '2359', //route.departureTime, // departureTime
       OQDOCR: deliveryData[0].DELIVERY_HEAD.OQDOCR, // 1
       OQDOCE: deliveryData[0].DELIVERY_HEAD.OQDOCE, // 1 ** 1 digit in Database TST
       OQDEWD: deliveryData[0].DELIVERY_HEAD.OQDEWD, // 0
@@ -96,45 +105,45 @@ exports.distributionDeliveryHead = async (data, transaction) => {
       OQAGKY: `                                        ${
         deliveryData[0].DELIVERY_HEAD.OQINOU
       }${String(policy.YXTTYP).slice(0, 1)}${warehouse}${policy.YXDPOL}${
-        route[0].method
-      }   ${routeCode}`, 
+        method.method
+      }   ${routeCode}`,
       OQRGDT: formatDate(),
       OQRGTM: getCurrentTimeFormatted(),
       OQLMDT: formatDate(),
-      OQCHNO: deliveryData[0].DELIVERY_HEAD.OQCHNO,
-      OQCHID: deliveryData[0].DELIVERY_HEAD.OQCHID,
-      OQSCES: deliveryData[0].DELIVERY_HEAD.OQSCES, //90
-      OQLMTS: Date.now(),
-    };
-    // console.log("coNo",coNo)
+      OQCHNO: 2,
+      OQCHID: 'MVXSECOFR',
+      OQSCES: '', //90
+      OQLMTS: Date.now()
+    }
+    console.log('deliveryobj', deliveryobj)
     switch (orderType.slice(0, 1)) {
-      case "T":
+      case 'T':
         await DeliveryHead.create(deliveryobj, {
-          transaction,
-        });
-        break;
-      case "I":
-        deliveryobj.OQDEWD = "3";
+          transaction
+        })
+        break
+      case 'I':
+        deliveryobj.OQDEWD = '3'
         await DeliveryHead.create(deliveryobj, {
-          transaction,
-        });
-        break;
-      case "R":
-        deliveryobj.OQINOU = "2";
-        deliveryobj.OQDEWD = "4";
+          transaction
+        })
+        break
+      case 'R':
+        deliveryobj.OQINOU = '2'
+        deliveryobj.OQDEWD = '4'
         await DeliveryHead.create(deliveryobj, {
-          transaction,
-        });
-        break;
+          transaction
+        })
+        break
     }
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "Distribution Delivery Head:", error);
+    throw errorEndpoint(currentFilePath, 'Distribution Delivery Head:', error)
   }
-};
+}
 
 exports.distributionDeliveryLine = async (data, transaction) => {
   try {
-    const items = data;
+    const items = data
     // console.log(items)
     for (let item of items) {
       // console.log("item.URNEWE",item.MRNEWE)
@@ -161,14 +170,14 @@ exports.distributionDeliveryLine = async (data, transaction) => {
           URCHNO: deliveryData[0].DELIVERY_LINE.URCHNO,
           URCHID: deliveryData[0].DELIVERY_LINE.URCHID,
           URLMTS: Date.now(),
-          URSCES: deliveryData[0].DELIVERY_HEAD.OQSCES, // MHDISH
+          URSCES: deliveryData[0].DELIVERY_HEAD.OQSCES // MHDISH
         },
         {
-          transaction,
+          transaction
         }
-      );
+      )
     }
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "Distribution Delivery Line:", error);
+    throw errorEndpoint(currentFilePath, 'Distribution Delivery Line:', error)
   }
-};
+}

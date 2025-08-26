@@ -137,7 +137,17 @@ const DROUTE = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
       field: 'DRTX15'
-    }
+    },
+    method: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: 'DRMODL'
+    },
+    transection: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: 'DRTRCA'
+    },
   },
   {
     freezeTableName: true,
