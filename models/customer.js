@@ -236,8 +236,6 @@ const Customer = sequelize.define(
       allowNull: true,
       field: "OKFRE1",
     },
-
-
     OKCORG: {
       type: DataTypes.STRING,
       allowNull: true,

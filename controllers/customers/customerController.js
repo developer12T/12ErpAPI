@@ -605,7 +605,7 @@ exports.insert = async (req, res, next) => {
         FBPONO: customerPoscode,
         FBCFC1: OKCFC1,
         FBCFC3: OKCFC3,
-        FBECAR: OKECAR,
+        FBECAR: '10',
         FBFVDT: formatDate(),
         FBLVDT: formatDate(),
         FBRGDT: formatDate(),
@@ -617,24 +617,51 @@ exports.insert = async (req, res, next) => {
       }
       // console.log(customer)
       if (Hcase === 1) {
-        const customerData = await Customer.findOne({
-          where: {
-            customerNo: customerNo,
-            coNo: '410'
-          }
-        })
-        
-        // console.log(customerData)
-        if (customerData) {
-          if (customerData.customerName == customerName) {
-            res.status(400).json({
-              message: 'Already Exists'
-            })
-            return
-          }
-        }
+        // const customerData = await Customer.findOne({
+        //   where: {
+        //     customerNo: customerNo,
+        //     coNo: '410'
+        //   }
+        // })
+
+        // // console.log(customerData)
+        // if (customerData) {
+        //   if (customerData.customerName == customerName) {
+        //     res.status(400).json({
+        //       message: 'Already Exists'
+        //     })
+        //     return
+        //   }
+        // }
+
         await Customer.create(customer, { transaction })
-        await PromotionStore.create(promotionStore, { transaction })
+        console.log(promotionStore)
+
+        await PromotionStore.create({
+          FBCONO: '410',
+          FBDIVI: 'OTT',
+          FBCUNO: customerNo,
+          FBCUCL: customerChannel,
+          FBSMCD: saleCode,
+          FBORTP: customerCoType,
+          FBWHLO: warehouse,
+          FBSDST: OKSDST,
+          FBCSCD: 'TH',
+          FBPYNO: salePayer,
+          FBFRE1: customerPoscode,
+          FBPONO: customerPoscode,
+          FBCFC1: OKCFC1,
+          FBCFC3: OKCFC3,
+          FBECAR: '10',
+          FBFVDT: formatDate(),
+          FBLVDT: formatDate(),
+          FBRGDT: formatDate(),
+          FBRGTM: getCurrentTimeFormatted(),
+          FBLMDT: formatDate(),
+          FBCHNO: 2,
+          FBCHID: 'MVXSECOFR',
+          FBPRI2: 5
+        })
       }
       let shippingData = shippings.map(shipping => {
         return {
