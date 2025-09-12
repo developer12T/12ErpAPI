@@ -1,5 +1,6 @@
 const Customer = require('../../models/customer')
 const Shipping = require('../../models/shipping')
+const { PromotionStore } = require('../../models/promotion')
 const Sale = require('../../models/sale')
 const { Op } = require('sequelize')
 const axios = require('axios')
@@ -18,10 +19,8 @@ const {
 const { decryptData, encryptData } = require('../../utils/hashData')
 const { io } = require('../../server')
 const { response } = require('express')
-const XLSX = require('xlsx');
+const XLSX = require('xlsx')
 const { shinppingInsert } = require('./shippingController')
-
-
 
 exports.index = async (req, res, next) => {
   try {
@@ -456,7 +455,6 @@ exports.update = async (req, res, next) => {
 }
 
 exports.insert = async (req, res, next) => {
-
   try {
     const {
       Hcase,
@@ -521,7 +519,7 @@ exports.insert = async (req, res, next) => {
         customerName: customerName, // OKCUNM
         customerAddress1: customerAddress1, // OKCUA1
         customerAddress2: customerAddress2, // OKCUA2
-        customerAddress3: customerAddress3, // OKCUA3 
+        customerAddress3: customerAddress3, // OKCUA3
         customerAddress4: customerAddress4, // OKCUA4
         addressID: existingData.OKADID, // OKADID
         customerPhone: customerPhone, // OKPHNO
@@ -574,22 +572,48 @@ exports.insert = async (req, res, next) => {
         OKCHID: existingData.USER, // OKCHID
         OKLMTS: Date.now(), // OKLMTS
         saleZone: saleZone,
-        OKFRE1 : OKFRE1,
-        OKECAR : OKECAR,
-        OKCFC4 : OKCFC4,
+        OKFRE1: OKFRE1,
+        OKECAR: OKECAR,
+        OKCFC4: OKCFC4,
 
-        OKVTCD :existingData.OKVTCD,
-        OKPRIO :existingData.OKPRIO,
-        OKAICD :existingData.OKAICD,
-        OKDUCD :existingData.OKDUCD,
-        OKMCOS :existingData.OKMCOS,
-        OKATPR :existingData.OKATPR,
-        OKSTMS :existingData.OKSTMS,
-        OKCHNO :existingData.OKCHNO,
-        OKTOWN : OKTOWN,
-        OKUSR1 :existingData.OKUSR1,
-        OKUSR2 :existingData.OKUSR2,
-        OKUSR3 :existingData.OKUSR3
+        OKVTCD: existingData.OKVTCD,
+        OKPRIO: existingData.OKPRIO,
+        OKAICD: existingData.OKAICD,
+        OKDUCD: existingData.OKDUCD,
+        OKMCOS: existingData.OKMCOS,
+        OKATPR: existingData.OKATPR,
+        OKSTMS: existingData.OKSTMS,
+        OKCHNO: existingData.OKCHNO,
+        OKTOWN: OKTOWN,
+        OKUSR1: existingData.OKUSR1,
+        OKUSR2: existingData.OKUSR2,
+        OKUSR3: existingData.OKUSR3
+      }
+
+      const promotionStore = {
+        FBCONO: '410',
+        FBDIVI: 'OTT',
+        FBCUNO: customerNo,
+        FBCUCL: customerChannel,
+        FBSMCD: saleCode,
+        FBORTP: customerCoType,
+        FBWHLO: warehouse,
+        FBSDST: OKSDST,
+        FBCSCD: 'TH',
+        FBPYNO: salePayer,
+        FBFRE1: customerPoscode,
+        FBPONO: customerPoscode,
+        FBCFC1: OKCFC1,
+        FBCFC3: OKCFC3,
+        FBECAR: OKECAR,
+        FBFVDT: formatDate(),
+        FBLVDT: formatDate(),
+        FBRGDT: formatDate(),
+        FBRGTM: getCurrentTimeFormatted(),
+        FBLMDT: Date.now(),
+        FBCHNO: '2',
+        FBCHID: 'MVXSECOFR',
+        FBPRI2: '5'
       }
       // console.log(customer)
       if (Hcase === 1) {
@@ -599,6 +623,7 @@ exports.insert = async (req, res, next) => {
             coNo: '410'
           }
         })
+        
         // console.log(customerData)
         if (customerData) {
           if (customerData.customerName == customerName) {
@@ -609,6 +634,7 @@ exports.insert = async (req, res, next) => {
           }
         }
         await Customer.create(customer, { transaction })
+        await PromotionStore.create(promotionStore, { transaction })
       }
       let shippingData = shippings.map(shipping => {
         return {
@@ -635,23 +661,21 @@ exports.insert = async (req, res, next) => {
       // io.emit("shippingData", shippingData);
       // io.emit("customerData", customer);
 
-      await transaction.commit();
+      await transaction.commit()
       res.status(201).json({
-        message: 'Created',
+        message: 'Created'
         // data : customer
       })
     } catch (error) {
       // Rollback for this particular order, log the error
       await transaction.rollback()
-      console.error("Rollback because of error:", error.stack || error);
+      console.error('Rollback because of error:', error.stack || error)
 
       res.status(500).json({
         message: 'Transaction rolled back due to error',
         error: error.message || 'Unknown error'
-      });
-
+      })
     }
-
   } catch (error) {
     next(error)
   }
@@ -659,7 +683,6 @@ exports.insert = async (req, res, next) => {
 
 exports.saleZone = async (req, res, next) => {
   try {
-
     const { saleZone } = req.body
 
     const customersData = await Customer.findAll({
