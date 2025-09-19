@@ -218,7 +218,7 @@ exports.insertHead = async (req, res, next) => {
             orderNo,
             MGRORN: orderNo,
             orderType,
-            tranferDate,
+            tranferDate:formatDate(),
             MGRIDT: tranferDate,
             MGATHS: distributionJson[0].HEAD.MGATHS,
             warehouse,
