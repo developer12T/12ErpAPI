@@ -9,9 +9,9 @@ const passportJWT = require('../middleware/passportJWT');
 // router.get('/', userController.index);
 
 /* http://localhost:3000/user/login */
-router.post('/login', userController.login);
+// router.post('/login', userController.login);
 
-router.post('/loginNew', userController.loginNew);
+router.post('/login', userController.login);
 /* http://localhost:3000/user/register */
 // router.post('/register', [
 //     body('name').not().isEmpty().withMessage('กรุณาป้อนข้อมูลชื่อสกุลด้วย'),

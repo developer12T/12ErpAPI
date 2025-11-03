@@ -10,13 +10,13 @@ const indexRouter = require("./routes/index");
 const M3API = require("./routes/12ErpAPI/index");
 const errorHandler = require("./middleware/errorHandler");
 const dotenv = require('dotenv')
-const { loginNew } = require('./controllers/userController')
+const { login } = require('./controllers/userController')
 const authMiddleware = require('./middleware/auth')
 dotenv.config()
 const app = express();
 
 
-app.post('/loginNew', loginNew)
+app.post('/login', login)
 
 app.use(authMiddleware)
 

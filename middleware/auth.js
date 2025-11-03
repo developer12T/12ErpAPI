@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = require('../config/index')
 
 // ✅ ใส่ path แบบเต็ม หรือแค่ prefix ก็ได้
-const openPaths = ['/loginNew', '/erp/users/loginNew']
+const openPaths = ['/login', '/erp/users/login']
 
 module.exports = function (req, res, next) {
   // ✅ ถ้า path เริ่มด้วย path ที่ยกเว้น → ข้ามได้
@@ -13,7 +13,9 @@ module.exports = function (req, res, next) {
 
   const authHeader = req.headers['authorization']
   if (!authHeader) {
-    return res.status(401).json({ message: 'Missing Authorization header' })
+  return res.status(401).json({ 
+    message: 'Access denied. Missing authentication token.' 
+  })
   }
 
   const token = authHeader.split(' ')[1]
