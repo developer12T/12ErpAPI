@@ -3,6 +3,9 @@ const crypto = require("crypto");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/index");
+const axios = require('axios')
+require('dotenv').config()
+
 
 exports.index = (req, res, next) => {
   
@@ -81,3 +84,35 @@ exports.login = async (req, res, next) => {
 //     },
 //   });
 // };
+
+
+
+exports.loginNew = async (req, res) => {
+  try {
+    const { username, password } = req.body
+
+    // 🔹 เรียก API จริง
+    const response = await axios.post(`${process.env.PRD_API_BASE_URL}/api/cash/login`, {
+      username,
+      password
+    })
+
+    // console.log(response)
+
+    if (response.data.status != 200) {
+      return res.status(401).json({ message: 'Invalid credentials' })
+    }
+
+    // ✅ สร้าง token (payload สามารถใส่อะไรก็ได้)
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '2h' })
+
+    res.json({
+      message: 'Login successful',
+      token
+    })
+  } catch (error) {
+    console.error('❌ Error:', error.message)
+    res.status(500).json({ message: error.message })
+  }
+}
+

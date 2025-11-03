@@ -9,8 +9,24 @@ const rateLimit = require("express-rate-limit");
 const indexRouter = require("./routes/index");
 const M3API = require("./routes/12ErpAPI/index");
 const errorHandler = require("./middleware/errorHandler");
-
+const dotenv = require('dotenv')
+const { loginNew } = require('./controllers/userController')
+const authMiddleware = require('./middleware/auth')
+dotenv.config()
 const app = express();
+
+
+app.post('/loginNew', loginNew)
+
+app.use(authMiddleware)
+
+
+app.get('/api/protected', (req, res) => {
+  res.json({
+    message: 'Access granted ✅',
+    user: req.user
+  })
+})
 
 // CORS options
 const corsOptions = {
