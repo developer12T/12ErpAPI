@@ -1,0 +1,32 @@
+[
+    {
+        "Hcase": 1,
+        "OAFRE1": "10100",
+        "addressID": "INVTSP",
+        "customerNo": "OLAZ000000",
+        "note": "",
+        "orderDate": "20251020",
+        "orderNo": "",
+        "orderStatusHigh": 22,
+        "orderStatusLow": 22,
+        "orderType": "071",
+        "payer": "O00000001",
+        "ref": "1053977913499688",
+        "requestDate": "20251020",
+        "total": 130,
+        "totalNet": 130,
+        "warehouse": "108",
+        "item": [
+            {
+                "discount": 0,
+                "itemCode": "10010101094",
+                "netPrice": 130,
+                "price": 130,
+                "promotionCode": "",
+                "qty": 1,
+                "total": 130,
+                "unit": "PCS"
+            }
+        ]
+    }
+]

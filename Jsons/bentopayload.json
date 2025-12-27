@@ -1,0 +1,74 @@
+{
+  "header": {
+    "orderNumber": "ORDER-EXAMPLE-001",
+    "orderType": "XXXX",
+    "salesOrg": "XXXX",
+    "distCh": "XX",
+    "division": "XX",
+    "salesOffice": "XXXX",
+    "salesGroup": "XXX",
+    "deliveryDate": "2025-06-17T08:10:19.000000+07:00",
+    "poNumber": "PO-EXAMPLE-001",
+    "poDate": "2025-06-15T22:07:32.000000+07:00",
+    "soldTo": "CUSTOMER_CODE",
+    "shipTo": "CUSTOMER_CODE",
+    "salesRep": "REP-XXXXXX"
+  },
+  "otcAddress": {
+    "name1": "Customer Name",
+    "address1": "XXX Address Line 1",
+    "address2": "XXX Address Line 2",
+    "city": "City Name",
+    "region": "XX",
+    "postal": "XXXXX",
+    "tel_number": "0000000000"
+  },
+  "shipAddress": {
+    "name1": "Customer Name",
+    "address1": "XXX Address Line 1",
+    "address2": "XXX Address Line 2",
+    "city": "City Name",
+    "region": "XX",
+    "postal": "XXXXX",
+    "tel_number": "0000000000"
+  },
+  "items": [
+    {
+      "itemNumber": 1,
+      "material": "SKU-001",
+      "quantity": "1",
+      "unit": "EA",
+      "pricePerUnit": 999,
+      "plant": "PLANT-XXXX",
+      "sloc": "SLOC-XXXX",
+      "deliveryDate": "2025-06-17T08:10:19.000000+07:00",
+      "isFreeGoods": false
+    },
+    {
+      "itemNumber": 2,
+      "material": "SKU-002",
+      "quantity": "12",
+      "unit": "EA",
+      "pricePerUnit": 999,
+      "plant": "PLANT-XXXX",
+      "sloc": "SLOC-XXXX",
+      "deliveryDate": "2025-06-17T08:10:19.000000+07:00",
+      "isFreeGoods": false
+    },
+    {
+      "itemNumber": 3,
+      "material": "SKU-003",
+      "quantity": 1,
+      "unit": "AU",
+      "pricePerUnit": 999,
+      "plant": "PLANT-YYYY",
+      "sloc": "SLOC-YYYY",
+      "deliveryDate": "2025-06-17T08:10:19.000000+07:00",
+      "isFreeGoods": false
+    }
+  ],
+  "discount": {
+    "type": "DISCOUNT_TYPE",
+    "value": 0
+  }
+}

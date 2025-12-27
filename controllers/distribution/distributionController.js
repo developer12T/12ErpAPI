@@ -48,6 +48,7 @@ exports.insertHead = async (req, res, next) => {
       const {
         orderType,
         tranferDate,
+        receiveDate,
         warehouse,
         towarehouse,
         location,
@@ -218,8 +219,8 @@ exports.insertHead = async (req, res, next) => {
             orderNo,
             MGRORN: orderNo,
             orderType,
-            tranferDate:formatDate(),
-            MGRIDT: tranferDate,
+            tranferDate: formatDate(),
+            MGRIDT: receiveDate,
             MGATHS: distributionJson[0].HEAD.MGATHS,
             warehouse,
             towarehouse,

@@ -637,31 +637,31 @@ exports.insert = async (req, res, next) => {
         await Customer.create(customer, { transaction })
         console.log(promotionStore)
 
-        await PromotionStore.create({
-          FBCONO: '410',
-          FBDIVI: 'OTT',
-          FBCUNO: customerNo,
-          FBCUCL: customerChannel,
-          FBSMCD: saleCode,
-          FBORTP: customerCoType,
-          FBWHLO: warehouse,
-          FBSDST: OKSDST,
-          FBCSCD: 'TH',
-          FBPYNO: salePayer,
-          FBFRE1: customerPoscode,
-          FBPONO: customerPoscode,
-          FBCFC1: OKCFC1,
-          FBCFC3: OKCFC3,
-          FBECAR: '10',
-          FBFVDT: formatDate(),
-          FBLVDT: formatDate(),
-          FBRGDT: formatDate(),
-          FBRGTM: getCurrentTimeFormatted(),
-          FBLMDT: formatDate(),
-          FBCHNO: 2,
-          FBCHID: 'MVXSECOFR',
-          FBPRI2: 5
-        })
+        // await PromotionStore.create({
+        //   FBCONO: '410',
+        //   FBDIVI: 'OTT',
+        //   FBCUNO: customerNo,
+        //   FBCUCL: customerChannel,
+        //   FBSMCD: saleCode,
+        //   FBORTP: customerCoType,
+        //   FBWHLO: warehouse,
+        //   FBSDST: OKSDST,
+        //   FBCSCD: 'TH',
+        //   FBPYNO: salePayer,
+        //   FBFRE1: customerPoscode,
+        //   FBPONO: customerPoscode,
+        //   FBCFC1: OKCFC1,
+        //   FBCFC3: OKCFC3,
+        //   FBECAR: '10',
+        //   FBFVDT: formatDate(),
+        //   FBLVDT: formatDate(),
+        //   FBRGDT: formatDate(),
+        //   FBRGTM: getCurrentTimeFormatted(),
+        //   FBLMDT: formatDate(),
+        //   FBCHNO: 2,
+        //   FBCHID: 'MVXSECOFR',
+        //   FBPRI2: 5
+        // })
       }
       let shippingData = shippings.map(shipping => {
         return {

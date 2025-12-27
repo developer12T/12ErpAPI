@@ -1,0 +1,32 @@
+[
+    {
+        "customerid": 60351816,
+        "customercode": "OSPE000000",
+        "customername": "ขายช่องทาง Shopee",
+        "saleschannel": "Shopee"
+    },
+    {
+        "customerid": 99999990,
+        "customercode": "OMKP000000",
+        "customername": "ขายช่องทาง Makro Pro",
+        "saleschannel": "Makro"
+    },
+    {
+        "customerid": 61672860,
+        "customercode": "OTIK000000",
+        "customername": "ขายช่องทาง Tiktok",
+        "saleschannel": "TIKTOK"
+    },
+    {
+        "customerid": 68515630,
+        "customercode": "OLAZ000000",
+        "customername": "ขายช่องทาง Lazada",
+        "saleschannel": "Lazada"
+    },
+    {
+        "customerid": 60351817,
+        "customercode": "OBEN000000",
+        "customername": "ขายช่องทาง Bento Web",
+        "saleschannel": "Bento"
+    }
+]

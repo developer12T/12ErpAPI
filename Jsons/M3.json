@@ -1,0 +1,32 @@
+[
+    {
+        "Hcase": 1,
+        "OAFRE1": "YSEND",
+        "addressID": "INVTSP",
+        "customerNo": "10330020",
+        "note": "",
+        "orderDate": "20250825",
+        "orderNo": "",
+        "orderStatusHigh": 22,
+        "orderStatusLow": 22,
+        "orderType": "081",
+        "payer": "10330020",
+        "ref": "OD6808E01035",
+        "requestDate": "20250908",
+        "total": 27071,
+        "totalNet": 27071,
+        "warehouse": "105",
+        "item": [
+            {
+                "discount": 0,
+                "itemCode": "10011101004",
+                "netPrice": 235.4,
+                "price": 235.4,
+                "promotionCode": "",
+                "qty": 115,
+                "total": 27071,
+                "unit": "CTN"
+            }
+        ]
+    }
+]
