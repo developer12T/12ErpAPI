@@ -3,70 +3,73 @@ const crypto = require("crypto");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/index");
+const axios = require('axios')
+require('dotenv').config()
+
 
 exports.index = (req, res, next) => {
   
 };
 
-exports.login = async (req, res, next) => {
-  try {
-    const { username, password } = req.body;
-    //check ว่ามีอีเมล์นี้ไม่ระบบหรือไม่
-    const user = await UserAnt.findAll({
-      attributes: { exclude: ["id"] },
-      where: {
-        Col_LoginName: username,
-      },
-    });
+// exports.login = async (req, res, next) => {
+//   try {
+//     const { username, password } = req.body;
+//     //check ว่ามีอีเมล์นี้ไม่ระบบหรือไม่
+//     const user = await UserAnt.findAll({
+//       attributes: { exclude: ["id"] },
+//       where: {
+//         Col_LoginName: username,
+//       },
+//     });
 
-    if (!user) {
-      const error = new Error("Not Found User");
-      error.statusCode = 404;
-      throw error;
-    }
-    // return res.status(200).json(user);
+//     if (!user) {
+//       const error = new Error("Not Found User");
+//       error.statusCode = 404;
+//       throw error;
+//     }
+//     // return res.status(200).json(user);
 
-    //ตรวจสอบรหัสผ่านว่าตรงกันหรือไม่ ถ้าไม่ตรง (false) ให้โยน error ออกไป
-    const dbPassword = user[0].Col_PWord;
-    const hashedPassword = crypto
-      .createHash("md5")
-      .update(password)
-      .digest("hex");
-    // const isValid = await user.checkPassword(password);
+//     //ตรวจสอบรหัสผ่านว่าตรงกันหรือไม่ ถ้าไม่ตรง (false) ให้โยน error ออกไป
+//     const dbPassword = user[0].Col_PWord;
+//     const hashedPassword = crypto
+//       .createHash("md5")
+//       .update(password)
+//       .digest("hex");
+//     // const isValid = await user.checkPassword(password);
 
-    if (!(dbPassword === hashedPassword)) {
-      const error = new Error("Password is Incorrect");
-      error.statusCode = 401;
-      throw error;
-    }
+//     if (!(dbPassword === hashedPassword)) {
+//       const error = new Error("Password is Incorrect");
+//       error.statusCode = 401;
+//       throw error;
+//     }
 
-    //สร้าง token
-    const token = jwt.sign(
-      { username: user[0].Col_LoginName, role: user[0].Col_DeptInfo },
-      JWT_SECRET,
-      {
-        expiresIn: "5 days",
-      }
-    );
-    res.json({
-      token,
-      idUser: user[0].Col_ECard,
-      fullname: user[0].Col_Name,
-      department: user[0].Col_o_JobTitle,
-      departmentDescrip: user[0].Col_DeptInfo,
-    });
+//     //สร้าง token
+//     const token = jwt.sign(
+//       { username: user[0].Col_LoginName, role: user[0].Col_DeptInfo },
+//       JWT_SECRET,
+//       {
+//         expiresIn: "5 days",
+//       }
+//     );
+//     res.json({
+//       token,
+//       idUser: user[0].Col_ECard,
+//       fullname: user[0].Col_Name,
+//       department: user[0].Col_o_JobTitle,
+//       departmentDescrip: user[0].Col_DeptInfo,
+//     });
 
-  //decode วันหมดอายุ
-    // const expires_in = jwt.decode(token);
-    // return res.status(200).json({
-    //   access_token: token,
-    //   expires_in: expires_in.exp,
-    //   token_type: "Bearer",
-    // });
-  } catch (error) {
-    next(error);
-  }
-};
+//   //decode วันหมดอายุ
+//     // const expires_in = jwt.decode(token);
+//     // return res.status(200).json({
+//     //   access_token: token,
+//     //   expires_in: expires_in.exp,
+//     //   token_type: "Bearer",
+//     // });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 //get profile
 // exports.me = (req, res, next) => {
@@ -81,3 +84,35 @@ exports.login = async (req, res, next) => {
 //     },
 //   });
 // };
+
+
+
+exports.login = async (req, res) => {
+  try {
+    const { username, password } = req.body
+
+    // 🔹 เรียก API จริง
+    const response = await axios.post(`${process.env.PRD_API_BASE_URL}/api/cash/login`, {
+      username,
+      password
+    })
+
+    // console.log(response)
+
+    if (response.data.status != 200) {
+      return res.status(401).json({ message: 'Invalid credentials' })
+    }
+
+    // ✅ สร้าง token (payload สามารถใส่อะไรก็ได้)
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '2h' })
+
+    res.json({
+      message: 'Login successful',
+      token
+    })
+  } catch (error) {
+    console.error('❌ Error:', error.message)
+    res.status(500).json({ message: error.message })
+  }
+}
+
