@@ -18,7 +18,7 @@ const app = express();
 
 app.post('/login', login)
 
-app.use(authMiddleware)
+// app.use(authMiddleware)
 
 
 app.get('/api/protected', (req, res) => {
