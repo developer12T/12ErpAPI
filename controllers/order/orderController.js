@@ -329,6 +329,7 @@ exports.insert = async (req, res, next) => {
         ref,
         note
       } = order
+
       let { orderNo } = order
       const items = order.item
       const calWeights = []
@@ -427,6 +428,7 @@ exports.insert = async (req, res, next) => {
             },
             transaction
           )
+
           orderNo = parseInt(orderNoRunning.lastNo) + 1
           orderNo = orderNo.toString()
 
@@ -604,6 +606,7 @@ exports.insert = async (req, res, next) => {
           transaction
         )
         const coType = await fetchCotype(orderType)
+
         if (Hcase === 1) {
           const customer = await fetchCustomer(customerNo)
           await Order.create(
@@ -694,7 +697,7 @@ exports.insert = async (req, res, next) => {
           netWeight: totalnetWeight.toFixed(3)
         }
         await allocateInsert(itemsData, transaction)
-        // await deliveryHeadInsert(deliveryObj, transaction)
+        await deliveryHeadInsert(deliveryObj, transaction)
         await deliveryLineInsert(itemsData, transaction)
         await orderLineInsert(itemsData, transaction)
         await prepareInvoiceInsertA(itemsData, transaction)
