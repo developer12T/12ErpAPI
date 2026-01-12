@@ -8,13 +8,30 @@ exports.fetchRoute = async shippingRoute => {
   try {
     const udiObj = {}
     const uteObj = {}
-    // console.log("shippingRoute",shippingRoute)
+    // 1️⃣ หา DOOBV2 ก่อน
     let RouteData = await DRODPR.findAll({
       where: {
         DOOBV2: shippingRoute,
         coNo: 410
       }
     })
+
+    // 2️⃣ ถ้าไม่เจอ → fallback ไปหา DOOBV1
+    if (!RouteData || RouteData.length === 0) {
+      RouteData = await DRODPR.findAll({
+        where: {
+          DOOBV1: shippingRoute,
+          coNo: 410
+        }
+      })
+    }
+
+    // 3️⃣ ถ้ายังไม่เจออีก → return null / throw error
+    if (!RouteData || RouteData.length === 0) {
+      return null
+      // หรือ
+      // throw new Error(`Route not found for shippingRoute: ${shippingRoute}`)
+    }
 
     const udiDatas = await DROUDI.findAll({
       where: {

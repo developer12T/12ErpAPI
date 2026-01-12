@@ -12,6 +12,7 @@ const Order = sequelize.define(
         isNumeric: true
       }
     },
+
     OADIVI: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -24,6 +25,19 @@ const Order = sequelize.define(
           }
         }
       }
+    },
+    OACUOR: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'OACUOR',
+      // validate: {
+      //   isLenghtRequired (value) {
+      //     // Custom validator to ensure exactly 8 digits
+      //     if (value.toString().length !== 3) {
+      //       throw new Error('OACUOR must be exactly 3 digits')
+      //     }
+      //   }
+      // }
     },
     orderNo: {
       type: DataTypes.STRING,

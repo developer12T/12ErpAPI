@@ -312,7 +312,20 @@ exports.insert = async (req, res, next) => {
     const orders = req.body
     const responses = []
     const failedOrders = []
+    // console.log('failedOrders', orders)
+
+    // res.status(200).json({
+    //   message: 'Partial Success',
+    //   failedOrders: orders
+    // })
+
     for (let order of orders) {
+      // res.status(207).json({
+      //   message: 'Partial Success',
+      //   successfulOrders: responses,
+      //   failedOrders: failedOrders
+      // })
+
       const {
         Hcase,
         orderDate,
@@ -327,6 +340,7 @@ exports.insert = async (req, res, next) => {
         addressID,
         payer,
         ref,
+        invoice,
         note
       } = order
 
@@ -453,7 +467,6 @@ exports.insert = async (req, res, next) => {
         )
 
         const runningNumberH = parseInt(running.lastNo) + 1
-
         let itemsData = await Promise.all(
           items.map(async item => {
             const itemDetail = await fetchItemDetails(item.itemCode)
@@ -463,7 +476,9 @@ exports.insert = async (req, res, next) => {
               addressID: addressID
             })
             const route = await fetchRoute(shinpping.shippingRoute)
+
             const customer = await fetchCustomer(customerNo)
+
             const WeightAll = await fetchCalWeight({
               itemCode: item.itemCode,
               qty: itemFactor.factor * item.qty
@@ -483,6 +498,7 @@ exports.insert = async (req, res, next) => {
             })
             return {
               coNo: orderJson[0].LINE.OBCONO,
+              OACUOR: invoice,
               OACUCD: customer.OKCUCD,
               zone: customer.zone,
               OBDIVI: orderJson[0].LINE.OBDIVI,
@@ -727,7 +743,7 @@ exports.insert = async (req, res, next) => {
       failedOrders: failedOrders
     })
   } catch (error) {
-    if (transaction) await transaction.rollback();
+    if (transaction) await transaction.rollback()
     next(error)
   }
 }
