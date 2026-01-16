@@ -769,6 +769,7 @@ exports.insert = async (req, res, next) => {
             {
               coNo: orderJson[0].HEAD.OACONO, // OACONO,
               OADIVI: orderJson[0].HEAD.OADIVI, // OADIVI
+              OACUOR: invoice,
               orderNo: orderNo, // OAORNO
               orderType: orderType, // OAORTP
               OAFACI: customer.OKFACI, // OAFACI
