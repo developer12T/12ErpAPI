@@ -350,7 +350,23 @@ exports.insert = async (req, res, next) => {
       const calCosts = []
       try {
         transaction = await sequelize.transaction()
+        const DISCOUNT_CODES = ['DISONLINE', 'DISCOUNTONLINE']
+
         for (let item of items) {
+          // 🔥 ข้าม DISCOUNT
+          if (DISCOUNT_CODES.includes(item.itemCode)) {
+            calWeights.push({
+              netWeight: 0,
+              grossWeight: 0
+            })
+
+            calCosts.push({
+              cost: 0
+            })
+
+            continue
+          }
+
           const itemFactor = await fetchItemFactor(item.itemCode, item.unit)
           const Weight = await fetchCalWeight({
             itemCode: item.itemCode,
@@ -467,17 +483,126 @@ exports.insert = async (req, res, next) => {
         )
 
         const runningNumberH = parseInt(running.lastNo) + 1
+
+        const toNegative = v => -Math.abs(Number(v || 0))
+        const toPositive = v => Math.abs(Number(v || 0))
+
         let itemsData = await Promise.all(
           items.map(async item => {
-            const itemDetail = await fetchItemDetails(item.itemCode)
-            const itemFactor = await fetchItemFactor(item.itemCode, item.unit)
-            const shinpping = await fetchShipping({
-              customerNo: customerNo,
-              addressID: addressID
-            })
+            // ================================
+            // 🔥 DISONLINE (case พิเศษ)
+            // ================================
+            console.log('itemCode ERP', item.itemCode)
+            console.log('customerNo ERP', customerNo)
+            const customer = await fetchCustomer(customerNo)
+            const shinpping = await fetchShipping({ customerNo, addressID })
             const route = await fetchRoute(shinpping.shippingRoute)
 
-            const customer = await fetchCustomer(customerNo)
+            if (item.itemCode === 'DISONLINE') {
+              const customer = await fetchCustomer(customerNo)
+
+              return {
+                coNo: orderJson[0].LINE.OBCONO,
+                OACUOR: invoice,
+                OACUCD: customer.OKCUCD,
+                zone: customer.zone,
+                OBDIVI: orderJson[0].LINE.OBDIVI,
+                OBORCO: orderJson[0].LINE.OBORCO,
+                orderNo: orderNo,
+                OKALCU: customer.OKALCU,
+                runningNumberH: runningNumberH,
+                orderType: orderType,
+                orderStatusLow: orderStatusLow,
+                orderDate: orderDate,
+                requestDate: requestDate,
+                OAFRE1: customer.OKFRE1,
+                payer: payer,
+
+                itemCode: item.itemCode,
+                itemNo: item.itemNo,
+                itemName: 'ส่วนลดราคาตามเงื่อนไข',
+                OBITDS: 'DISONLINE',
+
+                // 🔑 เงื่อนไขพิเศษ
+                qtyQT: -1,
+                qty: -1,
+                unit: 'PCS',
+
+                price: item.price,
+                discount: item.discount,
+                netPrice: item.netPrice,
+
+                total: item.total,
+                OBLNAM: item.total,
+
+                netWeight: 0,
+                grossWeight: 0,
+
+                promotionCode: item.promotionCode,
+                warehouse: warehouse,
+                customerNo: customerNo,
+                addressID: addressID,
+
+                MOPLDT: formatDate(),
+                MOTIHM: orderJson[0].LINE.OBPLHM,
+                MOPRIO: orderJson[0].LINE.OBPRIO,
+                OBCOFA: 1,
+                OBUCOS: 0, // ✅ Cost = 0
+                costPCS: 0, // ✅ CostAll = 0
+
+                grossWeightSingle: 0,
+                netWeightSingle: 0,
+
+                OBSPUN: 'PCS',
+                OBPRMO: orderJson[0].LINE.OBPRMO,
+                OBDIC1: orderJson[0].LINE.OBDIC1,
+                OBDIC2: item.discount !== 0 ? 8 : 1,
+                OBDIC3: orderJson[0].LINE.OBDIC3,
+                OBDIC4: orderJson[0].LINE.OBDIC4,
+                OBDIC5: item.promotionCode === '' ? 1 : 6,
+                OBDIC6: orderJson[0].LINE.OBDIC6,
+
+                OBCMP5: item.promotionCode,
+                OBDIBE: item.promotionCode !== '' ? 4 : '',
+                OBDIRE: item.promotionCode !== '' ? 0 : '',
+                OBDDSU: item.promotionCode !== '' ? 1 : 0,
+                OBACRF: item.promotionCode !== '' ? 0 : '',
+
+                OBDWDT: requestDate,
+                OBCODT: requestDate,
+                OBCOHM: route.departureTime,
+                OBDWDZ: requestDate,
+                OBCODZ: requestDate,
+                OBTIZO: orderJson[0].LINE.OBTIZO, // Check Data ?
+                OBSTCD: orderJson[0].LINE.OBSTCD,
+                OBCOCD: 0,
+                OBUCCD: orderJson[0].LINE.OBUCCD,
+                OBVTCD: orderJson[0].LINE.OBVTCD,
+
+                OBSMCD: customer.saleCode,
+                OBCUNO: customerNo,
+                OBADID: addressID,
+
+                OBROUT: route.routeCode, // Route
+                OBRODN: route.routeDeparture,
+                OBDSHM: route.departureTime,
+                OBCINA: orderJson[0].LINE.OBCINA, // Check Data ?
+                OBDECU: customerNo,
+                OBTEPY: customer.creditTerm,
+                OBPMOR: orderJson[0].LINE.OBPMOR, // Check Data ?
+                OBUPAV: orderJson[0].LINE.OBUPAV, // Check Data ?
+
+                customerChannel: customer.customerChannel,
+                OUSTUN: 'PCS',
+                OUITGR: 'DISONLIN',
+                itemType: 'ZNS',
+                OUITCL: 'ZNS12',
+                itemLot: item.itemLot
+              }
+            }
+
+            const itemDetail = await fetchItemDetails(item.itemCode)
+            const itemFactor = await fetchItemFactor(item.itemCode, item.unit)
 
             const WeightAll = await fetchCalWeight({
               itemCode: item.itemCode,
@@ -487,7 +612,9 @@ exports.insert = async (req, res, next) => {
               itemCode: item.itemCode,
               qty: 1
             })
+
             console.log('itemFactor' + itemFactor.factor * item.qty)
+
             const Cost = await fetchCalCost({
               itemCode: item.itemCode,
               qty: 1
@@ -512,33 +639,41 @@ exports.insert = async (req, res, next) => {
               requestDate: requestDate, //OARLDT
               OAFRE1: customer.OKFRE1,
               payer: payer,
+
               itemCode: item.itemCode,
               itemNo: item.itemNo,
               itemName: itemDetail[0].itemName,
               OBITDS: itemDetail[0].itemDescription,
+
               qtyQT: itemFactor.factor * item.qty,
               qty: item.qty,
               unit: item.unit,
+
               price: item.price,
               discount: item.discount,
               netPrice: item.netPrice,
+
               total: item.total,
+              OBLNAM: item.total,
+
               netWeight: WeightAll.netWeight,
               grossWeight: WeightAll.grossWeight,
+
               promotionCode: item.promotionCode,
               warehouse: warehouse,
               customerNo: customerNo,
-              // customerChannel: customerChannel,
               addressID: addressID,
+
               MOPLDT: formatDate(),
               MOTIHM: orderJson[0].LINE.OBPLHM,
               MOPRIO: orderJson[0].LINE.OBPRIO,
               OBCOFA: itemFactor.factor,
               OBUCOS: Cost.cost,
               costPCS: CostAll.cost,
-              OBLNAM: item.total,
+
               grossWeightSingle: Weight.grossWeight,
               netWeightSingle: Weight.netWeight,
+
               OBSPUN: item.unit,
               OBPRMO: orderJson[0].LINE.OBPRMO,
               OBDIC1: orderJson[0].LINE.OBDIC1,
@@ -547,11 +682,13 @@ exports.insert = async (req, res, next) => {
               OBDIC4: orderJson[0].LINE.OBDIC4,
               OBDIC5: item.promotionCode === '' ? 1 : 6,
               OBDIC6: orderJson[0].LINE.OBDIC6,
+
               OBCMP5: item.promotionCode,
               OBDIBE: item.promotionCode !== '' ? 4 : '',
               OBDIRE: item.promotionCode !== '' ? 0 : '',
               OBDDSU: item.promotionCode !== '' ? 1 : 0,
               OBACRF: item.promotionCode !== '' ? 0 : '',
+
               OBDWDT: requestDate,
               OBCODT: requestDate,
               OBCOHM: route.departureTime,
@@ -562,9 +699,11 @@ exports.insert = async (req, res, next) => {
               OBCOCD: itemFactor.factor,
               OBUCCD: orderJson[0].LINE.OBUCCD,
               OBVTCD: orderJson[0].LINE.OBVTCD,
+
               OBSMCD: customer.saleCode, // SaleCode
               OBCUNO: customerNo, // Customer Code
               OBADID: addressID, // Address ID
+
               OBROUT: route.routeCode, // Route
               OBRODN: route.routeDeparture,
               OBDSHM: route.departureTime,
@@ -573,6 +712,7 @@ exports.insert = async (req, res, next) => {
               OBTEPY: customer.creditTerm,
               OBPMOR: orderJson[0].LINE.OBPMOR, // Check Data ?
               OBUPAV: orderJson[0].LINE.OBUPAV, // Check Data ?
+
               customerChannel: customer.customerChannel,
               OUSTUN: itemDetail[0].basicUnit,
               OUITGR: itemDetail[0].MMITGR,
@@ -712,12 +852,26 @@ exports.insert = async (req, res, next) => {
           tranferDate: requestDate,
           netWeight: totalnetWeight.toFixed(3)
         }
-        await allocateInsert(itemsData, transaction)
+
+        const SKIP_ALLOCATE_CODES = ['DISONLINE', 'ZNS1401001']
+
+        const allocatableItems = itemsData.filter(
+          item => !SKIP_ALLOCATE_CODES.includes(item.itemCode)
+        )
+
+        if (allocatableItems.length > 0) {
+          await allocateInsert(allocatableItems, transaction)
+        }
+
+        // await allocateInsert(itemsData, transaction)
+
         await deliveryHeadInsert(deliveryObj, transaction)
+        console.log('itemsData', itemsData)
         await deliveryLineInsert(itemsData, transaction)
         await orderLineInsert(itemsData, transaction)
         await prepareInvoiceInsertA(itemsData, transaction)
         await transaction.commit()
+
         responses.push({
           orderNo: orderNo,
           status: Hcase === 1 ? 'Order Created' : 'Order Updated'

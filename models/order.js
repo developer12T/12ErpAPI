@@ -29,7 +29,7 @@ const Order = sequelize.define(
     OACUOR: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: 'OACUOR',
+      field: 'OACUOR'
       // validate: {
       //   isLenghtRequired (value) {
       //     // Custom validator to ensure exactly 8 digits
@@ -825,6 +825,17 @@ const OrderLine = sequelize.define(
         }
       }
     },
+    OBCUOR: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'OBCUOR',
+      validate: {
+        len: {
+          args: [1, 30],
+          msg: 'OBCUOR must be 1-30 digits long'
+        }
+      }
+    },
     qty: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -844,6 +855,28 @@ const OrderLine = sequelize.define(
         len: {
           args: [0, 15],
           msg: 'OBORQT must be 0-15 digits long'
+        }
+      }
+    },
+    OBDCCA: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'OBDCCA',
+      validate: {
+        len: {
+          args: [0, 1],
+          msg: 'OBDCCA must be 0-1 digits long'
+        }
+      }
+    },
+    OBDCCD: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'OBDCCD',
+      validate: {
+        len: {
+          args: [0, 1],
+          msg: 'OBDCCD must be 0-1 digits long'
         }
       }
     },

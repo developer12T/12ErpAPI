@@ -58,6 +58,18 @@ const PrepareInvoA = sequelize.define(
         },
       },
     },
+    OUSUNO: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "OUSUNO",
+      primaryKey: true,
+      validate: {
+        len: {
+          args: [0, 10],
+          msg: "OUSUNO must be 0-10 digits long",
+        },
+      },
+    },
     itemNo: {
       type: DataTypes.INTEGER,
       allowNull: true,

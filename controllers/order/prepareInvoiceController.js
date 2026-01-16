@@ -1,40 +1,44 @@
 // Models
-const { PrepareInvoA, PrepareInvoB } = require("../../models/prepareinvoice");
+const { PrepareInvoA, PrepareInvoB } = require('../../models/prepareinvoice')
 // Utils
 const {
   formatDate,
-  getCurrentTimeFormatted,
-} = require("../../utils/getDateTime");
-const { nonVat } = require("../../utils/calVat");
-const { getJsonData } = require("../../utils/getJsonData");
-const { trimObjectStrings } = require("../../utils/String");
+  getCurrentTimeFormatted
+} = require('../../utils/getDateTime')
+const { nonVat } = require('../../utils/calVat')
+const { getJsonData } = require('../../utils/getJsonData')
+const { trimObjectStrings } = require('../../utils/String')
 // Middleware
-const errorEndpoint = require("../../middleware/errorEndpoint");
-const path = require("path");
-const currentFilePath = path.basename(__filename);
+const errorEndpoint = require('../../middleware/errorEndpoint')
+const path = require('path')
+const currentFilePath = path.basename(__filename)
 exports.index = async (req, res, next) => {
   try {
-    const { orderNo } = req.body;
+    const { orderNo } = req.body
     const itemData = await PrepareInvoA.findAll({
       where: {
         coNo: 410,
-        orderNo: orderNo,
-      },
-    });
-    const response = itemData.map((item) => trimObjectStrings(item.toJSON()));
-    res.status(200).json(response);
+        orderNo: orderNo
+      }
+    })
+    const response = itemData.map(item => trimObjectStrings(item.toJSON()))
+    res.status(200).json(response)
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
+
 exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
   // let transaction;
   try {
     // transaction = await sequelize.transaction();
-    const items = itemData;
-    let prepareJson = getJsonData("prepareinvoice.json");
+    const items = itemData
+    let prepareJson = getJsonData('prepareinvoice.json')
+    const toNegative = v => -Math.abs(Number(v || 0))
+    const toPositive = v => Math.abs(Number(v || 0))
     // let prepareJson;
     for (let item of items) {
+      const isDiscount = item.itemCode === 'DISONLINE'
       await PrepareInvoA.create(
         {
           coNo: item.coNo,
@@ -72,9 +76,24 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
           grossWeight: item.grossWeight, // OrderLine
           netWeight: item.netWeight, // OrderLine
           OUDCCD: prepareJson[0].HEAD.OUDCCD, // 2
-          OUSAPR: nonVat(item.price), //non vat OrderLine.OBSAPR
-          OUGRPR: nonVat(item.price * item.qty), //non vat OrderLine OBNEPR
-          OUSAAM: nonVat(item.netPrice * item.qty), //OrderLine OBLNAM
+          OUSUNO: isDiscount ? 'FWD' : '', // 2
+
+          OUSAPR: nonVat(
+            isDiscount ? toPositive(item.price) : toPositive(item.price)
+          ),
+
+          OUGRPR: nonVat(
+            isDiscount
+              ? toNegative(item.price * item.qty)
+              : toPositive(item.price * item.qty)
+          ),
+
+          OUSAAM: nonVat(
+            isDiscount
+              ? toNegative(item.netPrice * item.qty)
+              : toPositive(item.netPrice * item.qty)
+          ),
+
           OUPRMO: prepareJson[0].HEAD.OUPRMO, // 8
           OUDISY: prepareJson[0].HEAD.OUDISY, //OOHEAD
           // add OrderLine OBDIC 1-6 use 2,5 other defult 1
@@ -90,8 +109,8 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
           OUUNMS: item.OUSTUN, // หน่วยเล็กสุดของ item
           OUORTK: prepareJson[0].HEAD.OUORTK, // 1
           addressID: item.addressID,
-          OUSDEP: "",
-          OUBUAR: "",
+          OUSDEP: '',
+          OUBUAR: '',
           OUINRC: item.customerNo, // customer
           OURGDT: formatDate(),
           OURGTM: getCurrentTimeFormatted(),
@@ -103,17 +122,17 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
           OUACOS: item.costPCS, //OrderLine OBUCOS * OBORQT
           OUTEPY: item.OBTEPY, //OCUSMA
           OUDECU: item.customerNo, // customer
-          OURQWH: item.warehouse, // warehouse
+          OURQWH: item.warehouse // warehouse
         },
         {
-          transaction,
+          transaction
         }
-      );
+      )
     }
   } catch (error) {
-    throw errorEndpoint(currentFilePath, "Prepare Invoice:", error);
+    throw errorEndpoint(currentFilePath, 'Prepare Invoice:', error)
   }
-};
+}
 
 // exports.insertB = async (req, res, next) => {
 //   try {
