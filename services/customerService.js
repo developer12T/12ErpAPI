@@ -112,7 +112,7 @@ exports.fetchShipping = async (data) => {
       where: {
         coNo: 410,
         customerNo,
-        addressID,
+        // addressID,
       },
     });
     console.log(customerNo, addressID)
