@@ -524,7 +524,7 @@ const Order = sequelize.define(
       validate: {
         len: {
           args: [0, 15],
-          msg: 'OACOAM must be 0-15 digits long'
+          msg: 'OABRAM must be 0-15 digits long'
         }
       }
     },

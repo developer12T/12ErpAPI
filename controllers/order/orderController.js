@@ -809,10 +809,10 @@ exports.insert = async (req, res, next) => {
               grossWeight: totalgrossWeight.toFixed(3),
               netWeight: totalnetWeight.toFixed(3),
               OACOAM: totalCost.toFixed(3),
-              total: total, // OABRLA
+              total: total.toFixed(2), // OABRLA
               OANTAM: totalNet, // Ne Order Value
               totalNet: totalNet, // OANTLA
-              OABRAM: total, // OANTLA
+              OABRAM: total.toFixed(2), // OANTLA
               OAFDED: requestDate,
               OALDED: requestDate,
               OARESP: orderJson[0].HEAD.OACHID,
