@@ -1147,6 +1147,17 @@ const OrderLine = sequelize.define(
         }
       }
     },
+    OBLTYP: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'OBLTYP',
+      validate: {
+        len: {
+          args: [0, 3],
+          msg: 'OBLTYP must be 0-3 digits long'
+        }
+      }
+    },
     OBLNAM: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -1540,6 +1551,11 @@ const OrderLine = sequelize.define(
           msg: 'OBCMP5 must be 0-4 digits long'
         }
       }
+    },
+    OBCOHZ: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'OBCOHZ'
     },
     OBDIBE: {
       type: DataTypes.INTEGER,

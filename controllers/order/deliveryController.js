@@ -85,7 +85,7 @@ exports.deliveryHeadInsert = async (data, transaction) => {
 
     // console.log('Customer_DAWD' + policy)
     const route = await fetchRoute(shinpping.shippingRoute)
-    
+
     await DeliveryHead.create(
       {
         coNo: coNo,
@@ -177,7 +177,8 @@ exports.deliveryLineInsert = async (itemData, transaction) => {
           URITNO: item.itemCode,
           URFACI: deliveryData[0].LINE.URFACI, // json
           URTRQT: item.qtyQT, // OrderLine qty (pcs)
-          URSTCD: item.OBSTCD, // 1
+          // URSTCD: item.OBSTCD, // 1
+          URSTCD: item.itemCode === 'ZNS1401001' ? 0 : item.OBSTCD,
           grossWeight: item.grossWeightSingle, // OrderLine
           netWeight: item.netWeightSingle, // OrderLine
           // URALUN OrderLine

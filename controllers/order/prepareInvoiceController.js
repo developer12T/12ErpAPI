@@ -95,7 +95,8 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
           ),
 
           OUPRMO: prepareJson[0].HEAD.OUPRMO, // 8
-          OUDISY: prepareJson[0].HEAD.OUDISY, //OOHEAD
+          // OUDISY: prepareJson[0].HEAD.OUDISY, //OOHEAD
+          OUDISY: 'VAN 18', //OOHEAD
           // add OrderLine OBDIC 1-6 use 2,5 other defult 1
           // OUDIA2  OrderLine non vat OBDIA2 * OBORQA
           // OUOFRA  OrderLine non vat OBDIA2 * OBORQA
@@ -108,7 +109,7 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
           OUUCCD: prepareJson[0].HEAD.OUUCCD, // 1
           OUUNMS: item.OUSTUN, // หน่วยเล็กสุดของ item
           OUORTK: prepareJson[0].HEAD.OUORTK, // 1
-          addressID: item.addressID,
+          addressID: '',
           OUSDEP: '',
           OUBUAR: '',
           OUINRC: item.customerNo, // customer
