@@ -77,6 +77,45 @@ exports.getRunningNumber = async (req, res, next) => {
   }
 }
 
+exports.reserveRunningNumber = async (req, res, next) => {
+  const transaction = await sequelize.transaction()
+  try {
+    const { coNo, series, seriesType, size } = req.body
+
+    if (!size || size <= 0) {
+      return res.status(400).json({ message: 'Invalid size' })
+    }
+
+    // 🔒 lock row
+    const row = await NumberSeries.findOne({
+      where: { coNo, series, seriesType },
+      transaction,
+      lock: transaction.LOCK.UPDATE
+    })
+
+    if (!row) {
+      await transaction.rollback()
+      return res.status(404).json({ message: 'NumberSeries not found' })
+    }
+
+    const startNo = row.lastNo + 1
+    const endNo = row.lastNo + size
+
+    // ✅ update ทีเดียว
+    await row.update({ lastNo: endNo }, { transaction })
+
+    await transaction.commit()
+
+    res.json({
+      startNo,
+      endNo
+    })
+  } catch (error) {
+    await transaction.rollback()
+    next(error)
+  }
+}
+
 exports.getRunningNumberInvoice = async (req, res, next) => {
   try {
     const { series, year, coNo } = req.body
