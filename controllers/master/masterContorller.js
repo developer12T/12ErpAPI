@@ -21,6 +21,7 @@ const MoveMent = require('../../models/transection')
 const { trimObjectStrings } = require('../../utils/String')
 
 const { Sequelize, Op } = require('sequelize')
+const { sequelize } = require('../../config/m3db')
 
 exports.getCalWeight = async (req, res, next) => {
   try {
