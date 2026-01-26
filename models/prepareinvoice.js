@@ -1,1203 +1,1208 @@
-const { sequelize, DataTypes } = require("../config/m3db");
+const { sequelize, DataTypes } = require('../config/m3db')
 
 const PrepareInvoA = sequelize.define(
-  "OSASTD",
+  'OSASTD',
   {
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: true,
       primaryKey: true,
-      field: "OUCONO",
+      field: 'OUCONO',
       validate: {
         isNumeric: {
-          msg: "Company No must contain only numbers", // Ensure the value is numeric
+          msg: 'Company No must contain only numbers' // Ensure the value is numeric
         },
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 3) {
-            throw new Error("Company No must be exactly 3 digits");
+            throw new Error('Company No must be exactly 3 digits')
           }
-        },
-      },
+        }
+      }
     },
     OUDIVI: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUDIVI",
+      field: 'OUDIVI',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 3) {
-            throw new Error("OUDIVI must be exactly 3 digits");
+            throw new Error('OUDIVI must be exactly 3 digits')
           }
-        },
-      },
+        }
+      }
     },
+    OULTYP: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'OULTYP'
+    },
+
     OUFACI: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUFACI",
+      field: 'OUFACI',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 3) {
-            throw new Error("OUDIVI must be exactly 3 digits");
+            throw new Error('OUDIVI must be exactly 3 digits')
           }
-        },
-      },
+        }
+      }
     },
     orderNo: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUORNO",
+      field: 'OUORNO',
       primaryKey: true,
       validate: {
         len: {
           args: [0, 10],
-          msg: "Order No must be 0-10 digits long",
-        },
-      },
+          msg: 'Order No must be 0-10 digits long'
+        }
+      }
     },
     OUSUNO: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUSUNO",
+      field: 'OUSUNO',
       primaryKey: true,
       validate: {
         len: {
           args: [0, 10],
-          msg: "OUSUNO must be 0-10 digits long",
-        },
-      },
+          msg: 'OUSUNO must be 0-10 digits long'
+        }
+      }
     },
     itemNo: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUPONR",
+      field: 'OUPONR',
       validate: {
         len: {
           args: [0, 5],
-          msg: "Item No must be 0-5 digits long",
+          msg: 'Item No must be 0-5 digits long'
         },
         isNumeric: {
-          msg: "Item No must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'Item No must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUOSSQ: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUOSSQ",
+      field: 'OUOSSQ',
       validate: {
         len: {
           args: [0, 5],
-          msg: "OUOSSQ must be 0-5 digits long",
+          msg: 'OUOSSQ must be 0-5 digits long'
         },
         isNumeric: {
-          msg: "OUOSSQ must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUOSSQ must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUOSDT: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUOSDT",
+      field: 'OUOSDT',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 8) {
-            throw new Error("OUOSDT must be exactly 8 digits");
+            throw new Error('OUOSDT must be exactly 8 digits')
           }
         },
         isNumeric: {
-          msg: "OUOSDT must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUOSDT must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUOSPE: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUOSPE",
+      field: 'OUOSPE',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 6) {
-            throw new Error("OUOSDT must be exactly 6 digits");
+            throw new Error('OUOSDT must be exactly 6 digits')
           }
         },
         isNumeric: {
-          msg: "OUOSPE must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUOSPE must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     customerNo: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUCUNO",
+      field: 'OUCUNO',
       validate: {
         len: {
           args: [0, 10],
-          msg: "Customer No must be 0-10 digits long",
-        },
-      },
+          msg: 'Customer No must be 0-10 digits long'
+        }
+      }
     },
     customerChannel: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUCUCL",
+      field: 'OUCUCL',
       validate: {
         len: {
           args: [0, 3],
-          msg: "Customer No must be 0-3 digits long",
-        },
-      },
+          msg: 'Customer No must be 0-3 digits long'
+        }
+      }
     },
     OUCUST: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUCUST",
+      field: 'OUCUST',
       validate: {
         len: {
           args: [0, 10],
-          msg: "OUCUST must be 0-10 digits long",
-        },
-      },
+          msg: 'OUCUST must be 0-10 digits long'
+        }
+      }
     },
     orderType: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUORTP",
+      field: 'OUORTP',
       validate: {
         len: {
           args: [0, 3],
-          msg: "OUCUST must be 0-3 digits long",
-        },
-      },
+          msg: 'OUCUST must be 0-3 digits long'
+        }
+      }
     },
     payer: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUPYNO",
+      field: 'OUPYNO',
       validate: {
         len: {
           args: [0, 10],
-          msg: "payer must be 0-10 digits long",
-        },
-      },
+          msg: 'payer must be 0-10 digits long'
+        }
+      }
     },
     OUCUCD: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUCUCD",
+      field: 'OUCUCD',
       validate: {
         len: {
           args: [0, 3],
-          msg: "OUCUCD must be 0-3 digits long",
-        },
-      },
+          msg: 'OUCUCD must be 0-3 digits long'
+        }
+      }
     },
     saleCode: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUSMCD",
+      field: 'OUSMCD',
       validate: {
         len: {
           args: [0, 10],
-          msg: "Sale Code must be 0-10 digits long",
-        },
-      },
+          msg: 'Sale Code must be 0-10 digits long'
+        }
+      }
     },
     OUCSCD: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUCSCD",
+      field: 'OUCSCD',
       validate: {
         len: {
           args: [0, 3],
-          msg: "OUCSCD must be 0-3 digits long",
-        },
-      },
+          msg: 'OUCSCD must be 0-3 digits long'
+        }
+      }
     },
     OUFRE1: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUFRE1",
+      field: 'OUFRE1',
       validate: {
         len: {
           args: [0, 5],
-          msg: "OUFRE1 must be 0-5 digits long",
-        },
-      },
+          msg: 'OUFRE1 must be 0-5 digits long'
+        }
+      }
     },
     warehouse: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUWHLO",
+      field: 'OUWHLO',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 3) {
-            throw new Error("Warehouse must be exactly 3 digits");
+            throw new Error('Warehouse must be exactly 3 digits')
           }
-        },
-      },
+        }
+      }
     },
     itemCode: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUITNO",
+      field: 'OUITNO',
       validate: {
         len: {
           args: [0, 15],
-          msg: "Item Code must be 0-15 digits long",
-        },
-      },
+          msg: 'Item Code must be 0-15 digits long'
+        }
+      }
     },
     OUITGR: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUITGR",
+      field: 'OUITGR',
       validate: {
         len: {
           args: [0, 8],
-          msg: "OUITGR must be 0-8 digits long",
-        },
-      },
+          msg: 'OUITGR must be 0-8 digits long'
+        }
+      }
     },
     itemType: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUITTY",
+      field: 'OUITTY',
       validate: {
         len: {
           args: [0, 3],
-          msg: "Item Type must be 0-3 digits long",
-        },
-      },
+          msg: 'Item Type must be 0-3 digits long'
+        }
+      }
     },
     OUITCL: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUITCL",
+      field: 'OUITCL',
       validate: {
         len: {
           args: [0, 5],
-          msg: "OUITCL must be 0-5 digits long",
-        },
-      },
+          msg: 'OUITCL must be 0-5 digits long'
+        }
+      }
     },
     OUORST: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUORST",
+      field: 'OUORST',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 2) {
-            throw new Error("OUORST must be exactly 2 digits");
+            throw new Error('OUORST must be exactly 2 digits')
           }
-        },
-      },
+        }
+      }
     },
     OUORQT: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUORQT",
+      field: 'OUORQT',
       validate: {
         len: {
           args: [0, 15],
-          msg: "OUORQT must be 0-15 digits long",
+          msg: 'OUORQT must be 0-15 digits long'
         },
         isNumeric: {
-          msg: "OUORQT must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUORQT must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUORQA: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUORQA",
+      field: 'OUORQA',
       validate: {
         len: {
           args: [0, 15],
-          msg: "OUORQA must be 0-15 digits long",
+          msg: 'OUORQA must be 0-15 digits long'
         },
         isNumeric: {
-          msg: "OUORQA must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUORQA must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     unit: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUALUN",
+      field: 'OUALUN',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 3) {
-            throw new Error("Unit must be exactly 3 digits");
+            throw new Error('Unit must be exactly 3 digits')
           }
-        },
-      },
+        }
+      }
     },
     OUCOFA: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUCOFA",
+      field: 'OUCOFA',
       validate: {
         len: {
           args: [0, 15],
-          msg: "OUCOFA must be 0-15 digits long",
+          msg: 'OUCOFA must be 0-15 digits long'
         },
         isNumeric: {
-          msg: "OUCOFA must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUCOFA must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUDMCF: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUDMCF",
+      field: 'OUDMCF',
       validate: {
         len: {
           args: [0, 1],
-          msg: "OUDMCF must be 0-1 digits long",
+          msg: 'OUDMCF must be 0-1 digits long'
         },
         isNumeric: {
-          msg: "OUDMCF must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUDMCF must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUSPUN: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUSPUN",
+      field: 'OUSPUN',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 3) {
-            throw new Error("OUSPUN must be exactly 3 digits");
+            throw new Error('OUSPUN must be exactly 3 digits')
           }
-        },
-      },
+        }
+      }
     },
     OUORQS: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUORQS",
+      field: 'OUORQS',
       validate: {
         len: {
           args: [0, 15],
-          msg: "OUDMCF must be 0-15 digits long",
+          msg: 'OUDMCF must be 0-15 digits long'
         },
         isNumeric: {
-          msg: "OUDMCF must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUDMCF must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUSTUN: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUSTUN",
+      field: 'OUSTUN',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 3) {
-            throw new Error("OUSPUN must be exactly 3 digits");
+            throw new Error('OUSPUN must be exactly 3 digits')
           }
-        },
-      },
+        }
+      }
     },
     OUORQB: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUORQB",
+      field: 'OUORQB',
       validate: {
         len: {
           args: [0, 15],
-          msg: "OUORQB must be 0-15 digits long",
+          msg: 'OUORQB must be 0-15 digits long'
         },
         isNumeric: {
-          msg: "OUORQB must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUORQB must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     grossWeight: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUGRWE",
+      field: 'OUGRWE',
       validate: {
         len: {
           args: [0, 9],
-          msg: "Gross Weight must be 0-9 digits long",
+          msg: 'Gross Weight must be 0-9 digits long'
         },
         isNumeric: {
-          msg: "Gross Weight must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'Gross Weight must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     netWeight: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUNEWE",
+      field: 'OUNEWE',
       validate: {
         len: {
           args: [0, 9],
-          msg: "Net Weight must be 0-9 digits long",
+          msg: 'Net Weight must be 0-9 digits long'
         },
         isNumeric: {
-          msg: "Net Weight must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'Net Weight must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUDCCD: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUDCCD",
+      field: 'OUDCCD',
       validate: {
         len: {
           args: [0, 1],
-          msg: "OUDCCD must be 0-1 digits long",
+          msg: 'OUDCCD must be 0-1 digits long'
         },
         isNumeric: {
-          msg: "OUDCCD must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUDCCD must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUSAPR: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUSAPR",
+      field: 'OUSAPR',
       validate: {
         len: {
           args: [0, 17],
-          msg: "OUSAPR must be 0-17 digits long",
+          msg: 'OUSAPR must be 0-17 digits long'
         },
         isNumeric: {
-          msg: "OUSAPR must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUSAPR must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUGRPR: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUGRPR",
+      field: 'OUGRPR',
       validate: {
         len: {
           args: [0, 17],
-          msg: "OUGRPR must be 0-17 digits long",
+          msg: 'OUGRPR must be 0-17 digits long'
         },
         isNumeric: {
-          msg: "OUGRPR must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUGRPR must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUSAAM: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUSAAM",
+      field: 'OUSAAM',
       validate: {
         len: {
           args: [0, 17],
-          msg: "OUSAAM must be 0-17 digits long",
+          msg: 'OUSAAM must be 0-17 digits long'
         },
         isNumeric: {
-          msg: "OUSAAM must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUSAAM must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUPRMO: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUPRMO",
+      field: 'OUPRMO',
       validate: {
         len: {
           args: [0, 1],
-          msg: "OUPRMO must be 0-1 digits long",
-        },
-      },
+          msg: 'OUPRMO must be 0-1 digits long'
+        }
+      }
     },
     OUDISY: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUDISY",
+      field: 'OUDISY',
       validate: {
         len: {
           args: [0, 10],
-          msg: "OUDISY must be 0-10 digits long",
-        },
-      },
+          msg: 'OUDISY must be 0-10 digits long'
+        }
+      }
     },
     OUDWDT: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUDWDT",
+      field: 'OUDWDT',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 8) {
-            throw new Error("OUDWDT must be exactly 8 digits");
+            throw new Error('OUDWDT must be exactly 8 digits')
           }
         },
         isNumeric: {
-          msg: "OUSAAM must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUSAAM must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUCODT: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUCODT",
+      field: 'OUCODT',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 8) {
-            throw new Error("OUDWDT must be exactly 8 digits");
+            throw new Error('OUDWDT must be exactly 8 digits')
           }
         },
         isNumeric: {
-          msg: "OUSAAM must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUSAAM must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUUCOS: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUUCOS",
+      field: 'OUUCOS',
       validate: {
         len: {
           args: [0, 17],
-          msg: "OUUCOS must be 0-17 digits long",
+          msg: 'OUUCOS must be 0-17 digits long'
         },
         isNumeric: {
-          msg: "OUUCOS must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUUCOS must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUUCCD: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUUCCD",
+      field: 'OUUCCD',
       validate: {
         len: {
           args: [0, 1],
-          msg: "OUUCCD must be 0-1 digits long",
+          msg: 'OUUCCD must be 0-1 digits long'
         },
         isNumeric: {
-          msg: "OUUCCD must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUUCCD must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUUNMS: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUUNMS",
+      field: 'OUUNMS',
       validate: {
         len: {
           args: [0, 3],
-          msg: "OUUNMS must be 0-3 digits long",
-        },
-      },
+          msg: 'OUUNMS must be 0-3 digits long'
+        }
+      }
     },
     OUORTK: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUORTK",
+      field: 'OUORTK',
       validate: {
         len: {
           args: [0, 1],
-          msg: "OUORTK must be 0-1 digits long",
-        },
-      },
+          msg: 'OUORTK must be 0-1 digits long'
+        }
+      }
     },
     addressID: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUADID",
+      field: 'OUADID',
       validate: {
         len: {
           args: [0, 6],
-          msg: "Adress ID must be 0-6 digits long",
-        },
-      },
+          msg: 'Adress ID must be 0-6 digits long'
+        }
+      }
     },
     OUINRC: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUINRC",
+      field: 'OUINRC',
       validate: {
         len: {
           args: [0, 10],
-          msg: "OUINRC must be 0-10 digits long",
-        },
-      },
+          msg: 'OUINRC must be 0-10 digits long'
+        }
+      }
     },
     OURGDT: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OURGDT",
+      field: 'OURGDT',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 8) {
-            throw new Error("OURGDT must be exactly 8 digits");
+            throw new Error('OURGDT must be exactly 8 digits')
           }
         },
         isNumeric: {
-          msg: "OURGDT must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OURGDT must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OURGTM: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OURGTM",
+      field: 'OURGTM',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 6) {
-            throw new Error("OURGTM must be exactly 6 digits");
+            throw new Error('OURGTM must be exactly 6 digits')
           }
         },
         isNumeric: {
-          msg: "OURGTM must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OURGTM must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OULMDT: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OULMDT",
+      field: 'OULMDT',
       validate: {
-        isLenghtRequired(value) {
+        isLenghtRequired (value) {
           // Custom validator to ensure exactly 8 digits
           if (value.toString().length !== 8) {
-            throw new Error("OULMDT must be exactly 8 digits");
+            throw new Error('OULMDT must be exactly 8 digits')
           }
         },
         isNumeric: {
-          msg: "OULMDT must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OULMDT must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUCHNO: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUCHNO",
+      field: 'OUCHNO',
       validate: {
         len: {
           args: [0, 3],
-          msg: "OUCHNO must be 0-3 digits long",
+          msg: 'OUCHNO must be 0-3 digits long'
         },
         isNumeric: {
-          msg: "OUCHNO must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUCHNO must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUCHID: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUCHID",
+      field: 'OUCHID',
       validate: {
         len: {
           args: [0, 10],
-          msg: "OUCHID must be 0-10 digits long",
-        },
-      },
+          msg: 'OUCHID must be 0-10 digits long'
+        }
+      }
     },
     OULMTS: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OULMTS",
+      field: 'OULMTS',
       validate: {
         len: {
           args: [0, 18],
-          msg: "OULMTS must be 0-18 digits long",
+          msg: 'OULMTS must be 0-18 digits long'
         },
         isNumeric: {
-          msg: "OULMTS must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OULMTS must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUACOS: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUACOS",
+      field: 'OUACOS',
       validate: {
         len: {
           args: [0, 17],
-          msg: "OUACOS must be 0-17 digits long",
+          msg: 'OUACOS must be 0-17 digits long'
         },
         isNumeric: {
-          msg: "OUACOS must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUACOS must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUTEPY: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUTEPY",
+      field: 'OUTEPY',
       validate: {
         len: {
           args: [0, 3],
-          msg: "OUTEPY must be 0-3 digits long",
-        },
-      },
+          msg: 'OUTEPY must be 0-3 digits long'
+        }
+      }
     },
     OUDECU: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUDECU",
+      field: 'OUDECU',
       validate: {
         len: {
           args: [0, 10],
-          msg: "OUDECU must be 0-10 digits long",
-        },
-      },
+          msg: 'OUDECU must be 0-10 digits long'
+        }
+      }
     },
     OURQWH: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OURQWH",
+      field: 'OURQWH',
       validate: {
         len: {
           args: [0, 3],
-          msg: "OURQWH must be 0-3 digits long",
-        },
-        
-      },
+          msg: 'OURQWH must be 0-3 digits long'
+        }
+      }
     },
     OUOFRA: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUOFRA",
+      field: 'OUOFRA',
       validate: {
         len: {
           args: [0, 15],
-          msg: "OUOFRA must be 0-15 digits long",
+          msg: 'OUOFRA must be 0-15 digits long'
         },
         isNumeric: {
-          msg: "OUOFRA must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUOFRA must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUDIA2: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "OUDIA2",
+      field: 'OUDIA2',
       validate: {
         len: {
           args: [0, 15],
-          msg: "OUDIA2 must be 0-15 digits long",
+          msg: 'OUDIA2 must be 0-15 digits long'
         },
         isNumeric: {
-          msg: "OUDIA2 must contain only numbers", // Ensure the value is numeric
-        },
-      },
+          msg: 'OUDIA2 must contain only numbers' // Ensure the value is numeric
+        }
+      }
     },
     OUSDST: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "OUSDST",
-    },
+      field: 'OUSDST'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
-    updatedAt: false,
+    updatedAt: false
   }
-);
+)
 
 const PrepareInvoB = sequelize.define(
-  "OSBSTD",
+  'OSBSTD',
   {
     coNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCCONO",
-      primaryKey: true,
+      field: 'UCCONO',
+      primaryKey: true
     },
     UCDIVI: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCDIVI",
-      primaryKey: true,
+      field: 'UCDIVI',
+      primaryKey: true
     },
     UCFACI: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCFACI",
+      field: 'UCFACI'
     },
     orderNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCORNO",
-      primaryKey: true,
+      field: 'UCORNO',
+      primaryKey: true
     },
     UCDLIX: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCDLIX",
+      field: 'UCDLIX'
     },
     itemNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCPONR",
+      field: 'UCPONR'
     },
     UCIVNO: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCIVNO",
+      field: 'UCIVNO'
     },
     UCORDT: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCORDT",
+      field: 'UCORDT'
     },
     UCDWDT: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCDWDT",
+      field: 'UCDWDT'
     },
     UCCODT: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCCODT",
+      field: 'UCCODT'
     },
     UCDLDT: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCDLDT",
+      field: 'UCDLDT'
     },
     UCIVDT: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCIVDT",
+      field: 'UCIVDT'
     },
     UCYEA4: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCYEA4",
+      field: 'UCYEA4'
     },
     UCYEA4: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCYEA4",
+      field: 'UCYEA4'
     },
     customerNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCCUNO",
+      field: 'UCCUNO'
     },
     customerChannel: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCCUCL",
+      field: 'UCCUCL'
     },
     UCCUST: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCCUST",
+      field: 'UCCUST'
     },
     orderType: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCORTP",
+      field: 'UCORTP'
     },
     payer: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCPYNO",
+      field: 'UCPYNO'
     },
     UCCUCD: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCCUCD",
+      field: 'UCCUCD'
     },
     UCRAIN: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCRAIN",
+      field: 'UCRAIN'
     },
     UCDMCU: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCDMCU",
+      field: 'UCDMCU'
     },
     saleCode: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCSMCD",
+      field: 'UCSMCD'
     },
     UCCSCD: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCCSCD",
+      field: 'UCCSCD'
     },
     UCFRE1: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCFRE1",
+      field: 'UCFRE1'
     },
     warehouse: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCWHLO",
+      field: 'UCWHLO'
     },
     itemCode: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCITNO",
+      field: 'UCITNO'
     },
     UCITGR: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCITGR",
+      field: 'UCITGR'
     },
     itemType: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCITTY",
+      field: 'UCITTY'
     },
     UCITCL: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCITCL",
+      field: 'UCITCL'
     },
     UCSTUN: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCSTUN",
+      field: 'UCSTUN'
     },
     UCALUN: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCALUN",
+      field: 'UCALUN'
     },
     UCSPUN: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCSPUN",
+      field: 'UCSPUN'
     },
     UCPRMO: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCPRMO",
+      field: 'UCPRMO'
     },
     UCDISY: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCDISY",
+      field: 'UCDISY'
     },
     UCUCCD: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCUCCD",
+      field: 'UCUCCD'
     },
     UCORTK: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCORTK",
+      field: 'UCORTK'
     },
     addressID: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCADID",
+      field: 'UCADID'
     },
     UCIVQT: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCIVQT",
+      field: 'UCIVQT'
     },
     UCOFQS: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCOFQS",
+      field: 'UCOFQS'
     },
     UCIVQA: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCIVQA",
+      field: 'UCIVQA'
     },
     UCIVQS: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCIVQS",
+      field: 'UCIVQS'
     },
     UCORQT: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCORQT",
+      field: 'UCORQT'
     },
     UCORQS: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCORQS",
+      field: 'UCORQS'
     },
     UCORQA: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCORQA",
+      field: 'UCORQA'
     },
     UCORQB: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCORQB",
+      field: 'UCORQB'
     },
     grossWeight: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCGRWE",
+      field: 'UCGRWE'
     },
     netWeight: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCNEWE",
+      field: 'UCNEWE'
     },
     UCSAAM: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCSAAM",
+      field: 'UCSAAM'
     },
     UCSGAM: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCSGAM",
+      field: 'UCSGAM'
     },
     UCCUAM: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCCUAM",
+      field: 'UCCUAM'
     },
     UCUCOS: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCUCOS",
+      field: 'UCUCOS'
     },
     UCDCOS: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCDCOS",
+      field: 'UCDCOS'
     },
     UCDDF1: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCDDF1",
+      field: 'UCDDF1'
     },
     UCDDF4: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCDDF4",
+      field: 'UCDDF4'
     },
     UCTDEL: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCTDEL",
+      field: 'UCTDEL'
     },
     UCTORL: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCTORL",
+      field: 'UCTORL'
     },
     UCRQTY: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCRQTY",
+      field: 'UCRQTY'
     },
     UCMPRO: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCMPRO",
+      field: 'UCMPRO'
     },
     UCINRC: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCINRC",
+      field: 'UCINRC'
     },
     UCROUT: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCROUT",
+      field: 'UCROUT'
     },
     UCRODN: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCRODN",
+      field: 'UCRODN'
     },
     UCRGDT: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCRGDT",
+      field: 'UCRGDT'
     },
     UCRGTM: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCRGTM",
+      field: 'UCRGTM'
     },
     UCLMDT: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCLMDT",
+      field: 'UCLMDT'
     },
     UCCHNO: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCCHNO",
+      field: 'UCCHNO'
     },
     UCCHID: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "UCCHID",
+      field: 'UCCHID'
     },
     UCINPX: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCINPX",
+      field: 'UCINPX'
     },
     UCRGDT: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCRGDT",
+      field: 'UCRGDT'
     },
     UCEXIN: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCEXIN",
+      field: 'UCEXIN'
     },
     UCLMTS: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCLMTS",
+      field: 'UCLMTS'
     },
     UCACOS: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCACOS",
+      field: 'UCACOS'
     },
     UCTEPY: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCTEPY",
+      field: 'UCTEPY'
     },
     UCDECU: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCDECU",
+      field: 'UCDECU'
     },
     UCRQWH: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "UCRQWH",
-    },
+      field: 'UCRQWH'
+    }
   },
   {
     freezeTableName: true,
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-    primaryKey: false,
+    primaryKey: false
   }
-);
+)
 
-module.exports = { PrepareInvoA, PrepareInvoB };
+module.exports = { PrepareInvoA, PrepareInvoB }

@@ -178,7 +178,7 @@ exports.deliveryLineInsert = async (itemData, transaction) => {
           URFACI: deliveryData[0].LINE.URFACI, // json
           URTRQT: item.qtyQT, // OrderLine qty (pcs)
           // URSTCD: item.OBSTCD, // 1
-          URSTCD: item.itemCode === 'ZNS1401001' ? 0 : item.OBSTCD,
+          URSTCD: item.itemCode === 'ZNS1401001' ? 0 : 1,
           grossWeight: item.grossWeightSingle, // OrderLine
           netWeight: item.netWeightSingle, // OrderLine
           // URALUN OrderLine

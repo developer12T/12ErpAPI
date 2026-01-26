@@ -55,7 +55,10 @@ exports.orderLineInsert = async (itemData, transaction) => {
           OBPRMO: item.OBPRMO,
           OBPCOF: orderJson[0].LINE.OBPCOF,
           // OBDCCS
-          OBDCCS: item.itemCode === 'ZNS1401001' ? 2 : 0,
+          OBDCCS:
+            item.itemCode === 'ZNS1401001' || item.itemCode === 'DISONLINE'
+              ? 2
+              : 0,
           OBCOHZ: '2359',
 
           OBCOFS: item.OBCOFA,
@@ -89,10 +92,13 @@ exports.orderLineInsert = async (itemData, transaction) => {
           OBCOHM: item.OBCOHM,
           OBDWDZ: item.OBDWDZ,
           OBCODZ: item.OBCODZ,
-          OBCOHZ: item.OBCOHZ,
+          OBCOHZ: '2359',
           OBTIZO: item.OBTIZO,
           // OBSTCD: item.OBSTCD,
-          OBSTCD: item.itemCode === 'ZNS1401001' ? 0 : item.OBSTCD,
+          OBSTCD:
+            item.itemCode === 'ZNS1401001' || item.itemCode === 'DISONLINE'
+              ? 0
+              : 1,
           // OBCOCD: item.OBCOCD,
           OBCOCD: item.itemCode === 'ZNS1401001' ? 0 : item.OBCOCD,
           OBUCCD: item.OBUCCD,
@@ -111,7 +117,10 @@ exports.orderLineInsert = async (itemData, transaction) => {
           OBDECU: item.OBDECU,
           OBTEPY: item.OBTEPY,
           // OBPMOR: item.OBPMOR,
-          OBPMOR: item.itemCode === 'ZNS1401001' ? 7 : item.OBPMOR,
+          OBPMOR:
+            item.itemCode === 'ZNS1401001' || item.itemCode === 'DISONLINE'
+              ? 7
+              : item.OBPMOR,
           OBLTYP: 0,
 
           OBUPAV: item.OBUPAV,

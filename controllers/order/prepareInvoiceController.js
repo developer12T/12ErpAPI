@@ -77,6 +77,8 @@ exports.prepareInvoiceInsertA = async (itemData, transaction, next) => {
           netWeight: item.netWeight, // OrderLine
           OUDCCD: prepareJson[0].HEAD.OUDCCD, // 2
           OUSUNO: isDiscount ? 'FWD' : '', // 2
+          OULTYP: 0,
+          OUORQB: 1, 
 
           OUSAPR: nonVat(
             isDiscount ? toPositive(item.price) : toPositive(item.price)
