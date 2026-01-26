@@ -80,7 +80,7 @@ router.post('/runningNumberInvoice/', getRunningNumberInvoice)
 router.post('/runningNumberInvoice/update', postUpdateRunningNumberInvoice)
 
 //http://localhost:3000/master/runningNumber/
-router.post('/reserve', reserveRunningNumber)
+router.post('/runningNumber/reserve', reserveRunningNumber)
 
 //=============================== Warehouse ===============================
 //http://localhost:3000/master/warehouse
