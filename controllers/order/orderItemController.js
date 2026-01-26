@@ -116,7 +116,6 @@ exports.orderLineInsert = async (itemData, transaction) => {
           OBCINA: item.itemCode === 'ZNS1401001' ? 0 : item.OBCINA,
           OBDECU: item.OBDECU,
           OBTEPY: item.OBTEPY,
-          // OBPMOR: item.OBPMOR,
           OBPMOR:
             item.itemCode === 'ZNS1401001' || item.itemCode === 'DISONLINE'
               ? 7
