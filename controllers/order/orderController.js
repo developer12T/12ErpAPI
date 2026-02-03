@@ -763,6 +763,37 @@ exports.insert = async (req, res, next) => {
         )
         const coType = await fetchCotype(orderType)
 
+        /* ===============================
+         *  คำนวณยอดจาก items.netPrice
+         *  - DISONLINE = ลบออก
+         * =============================== */
+        const grossAmount = items.reduce((sum, item) => {
+          const price = Number(item.price || 0)
+          const qty = Number(item.qty || 0)
+          const amount = price * qty
+
+          if (item.itemCode === 'DISONLINE') {
+            return sum - Math.abs(amount) // 🔥 ลบส่วนลดออก
+          }
+
+          return sum + amount
+        }, 0)
+
+        const grossAmount2 = Number(grossAmount.toFixed(2))
+
+        const summaryNetAmount = items.reduce((sum, item) => {
+          const net = Number(item.total || 0)
+
+          if (item.itemCode === 'DISONLINE') {
+            return sum - Math.abs(net) // 🔥 ส่วนลด
+          }
+
+          return sum + net
+        }, 0)
+
+        // ปัดทศนิยมตาม ERP
+        const summaryNetAmount2 = Number(summaryNetAmount.toFixed(2))
+
         if (Hcase === 1) {
           const customer = await fetchCustomer(customerNo)
           await Order.create(
@@ -809,14 +840,17 @@ exports.insert = async (req, res, next) => {
               grossWeight: totalgrossWeight.toFixed(3),
               netWeight: totalnetWeight.toFixed(3),
               OACOAM: totalCost.toFixed(3),
-              total: total.toFixed(2), // OABRLA
-              OANTAM: totalNet, // Ne Order Value
-              totalNet: totalNet, // OANTLA
-              OABRAM: total.toFixed(2), // OANTLA
+
+              total: grossAmount2, // OABRLA
+              OABRAM: grossAmount2, // OABRAM
+
+              OANTAM: summaryNetAmount2, // Ne Order Value
+              totalNet: summaryNetAmount2, // OANTLA
+
               OAFDED: requestDate,
               OALDED: requestDate,
               OARESP: orderJson[0].HEAD.OACHID,
-              OABLRO: nonVat(totalNet),
+              OABLRO: nonVat(summaryNetAmount2),
               OATXAP: orderJson[0].HEAD.OATXAP,
               OARLDZ: formatDate(), // OARLDZ
               OARGDT: formatDate(), // OARGDT
